@@ -14,29 +14,35 @@
 
         const tardigrade = createTardigrade();
 
-        const propListener = (value) => console.log("Listener bring value", value);
-        const globalListener = (name, value, props) => console.log("G listener bring", name, value, props);
+        const propListener = (value) => console.log("Listener receive value", value);
+        const globalListener = (name, value, props) => console.log("Global listener receive data", name, value, props);
 
         tardigrade.addListener(globalListener);
 
-        tardigrade.addProp("salo", 0);
-        tardigrade.addProp("gorilka", "text");
+        tardigrade.addProp("a", 0);
+        tardigrade.addProp("b", "text");
 
-        tardigrade.addPropListener("salo", propListener);
+        tardigrade.addPropListener("a", propListener);
 
-        tardigrade.setProp("salo", 15);
+        const altStore = createTardigrade();
 
-        tardigrade.removeProp("gorilka");
+        altStore.addProp("f", 2);
 
-        tardigrade.setProp("salo", null);
+        tardigrade.importProps(altStore);
 
-        tardigrade.removePropListener("salo", propListener);
+        tardigrade.setProp("a", 15);
+
+        tardigrade.removeProp("b");
+
+        tardigrade.setProp("a", null);
+
+        tardigrade.removePropListener("a", propListener);
 
         // tardigrade.removeAllListeners(); possible to remove all global listener
 
-        tardigrade.setProp("salo", "speka");
+        tardigrade.setProp("a", "speka");
 
-        tardigrade.setProp("salo", 17);
+        tardigrade.setProp("a", 17);
     </script>
 </body>
 </html>

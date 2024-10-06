@@ -1,3 +1,5 @@
+import { Tardigrade } from "./tardigrade";
+
 export type DictionaryKey = string | number | symbol;
 
 export type Dictionary<T = any> = {
@@ -17,6 +19,7 @@ export interface ITardigrade {
     addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeAllListeners(): void;
+    importProps(target: Tardigrade): void;
 }
 
 export interface Prop<T> {

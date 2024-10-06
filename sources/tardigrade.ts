@@ -8,7 +8,7 @@ export class Tardigrade implements ITardigrade {
     private _listenerHandlers: ((...args) => void)[] = [];
 
     public addProp<T>(name: string, value: T): void {
-        if (hasOwnProperty(this._props, name)) {
+        if (this.hasProp(name)) {
             console.error("Tardigrade: prop can't be override, you have to remove prop first");
             return;
         }
@@ -28,7 +28,7 @@ export class Tardigrade implements ITardigrade {
     }
 
     public removeProp(name: string): void {
-        if (!hasOwnProperty(this._props, name)) {
+        if (!this.hasProp(name)) {
             console.error("Tardigrade: prop can't be deleted, you have to remove prop first");
             return;
         }
@@ -38,7 +38,7 @@ export class Tardigrade implements ITardigrade {
     }
 
     public setProp<T>(name: string, newValue: T): void {
-        if (!hasOwnProperty(this._props, name)) {
+        if (!this.hasProp(name)) {
             console.error(`Tardigrade: prop "${name}" wasn't registered. You have to add this prop first`);
             return;
         }
@@ -65,7 +65,7 @@ export class Tardigrade implements ITardigrade {
     }
 
     public addPropListener(name: string, handler: (value: Nullable<any>) => void): void {
-        if (!hasOwnProperty(this._props, name)) {
+        if (!this.hasProp(name)) {
             console.error(`Tardigrade: prop "${name}" wasn't registered. You have to add this prop first`);
             return;
         }
@@ -97,12 +97,16 @@ export class Tardigrade implements ITardigrade {
     }
 
     public prop(name: string): Nullable<any> {
-        if (!hasOwnProperty(this._props, name)) {
+        if (!this.hasProp(name)) {
             console.error(`Tardigrade: prop "${name}" wasn't registered. You have to add this prop first`);
             return null;
         }
 
         return this._props[name].value;
+    }
+
+    public hasProp(name: string): boolean {
+        return hasOwnProperty(this._props, name);
     }
 
     public addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void {
@@ -116,6 +120,18 @@ export class Tardigrade implements ITardigrade {
 
     public removeAllListeners(): void {
         this._listenerHandlers = [];
+    }
+
+    public importProps(target: Tardigrade): void {
+        const importedProps = target.props;
+
+        Object
+            .entries(importedProps)
+            .forEach(([key, value]) => {
+                this.hasProp(key)
+                    ? this.setProp(key, value)
+                    : this.addProp(key, value);
+            });
     }
 
     private isPropListened(name: string): boolean {

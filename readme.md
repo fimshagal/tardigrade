@@ -140,44 +140,21 @@ Immutable Types: Once a property is added with a specific type, that type is loc
 
 Safe Handling of null Values: You can safely set a property to null without altering its original type. This allows you to clear values temporarily without losing the type information, ensuring that only null or the original type can be assigned to the property thereafter. This adds an extra layer of safety.
 
+### Reducing boilerplate
 
-### Local and Global Listeners
-
-Local Listeners: You can add listeners to individual properties via addPropListener, allowing you to react only to specific property changes. This reduces unnecessary processing and provides fine-grained control over state changes.
-
-Global Listeners: Using addListener, you can globally listen for any property changes in the system. This is especially useful when you need to track or log all state modifications across multiple properties.
-
+As I mentioned before one of the goals of Tardigrade is to reduce boilerplate code. It provides a structured way to manage state, but with fewer steps. Tardigrade reduces the need for writing actions, reducers, and dispatchers, allowing developers to focus more on business logic.
 
 ### Flexible Listener Management
 
-Removing Specific Listeners: You can easily remove both local property listeners (via removePropListener) and global listeners (via removeListener), ensuring that you're not leaving unused listeners in memory. This helps prevent memory leaks and keeps the system clean.
-
-Remove All Global Listeners: The optional removeAllListener() method provides a simple way to clear all global listeners at once, making it convenient to reset the state management system when necessary.
-
+You can easily listen either certain prop with ```addPropListener``` or global store changes with ```addListener```. To stop doing this you can just call ```removePropListener``` for prop or ```removeListener``` for stop listening global changes 
 
 ### Automatic Cleanup with Property Removal
 
-Automatic Listener Cleanup: When you remove a property via removeProp, all listeners attached to that property are automatically removed as well. This ensures that the lifecycle of your data and listeners are tightly coupled, avoiding dangling listeners and potential memory issues.
-
+Automatic Listener Cleanup: When you remove a property via ```removeProp```, all listeners attached to that property are automatically removed as well. This ensures that the lifecycle of your data and listeners are tightly coupled, avoiding dangling listeners and potential memory issues.
 
 ### Dynamic State Control
 
-This library allows you to dynamically add properties with addProp, making it ideal for applications that need to modify their state structure on the fly. This flexibility is crucial for dynamic applications where data models evolve over time.
-
-
-### Error Reduction Through Strict Typing
-
-With strict type checking, the library reduces the risk of runtime errors by ensuring that only the appropriate data types can be assigned to properties. The system will throw errors if you attempt to set a value of the wrong type, providing a robust safety net for managing your application state.
-
-
-### Safe State Handling
-
-Type-Safe Value Changes: After a property is added, the only allowable changes to its value must conform to its initial type. This prevents accidental type mismatches and keeps the application state consistent and reliable.
-
-
-### Added Safety:
-
-As mentioned, properties can be reset to null without affecting their original type. This maintains type integrity, ensuring that you can't accidentally overwrite a property with an incorrect data type while still allowing for safe "nullification" when needed.
+This library allows you to dynamically add properties with ```addProp```, making it ideal for applications that need to modify their state structure on the fly. This flexibility is crucial for dynamic applications where data models evolve over time.
 
 ---
 
