@@ -12,7 +12,7 @@ This library was created to offer a simplified approach to state management with
 
 **Simplified Implementation and Usage**
 
-Unlike Redux, which requires setting up actions, reducers, and combining them in a store, this library offers a much simpler interface for managing state. You can easily create and update properties using straightforward methods like addProp and setProp, giving developers more control without the overhead.
+Unlike Redux, which requires setting up actions, reducers, and combining them in a store, this library offers a much simpler interface for managing state. You can easily create and update properties using straightforward methods like ```addProp``` and ```setProp```, giving developers more control without the overhead.
 
 ```ts
 // Tardigrade approach
