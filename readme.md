@@ -108,7 +108,7 @@ In Redux, there’s no automatic mechanism for cleaning up listeners when state 
 
 **Less Boilerplate Code**
 
-Redux often requires a significant amount of boilerplate code—actions, reducers, and dispatchers must be defined for every state change, which can become overwhelming in large projects. Your library, on the other hand, significantly reduces the amount of code needed to manage state, allowing developers to focus more on business logic rather than infrastructure code.
+Redux often requires a significant amount of boilerplate code—actions, reducers, and dispatchers must be defined for every state change, which can become overwhelming in large projects. Tardigrade, on the other hand, significantly reduces the amount of code needed to manage state, allowing developers to focus more on business logic rather than infrastructure code.
 
 ```ts
 // Tardigrade approach
