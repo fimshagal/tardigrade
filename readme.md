@@ -10,7 +10,7 @@ This library was created to offer a simplified approach to state management with
 
 ---
 
-## Similarities with Redux
+## Similarities with Redux/Redux Toolkit
 
 #### Managing State through Simple Functions
 
@@ -55,34 +55,6 @@ store.dispatch(incrementCounter);
 
 In Redux, state changes are handled by dispatching actions, which are processed by reducers to update the state. Tardigrade simplifies this process by providing a direct method for setting state.
 
-#### Strong Typing and State Consistency
-
-One of Tardigrade’s unique features is strict typing by default, which ensures that once a property is added with a specific type, that type remains consistent throughout its lifecycle. This concept is similar to how Redux maintains the structure of state through reducers, ensuring predictable state management.
-
-**Tardigrade Example:**
-
-```ts
-tardigrade.addProp("username", "guest");
-tardigrade.setProp("username", null);  // Value can be null, but the type remains string
-```
-
-In Tardigrade, properties can be set to null while keeping their original type. This ensures that you maintain type safety, similar to how Redux ensures that state changes follow the expected structure defined in reducers
-
-**Redux Example:**
-
-```ts
-function userReducer(state = "guest", action) {
-    switch (action.type) {
-        case 'SET_USER':
-            return action.payload || null;
-        default:
-            return state;
-    }
-}
-```
-
-Redux ensures that the state is consistently updated through reducers, and Tardigrade builds on this by enforcing strong typing.
-
 #### Listening to State Changes
 
 Both Tardigrade and Redux allow you to listen for state changes. In Redux, you can use connect or hooks like useSelector to map state to components. Tardigrade also provides listeners for individual properties and global listeners to track any state changes, making it easy to handle state updates in a controlled manner.
@@ -116,26 +88,6 @@ connect(mapStateToProps, mapDispatchToProps)(MyComponent);
 ```
 
 Redux uses connect to map state and actions to props, while Tardigrade offers an easier way to listen to state changes through direct property listeners or global listeners.
-
-#### Automatic Cleanup of Listeners
-
-Tardigrade, like Redux, supports a clean and predictable way to manage state. One of its enhancements is the automatic cleanup of listeners when properties are removed, helping maintain clean, memory-efficient code.
-
-**Tardigrade Example:**
-
-```ts
-tardigrade.removeProp("counter");  // Automatically removes all listeners for 'counter'
-```
-
-In Tardigrade, removing a property automatically cleans up its associated listeners, which simplifies state management. Redux, on the other hand, relies on manual handling of such tasks, typically done through component unmounting or manual logic.
-
-**Redux Example:**
-
-```ts
-// Redux does not have a built-in equivalent, but you would typically handle cleanup in componentWillUnmount, by unsubscribing manually or 
-```
-
----
 
 #### Reduced Boilerplate
 
