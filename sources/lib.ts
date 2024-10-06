@@ -20,6 +20,7 @@ export interface ITardigrade {
     removeListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeAllListeners(): void;
     importProps(target: Tardigrade): void;
+    merge(target: Tardigrade): void
 }
 
 export interface Prop<T> {

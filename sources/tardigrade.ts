@@ -123,6 +123,8 @@ export class Tardigrade implements ITardigrade {
     }
 
     public importProps(target: Tardigrade): void {
+        console.warn("Tardigrade: importing doesn't replace props listeners and get only values. Use 'merge' to totally grafting stores");
+
         const importedProps = target.props;
 
         Object
@@ -132,6 +134,10 @@ export class Tardigrade implements ITardigrade {
                     ? this.setProp(key, value)
                     : this.addProp(key, value);
             });
+    }
+
+    public merge(target: Tardigrade): void {
+        throw Error("None implementing");
     }
 
     private isPropListened(name: string): boolean {
