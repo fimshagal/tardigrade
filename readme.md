@@ -126,7 +126,7 @@ function exampleReducer(state = 0, action) {
 store.dispatch(updateExample);
 ```
 
-Pure Redux requires defining actions, reducers, and dispatchers for each state change. Tardigrade simplifies this process, reducing the amount of boilerplate code needed to manage state.
+Pure Redux requires defining actions, reducers, and dispatchers for each state change. Tardigrade as Redux Toolkit simplifies this process, reducing the amount of boilerplate code needed to manage state.
 
 ---
 
