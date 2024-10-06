@@ -55,7 +55,7 @@ As you can see, in Redux the process of state changes involves creating actions 
 
 In Tardigrade, once a property is created with a specific type, that type cannot be changed. This ensures that your data remains consistent throughout the application's lifecycle.
 
-Additionally, the library allows you to set a property to null without changing its underlying type, maintaining the type safety even when the value is cleared. This is something Redux doesn't handle as directly, since the state is managed through reducers without strict type guarantees.
+Additionally, the library allows you to set a property to ```null``` without changing its underlying type, maintaining the type safety even when the value is cleared. This is something Redux doesn't handle as directly, since the state is managed through reducers without strict type guarantees.
 
 
 
