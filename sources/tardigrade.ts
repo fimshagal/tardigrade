@@ -148,8 +148,6 @@ export class Tardigrade implements ITardigrade {
     }
 
     public importProps(target: Tardigrade): void {
-        console.warn("Tardigrade: importing doesn't replace props listeners and get only values. Use 'merge' to totally grafting stores");
-
         const importedProps = target.props;
 
         Object
