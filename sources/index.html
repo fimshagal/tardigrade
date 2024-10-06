@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tardigrade sandbox</title>
+</head>
+<body>
+    <script type="module" src="./index.ts"></script>
+    <script type="module">
+        import { createTardigrade } from "./";
+
+        const tardigrade = createTardigrade();
+
+        const propListener = (value) => console.log("Listener bring value", value);
+        const globalListener = (name, value, props) => console.log("G listener bring", name, value, props);
+
+        tardigrade.addListener(globalListener);
+
+        tardigrade.addProp("salo", 0);
+        tardigrade.addProp("gorilka", "text");
+
+        tardigrade.addPropListener("salo", propListener);
+
+        tardigrade.setProp("salo", 15);
+
+        tardigrade.removeProp("gorilka");
+
+        tardigrade.setProp("salo", null);
+
+        tardigrade.removePropListener("salo", propListener);
+
+        // tardigrade.removeAllListeners(); possible to remove all global listener
+
+        tardigrade.setProp("salo", "speka");
+
+        tardigrade.setProp("salo", 17);
+    </script>
+</body>
+</html>
