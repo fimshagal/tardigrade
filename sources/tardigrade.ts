@@ -20,6 +20,16 @@ export class Tardigrade implements ITardigrade {
 
         const type: string = typeOf(value);
         const isValueScalar: boolean = isScalar(value);
+
+        if (!isValueScalar) {
+            try {
+                JSON.stringify(value);
+            } catch (error) {
+                console.error("Tardigrade: complex data has to be json-friendly");
+                return;
+            }
+        }
+
         const prop: Prop<any> = { name, value, type, isValueScalar };
 
         this._props[name] = prop;
@@ -59,6 +69,15 @@ export class Tardigrade implements ITardigrade {
         if (prop.type !== newType) {
             console.error(`Tardigrade: new value must have same type as initial value for prop "${name}"`);
             return;
+        }
+
+        if (!prop.isValueScalar) {
+            try {
+                JSON.stringify(newValue);
+            } catch (error) {
+                console.error("Tardigrade: complex data has to be json-friendly");
+                return;
+            }
         }
 
         handler(name, newValue);
@@ -102,7 +121,13 @@ export class Tardigrade implements ITardigrade {
             return null;
         }
 
-        return this._props[name].value;
+        const prop: Prop<any> = this._props[name];
+
+        if (prop.isValueScalar) {
+            return prop.value;
+        }
+
+        return this.cloneComplexData(prop.value);
     }
 
     public hasProp(name: string): boolean {
@@ -156,13 +181,17 @@ export class Tardigrade implements ITardigrade {
         }
     }
 
+    private cloneComplexData<T>(complexData: T): any {
+        return JSON.parse(JSON.stringify(complexData));
+    }
+
     public get props(): Dictionary {
         const response: Dictionary = {};
 
         Object
             .entries(this._props)
             .forEach(([propName, prop]): void => {
-                response[propName] = JSON.parse(JSON.stringify(prop.value));
+                response[propName] = this.cloneComplexData(prop.value);
             });
 
         return response;
