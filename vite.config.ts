@@ -6,7 +6,7 @@ export default defineConfig({
         lib: {
             entry: path.resolve(__dirname, 'sources/index.ts'),
             name: 'Tardigrade',
-            fileName: (format) => `tardigrade.${format}.js`,
+            fileName: (format) => `tardigrade.store.${format}.js`,
             formats: ['es', 'cjs', 'umd', 'iife'],
         },
     },

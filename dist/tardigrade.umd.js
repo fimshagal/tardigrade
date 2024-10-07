@@ -1,1 +1,0 @@
-(function(e,d){typeof exports=="object"&&typeof module<"u"?d(exports):typeof define=="function"&&define.amd?define(["exports"],d):(e=typeof globalThis<"u"?globalThis:e||self,d(e.Tardigrade={}))})(this,function(e){"use strict";class d{}const i=()=>new d;e.createTardigrade=i,Object.defineProperty(e,Symbol.toStringTag,{value:"Module"})});

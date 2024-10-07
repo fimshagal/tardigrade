@@ -280,9 +280,9 @@ export class Tardigrade implements ITardigrade {
             .forEach(([key, value]) => {
                 if (this.hasProp(key)) {
                     if (!override) return;
-                    this.silentSetProp(key, value);
+                    this.silentSetProp(key, value.value);
                 } else {
-                    this.silentAddProp(key, value);
+                    this.silentAddProp(key, value.value);
                 }
             });
     }
@@ -304,7 +304,7 @@ export class Tardigrade implements ITardigrade {
             handler(name, null);
             return;
         }
-
+        
         if (prop.type !== newType) {
             console.error(`Tardigrade: new value must have same type as initial value for prop "${name}"`);
             return;

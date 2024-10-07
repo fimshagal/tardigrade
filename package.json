@@ -1,19 +1,19 @@
 {
-  "name": "tardigrade",
+  "name": "tardigrade-store",
   "version": "1.0.0",
   "description": "A simple state management library",
-  "main": "dist/tardigrade.cjs.js",
-  "module": "dist/tardigrade.esm.js",
+  "main": "dist/tardigrade.store.cjs.js",
+  "module": "dist/tardigrade.store.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node build.index",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
     "test": "jest"
   },
   "author": "fSha",
-  "license": "MIT",
+  "license": "CHECK LICENSE IN LICENSE FILE",
   "devDependencies": {
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",

@@ -134,27 +134,17 @@ Pure Redux requires defining actions, reducers, and dispatchers for each state c
 
 I've designed Tardigrade to offer a flexible, safe, and intuitive way to manage state in applications. Here's why this approach stands out:
 
-### Strict Property Typing
+### Ease of use
 
-Immutable Types: Once a property is added with a specific type, that type is locked. This guarantees that the type of the property cannot be changed later, ensuring consistency across your application.
+Minimal boilerplate code and a fairly straightforward API. Tardigrade provides a structured way to manage state, but with fewer steps. Tardigrade reduces the need for writing actions, reducers, and dispatchers, allowing developers to focus more on business logic.
 
-Safe Handling of null Values: You can safely set a property to null without altering its original type. This allows you to clear values temporarily without losing the type information, ensuring that only null or the original type can be assigned to the property thereafter. This adds an extra layer of safety.
+### Full Dynamic State Control
 
-### Reducing boilerplate
+Tardigrade allows you to dynamically add and remove properties, clone and merge stores and others, making it ideal for applications that need to modify their state structure on the fly. This flexibility is crucial for dynamic applications where data models evolve over time.
 
-As I mentioned before one of the goals of Tardigrade is to reduce boilerplate code. It provides a structured way to manage state, but with fewer steps. Tardigrade reduces the need for writing actions, reducers, and dispatchers, allowing developers to focus more on business logic.
+### Such small size
 
-### Flexible Listener Management
-
-You can easily listen either certain prop with ```addPropListener``` or global store changes with ```addListener```. To stop doing this you can just call ```removePropListener``` for prop or ```removeListener``` for stop listening global changes 
-
-### Automatic Cleanup with Property Removal
-
-Automatic Listener Cleanup: When you remove a property via ```removeProp```, all listeners attached to that property are automatically removed as well. This ensures that the lifecycle of your data and listeners are tightly coupled, avoiding dangling listeners and potential memory issues.
-
-### Dynamic State Control
-
-This library allows you to dynamically add properties with ```addProp```, making it ideal for applications that need to modify their state structure on the fly. This flexibility is crucial for dynamic applications where data models evolve over time.
+Tardigrade had a really tiny size
 
 ---
 
@@ -290,8 +280,49 @@ tardigrade.removeProp("username");  // Removes 'username' property and its liste
 Once a property is removed, any attempt to update it will result in an error:
 
 ```ts
-myLib.setProp("username", "newUser");  // Throws an error since 'username' was removed
+tardigrade.setProp("username", "newUser");  // Throws an error since 'username' was removed
 ```
+
+#### Import props
+
+You can import props of another Tardigrade store into your with ```merge``` method. This will automatically replace props from target store to that you need
+
+```ts
+const altStore = createTardigrade();
+altStore.addProps("timestamp", 0);
+
+tardigrade.importProps("altStore");  // Replaced "timestamp" prop into our base store
+````
+
+```importProps``` method replace only props, without prop's listener handlers
+
+There are two ways to import props: without override or with
+
+```ts
+tardigrade.importProps("altStore", true);  // Will override existing props of this store after import
+tardigrade.importProps("altStore"); // Won't override existing props of this store after import
+````
+
+#### Merge stores
+
+You can merge one store into another. Merging replace not only props but all the listener handlers and make source object stop working
+
+```ts
+const altStore = createTardigrade();
+altStore.addProps("timestamp", 0);
+altStore.addPropListener("timestamp", (value) => console.log(value));
+
+tardigrade.merge(altStore);  // Replaced "timestamp" prop and all the prop listener handlers
+
+consolel.log(altStore.prop("timestamp")); // would return "null" cause altStore was killed after merging
+````
+
+As ```importProps``` this method also has two ways to be executed
+
+```ts
+tardigrade.merge("altStore", true);  // Will override existing props and listener handlers of this store after import
+ tardigrade.merge("altStore"); // Won't override existing props and listener handlers of this store after import
+````
 
 #### Full Example
 
@@ -327,4 +358,5 @@ tardigrade.removeListener(globalListener);
 // Remove a property
 tardigrade.removeProp("username");
 ```
+
 
