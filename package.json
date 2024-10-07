@@ -1,9 +1,10 @@
 {
   "name": "tardigrade-store",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple state management library",
-  "main": "dist/tardigrade.store.cjs.js",
-  "module": "dist/tardigrade.store.esm.js",
+  "main": "dist/index.js",
+  "module": "dist/tardigrade.store.es.js",
+  "browser": "dist/tardigrade.store.iife.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "vite build && node build.index",

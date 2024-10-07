@@ -1,1 +1,6 @@
+.idea/
 sources/
+.gitignore
+build.index.js
+tsconfig.json
+vite.config.ts
