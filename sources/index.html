@@ -40,6 +40,31 @@
 
         console.log(tardigradeB);
 
+        const tardigradeF = createTardigrade();
+
+        tardigradeF.addListener((name, value, props) => {
+            console.log(name, value, props);
+        });
+
+        tardigradeF.addProp("money", 100);
+
+        tardigradeF.addResolver("xResolver", ({ money }) => {
+            return Math.random() + (money || 0);
+        });
+
+        tardigradeF.callResolver("xResolver");
+        tardigradeF.callResolver("xResolver");
+        tardigradeF.callResolver("xResolver");
+        tardigradeF.removeResolver("xResolver");
+
+        tardigradeF.callResolver("xResolver");
+
+        tardigradeF.addResolver("Goro", ({ money }) => Math.pow(money, 2));
+
+        tardigradeA.merge(tardigradeF);
+
+        tardigradeA.callResolver("Goro");
+
     </script>
 </body>
 </html>

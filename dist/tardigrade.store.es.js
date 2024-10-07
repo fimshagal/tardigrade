@@ -1,23 +1,99 @@
-var c = Object.defineProperty;
-var u = (o, r, e) => r in o ? c(o, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : o[r] = e;
-var p = (o, r, e) => (u(o, typeof r != "symbol" ? r + "" : r, e), e);
-const l = (o) => Object.prototype.toString.call(o).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), d = (o) => {
-  const r = l(o);
+var u = Object.defineProperty;
+var c = (o, r, e) => r in o ? u(o, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : o[r] = e;
+var l = (o, r, e) => (c(o, typeof r != "symbol" ? r + "" : r, e), e);
+const a = (o) => Object.prototype.toString.call(o).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), h = (o) => {
+  const r = a(o);
   return r !== "null" && r !== "undefined";
-}, f = (o) => {
-  const r = l(o);
+}, v = (o) => {
+  const r = a(o);
   return r === "string" || r === "number" || r === "symbol";
-}, h = (o, r) => Object.prototype.hasOwnProperty.call(o, r);
+}, i = (o, r) => Object.prototype.hasOwnProperty.call(o, r);
 class _ {
   constructor(r) {
-    p(this, "_props", {});
-    p(this, "_propListenerHandlers", {});
-    p(this, "_listenerHandlers", []);
-    p(this, "_alive", !0);
-    p(this, "_sessionKey", null);
+    l(this, "_resolvers", {});
+    l(this, "_props", {});
+    l(this, "_resolverListenerHandlers", {});
+    l(this, "_propListenerHandlers", {});
+    l(this, "_listenerHandlers", []);
+    l(this, "_alive", !0);
+    l(this, "_sessionKey", null);
     if (!r)
       throw Error("Tardigrade constructor error");
     this._sessionKey = r;
+  }
+  addResolver(r, e) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    if (a(e) !== "function") {
+      console.error("Tardigrade: resolver have to be a function");
+      return;
+    }
+    if (i(this._resolvers, r)) {
+      console.error("Tardigrade: resolver has been planted");
+      return;
+    }
+    this._resolvers[r] = e;
+  }
+  setResolver(r, e) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    if (a(e) !== "function") {
+      console.error("Tardigrade: resolver have to be a function");
+      return;
+    }
+    if (!i(this._resolvers, r)) {
+      console.error("Tardigrade: resolver has been planted");
+      return;
+    }
+    this._resolvers[r] = e;
+  }
+  removeResolver(r) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    i(this._resolvers, r) && (delete this._resolvers[r], delete this._resolverListenerHandlers[r]);
+  }
+  callResolver(r) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    if (!i(this._resolvers, r)) {
+      console.error("Tardigrade: this resolver hasn't been created yet or been deleted");
+      return;
+    }
+    const e = this._resolvers[r](this.props);
+    this.handleOnCallResolver(r, e), i(this._resolverListenerHandlers, r) && this._resolverListenerHandlers[r].forEach((s) => s(e));
+  }
+  addResolverListener(r, e) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    if (!i(this._resolvers, r)) {
+      console.error(`Tardigrade: there is no resolver with name "${r}"`);
+      return;
+    }
+    i(this._resolverListenerHandlers, r) || (this._resolverListenerHandlers[r] = []), this._resolverListenerHandlers[r].push(e);
+  }
+  removeResolverListener(r, e) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    i(this._resolverListenerHandlers, r) && (this._resolverListenerHandlers[r] = this._resolverListenerHandlers[r].filter((s) => s !== e));
+  }
+  removeAllResolverListeners(r) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    i(this._resolverListenerHandlers, r) && delete this._resolverListenerHandlers[r];
   }
   addProp(r, e) {
     this.silentAddProp(r, e), this.handleOnSetProp(this._props[r]);
@@ -42,14 +118,14 @@ class _ {
       console.error(`Tardigrade: prop "${r}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (n, a) => {
-      this._props[n].value = a, this.handleOnSetProp(this._props[n]);
-    }, t = this._props[r], i = l(e);
-    if (!d(e)) {
+    const s = (p, d) => {
+      this._props[p].value = d, this.handleOnSetProp(this._props[p]);
+    }, t = this._props[r], n = a(e);
+    if (!h(e)) {
       s(r, null);
       return;
     }
-    if (t.type !== i) {
+    if (t.type !== n) {
       console.error(`Tardigrade: new value must have same type as initial value for prop "${r}"`);
       return;
     }
@@ -104,7 +180,7 @@ class _ {
     return e.isValueScalar ? e.value : this.cloneComplexData(e.value);
   }
   hasProp(r) {
-    return this._alive ? h(this._props, r) : (console.error("Tardigrade: this store doesn't support yet"), !1);
+    return this._alive ? i(this._props, r) : (console.error("Tardigrade: this store doesn't support yet"), !1);
   }
   addListener(r) {
     if (!this._alive) {
@@ -133,13 +209,13 @@ class _ {
       return;
     }
     const s = r.props;
-    Object.entries(s).forEach(([t, i]) => {
+    Object.entries(s).forEach(([t, n]) => {
       if (this.hasProp(t)) {
         if (!e)
           return;
-        this.setProp(t, i);
+        this.setProp(t, n);
       } else
-        this.addProp(t, i);
+        this.addProp(t, n);
     });
   }
   merge(r, e) {
@@ -148,7 +224,7 @@ class _ {
       return;
     }
     const s = Object.keys(r.props);
-    this.silentImportProps(r, e), this.importAllPropsListenerHandlers(r, e), this.importAllListenersHandlers(r, e), r.kill(this._sessionKey), s.forEach((t) => {
+    this.silentImportProps(r, e), this.importAllPropsListenerHandlers(r, e), this.importAllListenersHandlers(r, e), this.importResolvers(r, e), this.importAllResolversListenerHandlers(r, e), r.kill(this._sessionKey), s.forEach((t) => {
       console.log(t, this._props[t]), this.handleOnSetProp(this._props[t]);
     });
   }
@@ -167,6 +243,20 @@ class _ {
     }
     return r !== this._sessionKey ? null : { ...this._propListenerHandlers };
   }
+  exportAllResolvers(r) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    return r !== this._sessionKey ? null : { ...this._resolvers };
+  }
+  exportAllResolversListenerHandlers(r) {
+    if (!this._alive) {
+      console.error("Tardigrade: this store doesn't support yet");
+      return;
+    }
+    return r !== this._sessionKey ? null : { ...this._resolverListenerHandlers };
+  }
   exportAllListenersHandlers(r) {
     if (!this._alive) {
       console.error("Tardigrade: this store doesn't support yet");
@@ -180,13 +270,13 @@ class _ {
       return;
     }
     const s = r.props;
-    Object.entries(s).forEach(([t, i]) => {
+    Object.entries(s).forEach(([t, n]) => {
       if (this.hasProp(t)) {
         if (!e)
           return;
-        this.silentSetProp(t, i.value);
+        this.silentSetProp(t, n);
       } else
-        this.silentAddProp(t, i.value);
+        this.silentAddProp(t, n);
     });
   }
   silentSetProp(r, e) {
@@ -194,14 +284,14 @@ class _ {
       console.error(`Tardigrade: prop "${r}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (n, a) => {
-      this._props[n].value = a;
-    }, t = this._props[r], i = l(e);
-    if (!d(e)) {
+    const s = (p, d) => {
+      this._props[p].value = d;
+    }, t = this._props[r], n = a(e);
+    if (!h(e)) {
       s(r, null);
       return;
     }
-    if (t.type !== i) {
+    if (t.type !== n) {
       console.error(`Tardigrade: new value must have same type as initial value for prop "${r}"`);
       return;
     }
@@ -223,19 +313,42 @@ class _ {
       console.error("Tardigrade: prop can't be override, you have to remove prop first");
       return;
     }
-    if (!d(e)) {
+    if (!h(e)) {
       console.error("Tardigrade: value can't be nullable");
       return;
     }
-    const s = l(e), t = f(e);
-    if (!t)
-      try {
-        JSON.stringify(e);
-      } catch {
-        console.error("Tardigrade: complex data has to be json-friendly");
-        return;
-      }
+    const s = a(e), t = v(e);
+    if (t) {
+      this._props[r] = { name: r, value: e, type: s, isValueScalar: t };
+      return;
+    }
+    try {
+      JSON.stringify(e);
+    } catch {
+      console.error("Tardigrade: complex data has to be json-friendly");
+      return;
+    }
     this._props[r] = { name: r, value: e, type: s, isValueScalar: t };
+  }
+  importResolvers(r, e) {
+    const s = r.exportAllResolvers(this._sessionKey);
+    this._resolvers = e ? {
+      ...this._resolvers,
+      ...s
+    } : {
+      ...s,
+      ...this._resolvers
+    };
+  }
+  importAllResolversListenerHandlers(r, e) {
+    const s = r.exportAllResolversListenerHandlers(this._sessionKey);
+    this._propListenerHandlers = e ? {
+      ...this._resolverListenerHandlers,
+      ...s
+    } : {
+      ...s,
+      ...this._resolverListenerHandlers
+    };
   }
   importAllPropsListenerHandlers(r, e) {
     const s = r.exportAllPropsListenerHandlers(this._sessionKey);
@@ -255,7 +368,11 @@ class _ {
     this._listenerHandlers = e ? [...new Set(t)] : t;
   }
   isPropListened(r) {
-    return h(this._propListenerHandlers, r);
+    return i(this._propListenerHandlers, r);
+  }
+  handleOnCallResolver(r, e) {
+    for (const s of this._listenerHandlers)
+      s(r, e, this.props);
   }
   handleOnSetProp(r) {
     if (this.isPropListened(r.name))
@@ -272,11 +389,11 @@ class _ {
       return console.error("Tardigrade: this store doesn't support yet"), {};
     const r = {};
     return Object.entries(this._props).forEach(([e, s]) => {
-      r[e] = s.isValueScalar ? s : this.cloneComplexData(s.value);
+      r[e] = s.isValueScalar ? s.value : this.cloneComplexData(s.value);
     }), r;
   }
 }
-const y = () => Symbol(crypto.randomUUID()), v = y(), P = () => new _(v);
+const f = () => Symbol(crypto.randomUUID()), y = f(), L = () => new _(y);
 export {
-  P as createTardigrade
+  L as createTardigrade
 };

@@ -3,7 +3,9 @@ import { typeOf, isDef, isScalar } from "./type.of";
 import { hasOwnProperty } from "./has.own.property";
 
 export class Tardigrade implements ITardigrade {
+    private _resolvers: Dictionary<(...args: any[]) => any> = {};
     private _props: Dictionary<Prop<any>> = {};
+    private _resolverListenerHandlers: Dictionary<((...args: any[]) => void)[]> = {};
     private _propListenerHandlers: Dictionary = {};
     private _listenerHandlers: ((...args: any[]) => void)[] = [];
     private _alive: boolean = true;
@@ -16,6 +18,126 @@ export class Tardigrade implements ITardigrade {
         }
 
         this._sessionKey = sessionKey;
+    }
+
+    public addResolver(name: string, resolver: (...args: any[]) => any): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (typeOf(resolver) !== "function") {
+            console.error('Tardigrade: resolver have to be a function');
+            return;
+        }
+
+        if (hasOwnProperty(this._resolvers, name)) {
+            console.error('Tardigrade: resolver has been planted');
+            return;
+        }
+
+        this._resolvers[name] = resolver;
+    }
+
+    public setResolver(name: string, resolver: (...args: any[]) => any): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (typeOf(resolver) !== "function") {
+            console.error('Tardigrade: resolver have to be a function');
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolvers, name)) {
+            console.error('Tardigrade: resolver has been planted');
+            return;
+        }
+
+        this._resolvers[name] = resolver;
+    }
+
+    public removeResolver(name: string): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolvers, name)) {
+            return;
+        }
+
+        delete this._resolvers[name];
+        delete this._resolverListenerHandlers[name];
+    }
+
+    public callResolver(name: string): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolvers, name)) {
+            console.error("Tardigrade: this resolver hasn't been created yet or been deleted");
+            return;
+        }
+
+        const value = this._resolvers[name](this.props);
+
+        this.handleOnCallResolver(name, value);
+
+        if (!hasOwnProperty(this._resolverListenerHandlers, name)) {
+            return;
+        }
+
+        this._resolverListenerHandlers[name]
+            .forEach((handler) => handler(value));
+    }
+
+    public addResolverListener(name: string, handler: (value: Nullable<any>) => void): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolvers, name)) {
+            console.error(`Tardigrade: there is no resolver with name "${name}"`);
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolverListenerHandlers, name)) {
+            this._resolverListenerHandlers[name] = [];
+        }
+
+        this._resolverListenerHandlers[name].push(handler);
+    }
+
+    public removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolverListenerHandlers, name)) {
+            return;
+        }
+
+        this._resolverListenerHandlers[name] = this._resolverListenerHandlers[name]
+            .filter((listenerHandler) => listenerHandler !== handler);
+    }
+
+    public removeAllResolverListeners(name: string): void {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (!hasOwnProperty(this._resolverListenerHandlers, name)) {
+            return;
+        }
+
+        delete this._resolverListenerHandlers[name];
     }
 
     public addProp<T>(name: string, value: T): void {
@@ -214,6 +336,8 @@ export class Tardigrade implements ITardigrade {
         this.silentImportProps(target, override);
         this.importAllPropsListenerHandlers(target, override);
         this.importAllListenersHandlers(target, override);
+        this.importResolvers(target, override);
+        this.importAllResolversListenerHandlers(target, override);
         target.kill(this._sessionKey!);
 
         targetPropsNames
@@ -254,6 +378,32 @@ export class Tardigrade implements ITardigrade {
         return { ...this._propListenerHandlers };
     }
 
+    public exportAllResolvers(sessionKey: symbol): Nullable<{}> {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (sessionKey !== this._sessionKey) {
+            return null;
+        }
+
+        return { ...this._resolvers };
+    }
+
+    public exportAllResolversListenerHandlers(sessionKey: symbol): Nullable<{}> {
+        if (!this._alive) {
+            console.error("Tardigrade: this store doesn't support yet");
+            return;
+        }
+
+        if (sessionKey !== this._sessionKey) {
+            return null;
+        }
+
+        return { ...this._resolverListenerHandlers };
+    }
+
     public exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]> {
         if (!this._alive) {
             console.error("Tardigrade: this store doesn't support yet");
@@ -280,9 +430,9 @@ export class Tardigrade implements ITardigrade {
             .forEach(([key, value]) => {
                 if (this.hasProp(key)) {
                     if (!override) return;
-                    this.silentSetProp(key, value.value);
+                    this.silentSetProp(key, value);
                 } else {
-                    this.silentAddProp(key, value.value);
+                    this.silentAddProp(key, value);
                 }
             });
     }
@@ -323,6 +473,7 @@ export class Tardigrade implements ITardigrade {
     }
 
     private silentAddProp<T>(name: string, value: T): void {
+
         if (!this._alive) {
             console.error("Tardigrade: this store doesn't support yet");
             return;
@@ -341,16 +492,44 @@ export class Tardigrade implements ITardigrade {
         const type: string = typeOf(value);
         const isValueScalar: boolean = isScalar(value);
 
-        if (!isValueScalar) {
-            try {
-                JSON.stringify(value);
-            } catch (error) {
-                console.error("Tardigrade: complex data has to be json-friendly");
-                return;
-            }
+        if (isValueScalar) {
+            this._props[name] = { name, value, type, isValueScalar };
+            return;
+        }
+
+        try {
+            JSON.stringify(value);
+        } catch (error) {
+            console.error("Tardigrade: complex data has to be json-friendly");
+            return;
         }
 
         this._props[name] = { name, value, type, isValueScalar };
+    }
+
+    private importResolvers(target: Tardigrade, override?: boolean): void {
+        const importedResolvers = target.exportAllResolvers(this._sessionKey!);
+
+        this._resolvers = override ? {
+                ...this._resolvers,
+                ...importedResolvers,
+            }
+            : {
+                ...importedResolvers,
+                ...this._resolvers,
+            };
+    }
+
+    private importAllResolversListenerHandlers(target: Tardigrade, override?: boolean): void {
+        const importedResolversHandlers = target.exportAllResolversListenerHandlers(this._sessionKey!);
+
+        this._propListenerHandlers = override ? {
+            ...this._resolverListenerHandlers,
+            ...importedResolversHandlers,
+        } : {
+            ...importedResolversHandlers,
+            ...this._resolverListenerHandlers,
+        };
     }
 
     private importAllPropsListenerHandlers(target: Tardigrade, override?: boolean): void {
@@ -381,6 +560,12 @@ export class Tardigrade implements ITardigrade {
         return hasOwnProperty(this._propListenerHandlers, name);
     }
 
+    private handleOnCallResolver(updatedResolverName: string, value: any): void {
+        for (const handler of this._listenerHandlers) {
+            handler(updatedResolverName, value, this.props);
+        }
+    }
+
     private handleOnSetProp(updatedProp: Prop<any>): void {
         if (this.isPropListened(updatedProp.name)) {
             for (const handler of this._propListenerHandlers[updatedProp.name]) {
@@ -408,7 +593,7 @@ export class Tardigrade implements ITardigrade {
         Object
             .entries(this._props)
             .forEach(([propName, prop]): void => {
-                response[propName] = prop.isValueScalar ? prop : this.cloneComplexData(prop.value);
+                response[propName] = prop.isValueScalar ? prop.value : this.cloneComplexData(prop.value);
             });
 
         return response;
