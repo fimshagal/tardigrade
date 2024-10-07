@@ -12,41 +12,34 @@
     <script type="module">
         import { createTardigrade } from "./";
 
-        const tardigrade = createTardigrade();
+        const tardigradeA = createTardigrade();
 
-        const propListener = (value) => console.log("Listener receive value", value);
-        const globalListener = (name, value, props) => console.log("Global listener receive data", name, value, props);
+        const tardigradeB = createTardigrade();
 
-        tardigrade.addListener(globalListener);
+        tardigradeA.addProp("a", 0);
+        tardigradeA.addProp("b", 0);
+        tardigradeA.addProp("c", 18);
 
-        tardigrade.addProp("a", 0);
-        tardigrade.addProp("b", "text");
+        const callback = (value) => {
+            console.log(`only a-c is ${value}`);
+        };
 
-        tardigrade.addPropListener("a", propListener);
+        tardigradeA.addPropListener("a", (value) => console.log("A", value));
+        tardigradeA.addPropListener("c", (value) => console.log("Not override", value));
 
-        const altStore = createTardigrade();
+        tardigradeB.addProp('c', 1);
 
-        altStore.addProp("f", 2);
+        tardigradeB.addPropListener('c', callback);
 
-        tardigrade.importProps(altStore);
+        tardigradeA.merge(tardigradeB, true);
+        tardigradeA.setProp("a", 190);
 
-        tardigrade.setProp("a", 15);
+        console.log(tardigradeA);
 
-        tardigrade.addProp("g", {});
-        tardigrade.setProp("g", { a:  2});
-        tardigrade.setProp("g", window);
+        tardigradeA.setProp('c', 12);
 
-        tardigrade.removeProp("b");
+        console.log(tardigradeB);
 
-        tardigrade.setProp("a", null);
-
-        tardigrade.removePropListener("a", propListener);
-
-        // tardigrade.removeAllListeners(); possible to remove all global listener
-
-        tardigrade.setProp("a", "speka");
-
-        tardigrade.setProp("a", 17);
     </script>
 </body>
 </html>
