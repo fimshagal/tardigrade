@@ -5,8 +5,7 @@ const distDir = path.resolve(__dirname, 'dist');
 const indexPath = path.join(distDir, 'index.js');
 
 // Вміст index.js, який буде згенеровано
-const content = `
-'use strict';
+const content = `'use strict';
 
 if (typeof module !== 'undefined' && module.exports && require) {
     // CommonJS

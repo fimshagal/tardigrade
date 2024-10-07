@@ -5,7 +5,7 @@ import { hasOwnProperty } from "./has.own.property";
 export class Tardigrade implements ITardigrade {
     private _props: Dictionary<Prop<any>> = {};
     private _propListenerHandlers: Dictionary = {};
-    private _listenerHandlers: ((...args) => void)[] = [];
+    private _listenerHandlers: ((...args: any[]) => void)[] = [];
     private _alive: boolean = true;
 
     private readonly _sessionKey: Nullable<symbol> = null;
@@ -109,7 +109,7 @@ export class Tardigrade implements ITardigrade {
         }
 
         this._propListenerHandlers[name] = this._propListenerHandlers[name]
-            .filter((existedHandler) => existedHandler !== handler);
+            .filter((existedHandler: any) => existedHandler !== handler);
     }
 
     public removeAllPropListeners(name: string): void {
@@ -304,7 +304,7 @@ export class Tardigrade implements ITardigrade {
             handler(name, null);
             return;
         }
-        
+
         if (prop.type !== newType) {
             console.error(`Tardigrade: new value must have same type as initial value for prop "${name}"`);
             return;
@@ -366,10 +366,10 @@ export class Tardigrade implements ITardigrade {
     }
 
     private importAllListenersHandlers(target: Tardigrade, override?: boolean): void {
-        const importedHandlers = target.exportAllListenersHandlers(this._sessionKey!);
+        const importedHandlers = target.exportAllListenersHandlers(this._sessionKey!) as Nullable<((value: Nullable<any>) => void)[]>;
         const merged = [
             ...this._listenerHandlers,
-            ...importedHandlers,
+            ...importedHandlers!,
         ];
 
         this._listenerHandlers = override

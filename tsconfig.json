@@ -9,8 +9,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitAny": true,
     "skipLibCheck": true,
-    "include": ["sources/**/*.ts"],
-    "exclude": ["node_modules", "dist"]
-  }
+    "moduleResolution": "Node"
+  },
+  "include": ["sources/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
