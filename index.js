@@ -1,11 +1,4 @@
-const fs = require('fs');
-const path = require('path');
 
-const distDir = path.resolve(__dirname, 'dist');
-const indexPath = path.join(__dirname, 'index.js');
-
-// Вміст index.js, який буде згенеровано
-const content = `
 'use strict';
 
 (() => {
@@ -30,14 +23,3 @@ const content = `
         });
     }
 })();
-`;
-
-// Переконайся, що папка dist існує, і створюй index.js
-if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir);
-}
-
-// Записуємо згенерований файл index.js у папку dist
-fs.writeFileSync(indexPath, content, 'utf8');
-
-console.log('index.js has been successfully generated in the dist folder.');

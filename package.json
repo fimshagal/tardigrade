@@ -1,8 +1,8 @@
 {
   "name": "tardigrade-store",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "description": "A simple state management library",
-  "main": "dist/index.js",
+  "main": "dist/tardigrade.store.cjs.js",
   "module": "dist/tardigrade.store.es.js",
   "browser": "dist/tardigrade.store.iife.js",
   "types": "dist/index.d.ts",
@@ -12,6 +12,13 @@
     "dev": "vite",
     "lint": "eslint . --ext .ts",
     "test": "jest"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/tardigrade.store.cjs.js",
+      "import": "./dist/tardigrade.store.es.js",
+      "browser": "./dist/tardigrade.store.iife.js"
+    }
   },
   "author": "fSha",
   "license": "CHECK LICENSE IN LICENSE FILE",

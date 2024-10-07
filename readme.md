@@ -146,23 +146,6 @@ Tardigrade allows you to dynamically add and remove properties, clone and merge 
 
 Tardigrade had a really tiny size
 
----
-
-## Base
-
-Run this command to start demo sandbox
-```shell
-npm run dev
-```
-
-If you make some changes and want to check it you can call first
-```shell
-npm run build
-```
-
-and then check changes in sandbox
-
----
 
 ## Basic usage
 
