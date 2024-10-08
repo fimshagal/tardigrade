@@ -1,134 +1,19 @@
 # Tardigrade
 
-![tardigrade.jpg](tardigrade.jpg)
-
 Tardigrade is lightweight javascript library for managing state and data with strict typing, supporting dynamic properties, property-specific, global and local listeners, and automatic cleanup for safe and flexible state control
 
 ---
 
+## Attention!
+
+Tardigrade still is under constructions
+
+There is some known issue:
+- bad import approach, you have to use direct file path instead an alias
+
 ## Why this library was created
 
 This library was created to offer a simplified approach to state management with enhanced type safety, addressing some of the complexities and boilerplate often found in solutions like Redux. With this library, the goal was to create a lightweight state management tool that eliminates unnecessary configuration and ensures strict type control, while still being flexible enough to handle dynamic state changes and listeners
-
----
-
-## Similarities with Redux/Redux Toolkit
-
-#### Managing State through Simple Functions
-
-Just like Redux uses actions and reducers to manage state updates, Tardigrade also allows developers to modify state using simple methods. Instead of dispatching actions, you directly set and update properties.
-
-**Tardigrade Example:**
-
-```ts
-const tardigrade = createTardigrade();
-
-tardigrade.addProp("counter", 0);
-tardigrade.setProp("counter", 5);
-```
-
-In Tardigrade, state changes can be applied directly by using setProp after defining the initial state with addProp.
-
-**Redux Example:**
-
-```ts
-// Action
-const incrementCounter = {
-    type: 'INCREMENT',
-    payload: 5
-};
-
-// Reducer
-function counterReducer(state = 0, action) {
-    switch(action.type) {
-        case 'INCREMENT':
-            return state + action.payload;
-        default:
-            return state;
-    }
-}
-
-// Create store
-const store = createStore(counterReducer);
-
-// Dispatch
-store.dispatch(incrementCounter);
-```
-
-In Redux, state changes are handled by dispatching actions, which are processed by reducers to update the state. Tardigrade simplifies this process by providing a direct method for setting state.
-
-#### Listening to State Changes
-
-Both Tardigrade and Redux allow you to listen for state changes. In Redux, you can use connect or hooks like useSelector to map state to components. Tardigrade also provides listeners for individual properties and global listeners to track any state changes, making it easy to handle state updates in a controlled manner.
-
-**Tardigrade Example:**
-
-```ts
-const propListener = (value) => console.log("Counter changed:", value);
-tardigrade.addPropListener("counter", propListener);
-
-const globalListener = (name, value, props) => console.log(`Global change: ${name} = ${value}`);
-tardigrade.addListener(globalListener);
-
-tardigrade.setProp("counter", 10);
-```
-
-Tardigrade allows you to attach listeners directly to specific properties, similar to how Redux allows components to subscribe to state changes using connect or useSelector.
-
-**Redux Example:**
-
-```ts
-const mapStateToProps = state => ({
-    counter: state.counter
-});
-
-const mapDispatchToProps = dispatch => ({
-    increment: (value) => dispatch({ type: 'INCREMENT', payload: value })
-});
-
-connect(mapStateToProps, mapDispatchToProps)(MyComponent);
-```
-
-Redux uses connect to map state and actions to props, while Tardigrade offers an easier way to listen to state changes through direct property listeners or global listeners.
-
-#### Reduced Boilerplate
-
-One of the goals of Tardigrade is to reduce boilerplate code. Like Redux Toolkit, it provides a structured way to manage state, but with fewer steps. Tardigrade reduces the need for writing actions, reducers, and dispatchers, allowing developers to focus more on business logic.
-
-**Tardigrade Example:**
-
-```ts
-const tardigrade = createTardigrade();
-
-tardigrade.addProp("example", 0);
-tardigrade.setProp("example", 10);
-```
-
-Tardigrade handles state changes with minimal code, allowing you to directly manage properties and their values.
-
-**Pure Redux Example:**
-```ts
-// Action
-const updateExample = {
-    type: 'UPDATE_EXAMPLE',
-    payload: 10
-};
-
-// Reducer
-function exampleReducer(state = 0, action) {
-    switch(action.type) {
-        case 'UPDATE_EXAMPLE':
-            return action.payload;
-        default:
-            return state;
-    }
-}
-
-// Dispatch the action
-store.dispatch(updateExample);
-```
-
-Pure Redux requires defining actions, reducers, and dispatchers for each state change. Tardigrade as Redux Toolkit simplifies this process, reducing the amount of boilerplate code needed to manage state.
 
 ---
 
@@ -144,9 +29,13 @@ Minimal boilerplate code and a fairly straightforward API. Tardigrade provides a
 
 Tardigrade allows you to dynamically add and remove properties, clone and merge stores and others, making it ideal for applications that need to modify their state structure on the fly. This flexibility is crucial for dynamic applications where data models evolve over time.
 
-### Such small size
+### Immutability
 
-Tardigrade had a really tiny size
+Tardigrade works with immutable data even if the provided data was originally mutable. It ensures that all state transformations maintain immutability, preventing unintended side effects and making state changes more predictable and reliable
+
+### Small size
+
+Tardigrade had a really small size
 
 
 ## Basic usage
@@ -343,5 +232,50 @@ tardigrade.removeListener(globalListener);
 // Remove a property
 tardigrade.removeProp("username");
 ```
+
+## Resolvers
+
+Resolver - is a function which can be pass into store and be called in certain moment to bring some value. Application can follow resolvers as props to control state
+
+#### Simple resolver usage
+
+```ts
+import { createTardigrade } from "tardigrade";
+
+const tardigrade = createTardigrade();
+
+tardigrade.addResolver("random", () => Math.random());
+tardigrade.addResolverListener("random", (value) => {
+   console.log(`Resolver was called and bring ${value}`); 
+});
+
+tardigrade.callResolver("random"); // as result it will call resolver listener handler above
+```
+
+Income resolver handler can use single argument - all the current props object
+
+```ts
+import { createTardigrade } from "tardigrade";
+
+const tardigrade = createTardigrade();
+tardigrade.addProp("money", 1e5);
+tardigrade.addResolver("multiplyMoneyRandomly", ({ money }) => Math.random() * money);
+
+tardigrade.addResolverListener("multiplyMoneyRandomly", (value) => {
+   console.log(`Resolver was called and bring ${value}`); 
+});
+
+tardigrade.callResolver("multiplyMoneyRandomly");
+```
+
+Resolver also migrate as well by merging
+
+---
+
+## Links
+
+Github: [fimshagal/tardigrade](https://github.com/fimshagal/tardigrade)
+
+E-mail: [fimashagal@gmail.com](mailto:fimashagal@gmail.com)
 
 
