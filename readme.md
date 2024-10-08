@@ -1,7 +1,5 @@
 # Tardigrade
 
-![tardigrade.jpg](./tardigrade.jpg)
-
 Tardigrade is lightweight javascript library for managing state and data with strict typing, supporting dynamic properties, property-specific, global and local listeners, and automatic cleanup for safe and flexible state control
 
 ---
