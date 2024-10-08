@@ -122,10 +122,10 @@ tardigrade.removePropListener("counter", propListener);
 
 #### Remove All Property-Specific Listeners
 
-If you need to remove all property-specific listeners at once, you can call ```removeAllPropListener```:
+If you need to remove all property-specific listeners at once, you can call ```removeAllPropListeners```:
 
 ```ts
-tardigrade.removeAllPropListener("counter");
+tardigrade.removeAllPropListeners("counter");
 ```
 
 #### Remove Global Listener
