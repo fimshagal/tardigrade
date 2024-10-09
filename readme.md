@@ -243,6 +243,8 @@ tardigrade.removeListener(globalListener);
 tardigrade.removeProp("username");
 ```
 
+---
+
 ## Resolvers
 
 Resolver - is a function which can be pass into store and be called in certain moment to bring some value. Application can follow resolvers as props to control state
@@ -314,10 +316,71 @@ import { createTardigrade } from "./";
 
 ---
 
+## ```createTardigrade``` variants
+
+At the beginning we learn how create basic instance of store. But you are able to use some options to instancing
+
+#### Initial props and resolvers
+
+Pass json-friendly object as first argument. All what is function would become resolver and all other what is has another type would become prop 
+
+```ts
+
+import { createTardigrade } from "./";
+
+(async () => {
+    const propKeys = {
+        counter: "counter",
+    };
+
+    const resolverKeys = {
+        fetchSomeSpecial: "fetchSomeSpecial",
+    };
+
+    const tardigrade = createTardigrade({
+        [propKeys.counter]: 0,
+        [resolverKeys.fetchSomeSpecial]: async () => {
+            try {
+                const response = await fetch("https://jsonplaceholder.org/posts");
+                    return response.json();
+            } catch (error) {
+                console.log('Fetch error', error);
+                return null;
+            }
+        },
+    });
+
+    tardigrade.addPropListener(propKeys.counter, (counterValue) => {
+        console.log(`Counter equals ${counterValue}`);
+    });
+
+    tardigrade.addResolverListener(resolverKeys.fetchSomeSpecial, (fetchedValue) => {
+        console.log("Fetched value is", fetchedValue);
+    });
+
+    await tardigrade.callResolver(resolverKeys.fetchSomeSpecial);
+
+    for (let i = 0; i < 10; i++) {
+        tardigrade.setProp(propKeys.counter, tardigrade.prop(propKeys.counter) + 1);
+    }
+})();
+
+```
+
+---
+
 ## Links
 
 Github: [fimshagal/tardigrade](https://github.com/fimshagal/tardigrade)
 
 E-mail: [fimashagal@gmail.com](mailto:fimashagal@gmail.com)
+
+---
+
+## Support
+
+If you find this package useful, consider supporting my work via PayPal:
+
+**fimashagal@gmail.com**
 
 

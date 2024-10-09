@@ -12,20 +12,29 @@
         import { createTardigrade } from "./";
 
         (async () => {
-            const tardigrade = createTardigrade();
+            const propKeys = {
+                counter: "counter",
+            };
 
             const resolverKeys = {
                 fetchSomeSpecial: "fetchSomeSpecial",
             };
 
-            tardigrade.addResolver(resolverKeys.fetchSomeSpecial, async () => {
-                try {
-                    const response = await fetch("https://jsonplaceholder.org/posts");
-                    return response.json();
-                } catch (error) {
-                    console.log('Fetch error', error);
-                    return null;
-                }
+            const tardigrade = createTardigrade({
+                [propKeys.counter]: 0,
+                [resolverKeys.fetchSomeSpecial]: async () => {
+                    try {
+                        const response = await fetch("https://jsonplaceholder.org/posts");
+                        return response.json();
+                    } catch (error) {
+                        console.log('Fetch error', error);
+                        return null;
+                    }
+                },
+            });
+
+            tardigrade.addPropListener(propKeys.counter, (counterValue) => {
+                console.log(`Counter equals ${counterValue}`);
             });
 
             tardigrade.addResolverListener(resolverKeys.fetchSomeSpecial, (fetchedValue) => {
@@ -33,6 +42,10 @@
             });
 
             await tardigrade.callResolver(resolverKeys.fetchSomeSpecial);
+
+            for (let i = 0; i < 10; i++) {
+                tardigrade.setProp(propKeys.counter, tardigrade.prop(propKeys.counter) + 1);
+            }
         })();
 
     </script>

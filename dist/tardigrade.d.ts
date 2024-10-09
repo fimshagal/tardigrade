@@ -1,4 +1,4 @@
-import { Dictionary, ITardigrade, Nullable, Prop } from "./lib";
+import { Dictionary, ITardigrade, Nullable, Prop, TardigradeInitialOptions } from "./lib";
 export declare class Tardigrade implements ITardigrade {
     private _resolvers;
     private _props;
@@ -7,7 +7,7 @@ export declare class Tardigrade implements ITardigrade {
     private _listenerHandlers;
     private _alive;
     private readonly _sessionKey;
-    constructor(sessionKey: symbol);
+    constructor(sessionKey: symbol, initialOptions: TardigradeInitialOptions);
     addResolver(name: string, resolver: (...args: any[]) => any): void;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;

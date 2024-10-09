@@ -1,2 +1,3 @@
 import { Tardigrade } from "../tardigrade";
-export declare const createTardigrade: () => Tardigrade;
+import { Dictionary, TardigradeInitialOptions } from "../lib";
+export declare const createTardigrade: (initialData?: Dictionary, initialOptions?: TardigradeInitialOptions) => Tardigrade;

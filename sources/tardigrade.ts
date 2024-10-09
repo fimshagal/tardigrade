@@ -1,4 +1,4 @@
-import { Dictionary, ITardigrade, Nullable, Prop } from "./lib";
+import {Dictionary, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes} from "./lib";
 import { typeOf, isDef, isScalar } from "./type.of";
 import { hasOwnProperty } from "./has.own.property";
 
@@ -12,7 +12,7 @@ export class Tardigrade implements ITardigrade {
 
     private readonly _sessionKey: Nullable<symbol> = null;
 
-    constructor(sessionKey: symbol) {
+    constructor(sessionKey: symbol, initialOptions: TardigradeInitialOptions) {
         if (!sessionKey) {
             throw Error("Tardigrade constructor error");
         }
@@ -26,7 +26,7 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        if (typeOf(resolver) !== "function" && typeOf(resolver) !== "asyncfunction") {
+        if (typeOf(resolver) !== TardigradeTypes.Function && typeOf(resolver) !== TardigradeTypes.AsyncFunction) {
             console.error('Tardigrade: resolver have to be a function');
             return;
         }
@@ -45,7 +45,7 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        if (typeOf(resolver) !== "function") {
+        if (typeOf(resolver) !== TardigradeTypes.Function && typeOf(resolver) !== TardigradeTypes.AsyncFunction) {
             console.error('Tardigrade: resolver have to be a function');
             return;
         }
@@ -500,11 +500,11 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        const type: string = typeOf(value);
+        const type: string = typeOf(value) as TardigradeTypes;
         const isValueScalar: boolean = isScalar(value);
 
         if (isValueScalar) {
-            this._props[name] = { name, value, type, isValueScalar };
+            this._props[name] = { name, value, type, isValueScalar } as Prop<T>;
             return;
         }
 
@@ -515,7 +515,7 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        this._props[name] = { name, value, type, isValueScalar };
+        this._props[name] = { name, value, type, isValueScalar } as Prop<T>;
     }
 
     private importAllResolversListenerHandlers(target: Tardigrade, override?: boolean): void {

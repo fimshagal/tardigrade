@@ -15,3 +15,17 @@
 - docs
 
 ---
+
+## [1.1.8] - 2024-10-09
+### Added
+- License banner
+
+### Fixed
+- ```addResolver``` and ```setResolver``` function filter
+
+### Updated
+- types and interfaces
+- ```createTardigrade``` method
+- docs
+
+---

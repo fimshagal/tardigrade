@@ -36,9 +36,25 @@ export interface ITardigrade {
     removeAllResolverListeners(name: string): void;
 }
 
+export interface TardigradeInitialOptions {
+
+}
+
+export enum TardigradeTypes {
+    Null = "null",
+    Undefined = "undefined",
+    Function = "function",
+    AsyncFunction = "asyncfunction",
+    Number = "number",
+    String = "string",
+    Boolean = "boolean",
+    Array = "array",
+    Object = "object",
+}
+
 export interface Prop<T> {
     name: string;
     value: T;
-    type: string;
+    type: TardigradeTypes;
     isValueScalar: boolean;
 }
