@@ -11,58 +11,29 @@
     <script type="module">
         import { createTardigrade } from "./";
 
-        const tardigradeA = createTardigrade();
+        (async () => {
+            const tardigrade = createTardigrade();
 
-        const tardigradeB = createTardigrade();
+            const resolverKeys = {
+                fetchSomeSpecial: "fetchSomeSpecial",
+            };
 
-        tardigradeA.addProp("a", 0);
-        tardigradeA.addProp("b", 0);
-        tardigradeA.addProp("c", 18);
+            tardigrade.addResolver(resolverKeys.fetchSomeSpecial, async () => {
+                try {
+                    const response = await fetch("https://jsonplaceholder.org/posts");
+                    return response.json();
+                } catch (error) {
+                    console.log('Fetch error', error);
+                    return null;
+                }
+            });
 
-        const callback = (value) => {
-            console.log(`only a-c is ${value}`);
-        };
+            tardigrade.addResolverListener(resolverKeys.fetchSomeSpecial, (fetchedValue) => {
+                console.log("Fetched value is", fetchedValue);
+            });
 
-        tardigradeA.addPropListener("a", (value) => console.log("A", value));
-        tardigradeA.addPropListener("c", (value) => console.log("Not override", value));
-
-        tardigradeB.addProp('c', 1);
-
-        tardigradeB.addPropListener('c', callback);
-
-        tardigradeA.merge(tardigradeB, true);
-        tardigradeA.setProp("a", 190);
-
-        console.log(tardigradeA);
-
-        tardigradeA.setProp('c', 12);
-
-        console.log(tardigradeB);
-
-        const tardigradeF = createTardigrade();
-
-        tardigradeF.addListener((name, value, props) => {
-            console.log(name, value, props);
-        });
-
-        tardigradeF.addProp("money", 100);
-
-        tardigradeF.addResolver("xResolver", ({ money }) => {
-            return Math.random() + (money || 0);
-        });
-
-        tardigradeF.callResolver("xResolver");
-        tardigradeF.callResolver("xResolver");
-        tardigradeF.callResolver("xResolver");
-        tardigradeF.removeResolver("xResolver");
-
-        tardigradeF.callResolver("xResolver");
-
-        tardigradeF.addResolver("Goro", ({ money }) => Math.pow(money, 2));
-
-        tardigradeA.merge(tardigradeF);
-
-        tardigradeA.callResolver("Goro");
+            await tardigrade.callResolver(resolverKeys.fetchSomeSpecial);
+        })();
 
     </script>
 </body>

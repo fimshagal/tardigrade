@@ -11,7 +11,7 @@ export declare class Tardigrade implements ITardigrade {
     addResolver(name: string, resolver: (...args: any[]) => any): void;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;
-    callResolver(name: string): void;
+    callResolver(name: string): Promise<void>;
     addResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;
@@ -26,6 +26,7 @@ export declare class Tardigrade implements ITardigrade {
     addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeAllListeners(): void;
+    importResolvers(target: Tardigrade, override?: boolean): void;
     importProps(target: Tardigrade, override?: boolean): void;
     merge(target: Tardigrade, override?: boolean): void;
     kill(sessionKey: symbol): void;
@@ -36,7 +37,6 @@ export declare class Tardigrade implements ITardigrade {
     private silentImportProps;
     private silentSetProp;
     private silentAddProp;
-    private importResolvers;
     private importAllResolversListenerHandlers;
     private importAllPropsListenerHandlers;
     private importAllListenersHandlers;

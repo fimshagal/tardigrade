@@ -1,22 +1,22 @@
 var u = Object.defineProperty;
 var c = (o, r, e) => r in o ? u(o, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : o[r] = e;
-var l = (o, r, e) => (c(o, typeof r != "symbol" ? r + "" : r, e), e);
-const a = (o) => Object.prototype.toString.call(o).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), h = (o) => {
-  const r = a(o);
+var a = (o, r, e) => (c(o, typeof r != "symbol" ? r + "" : r, e), e);
+const l = (o) => Object.prototype.toString.call(o).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), h = (o) => {
+  const r = l(o);
   return r !== "null" && r !== "undefined";
 }, v = (o) => {
-  const r = a(o);
+  const r = l(o);
   return r === "string" || r === "number" || r === "symbol";
 }, i = (o, r) => Object.prototype.hasOwnProperty.call(o, r);
 class _ {
   constructor(r) {
-    l(this, "_resolvers", {});
-    l(this, "_props", {});
-    l(this, "_resolverListenerHandlers", {});
-    l(this, "_propListenerHandlers", {});
-    l(this, "_listenerHandlers", []);
-    l(this, "_alive", !0);
-    l(this, "_sessionKey", null);
+    a(this, "_resolvers", {});
+    a(this, "_props", {});
+    a(this, "_resolverListenerHandlers", {});
+    a(this, "_propListenerHandlers", {});
+    a(this, "_listenerHandlers", []);
+    a(this, "_alive", !0);
+    a(this, "_sessionKey", null);
     if (!r)
       throw Error("Tardigrade constructor error");
     this._sessionKey = r;
@@ -26,7 +26,7 @@ class _ {
       console.error("Tardigrade: this store doesn't support yet");
       return;
     }
-    if (a(e) !== "function") {
+    if (console.log(l(e)), l(e) !== "function" && l(e) !== "asyncfunction") {
       console.error("Tardigrade: resolver have to be a function");
       return;
     }
@@ -41,7 +41,7 @@ class _ {
       console.error("Tardigrade: this store doesn't support yet");
       return;
     }
-    if (a(e) !== "function") {
+    if (l(e) !== "function") {
       console.error("Tardigrade: resolver have to be a function");
       return;
     }
@@ -58,7 +58,7 @@ class _ {
     }
     i(this._resolvers, r) && (delete this._resolvers[r], delete this._resolverListenerHandlers[r]);
   }
-  callResolver(r) {
+  async callResolver(r) {
     if (!this._alive) {
       console.error("Tardigrade: this store doesn't support yet");
       return;
@@ -67,7 +67,7 @@ class _ {
       console.error("Tardigrade: this resolver hasn't been created yet or been deleted");
       return;
     }
-    const e = this._resolvers[r](this.props);
+    const e = await this._resolvers[r](this.props);
     this.handleOnCallResolver(r, e), i(this._resolverListenerHandlers, r) && this._resolverListenerHandlers[r].forEach((s) => s(e));
   }
   addResolverListener(r, e) {
@@ -120,7 +120,7 @@ class _ {
     }
     const s = (p, d) => {
       this._props[p].value = d, this.handleOnSetProp(this._props[p]);
-    }, t = this._props[r], n = a(e);
+    }, t = this._props[r], n = l(e);
     if (!h(e)) {
       s(r, null);
       return;
@@ -202,6 +202,16 @@ class _ {
       return;
     }
     this._listenerHandlers = [];
+  }
+  importResolvers(r, e) {
+    const s = r.exportAllResolvers(this._sessionKey);
+    this._resolvers = e ? {
+      ...this._resolvers,
+      ...s
+    } : {
+      ...s,
+      ...this._resolvers
+    };
   }
   importProps(r, e) {
     if (!this._alive) {
@@ -286,7 +296,7 @@ class _ {
     }
     const s = (p, d) => {
       this._props[p].value = d;
-    }, t = this._props[r], n = a(e);
+    }, t = this._props[r], n = l(e);
     if (!h(e)) {
       s(r, null);
       return;
@@ -317,7 +327,7 @@ class _ {
       console.error("Tardigrade: value can't be nullable");
       return;
     }
-    const s = a(e), t = v(e);
+    const s = l(e), t = v(e);
     if (t) {
       this._props[r] = { name: r, value: e, type: s, isValueScalar: t };
       return;
@@ -329,16 +339,6 @@ class _ {
       return;
     }
     this._props[r] = { name: r, value: e, type: s, isValueScalar: t };
-  }
-  importResolvers(r, e) {
-    const s = r.exportAllResolvers(this._sessionKey);
-    this._resolvers = e ? {
-      ...this._resolvers,
-      ...s
-    } : {
-      ...s,
-      ...this._resolvers
-    };
   }
   importAllResolversListenerHandlers(r, e) {
     const s = r.exportAllResolversListenerHandlers(this._sessionKey);

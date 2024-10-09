@@ -25,8 +25,8 @@ export class Tardigrade implements ITardigrade {
             console.error("Tardigrade: this store doesn't support yet");
             return;
         }
-
-        if (typeOf(resolver) !== "function") {
+        console.log(typeOf(resolver));
+        if (typeOf(resolver) !== "function" && typeOf(resolver) !== "asyncfunction") {
             console.error('Tardigrade: resolver have to be a function');
             return;
         }
@@ -72,7 +72,7 @@ export class Tardigrade implements ITardigrade {
         delete this._resolverListenerHandlers[name];
     }
 
-    public callResolver(name: string): void {
+    public async callResolver(name: string): Promise<void> {
         if (!this._alive) {
             console.error("Tardigrade: this store doesn't support yet");
             return;
@@ -83,7 +83,7 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        const value = this._resolvers[name](this.props);
+        const value = await this._resolvers[name](this.props);
 
         this.handleOnCallResolver(name, value);
 
@@ -305,6 +305,19 @@ export class Tardigrade implements ITardigrade {
         this._listenerHandlers = [];
     }
 
+    public importResolvers(target: Tardigrade, override?: boolean): void {
+        const importedResolvers = target.exportAllResolvers(this._sessionKey!);
+
+        this._resolvers = override ? {
+                ...this._resolvers,
+                ...importedResolvers,
+            }
+            : {
+                ...importedResolvers,
+                ...this._resolvers,
+            };
+    }
+
     public importProps(target: Tardigrade, override?: boolean): void {
         if (!this._alive) {
             console.error("Tardigrade: this store doesn't support yet");
@@ -473,7 +486,6 @@ export class Tardigrade implements ITardigrade {
     }
 
     private silentAddProp<T>(name: string, value: T): void {
-
         if (!this._alive) {
             console.error("Tardigrade: this store doesn't support yet");
             return;
@@ -505,19 +517,6 @@ export class Tardigrade implements ITardigrade {
         }
 
         this._props[name] = { name, value, type, isValueScalar };
-    }
-
-    private importResolvers(target: Tardigrade, override?: boolean): void {
-        const importedResolvers = target.exportAllResolvers(this._sessionKey!);
-
-        this._resolvers = override ? {
-                ...this._resolvers,
-                ...importedResolvers,
-            }
-            : {
-                ...importedResolvers,
-                ...this._resolvers,
-            };
     }
 
     private importAllResolversListenerHandlers(target: Tardigrade, override?: boolean): void {

@@ -37,6 +37,10 @@ Tardigrade works with immutable data even if the provided data was originally mu
 
 Tardigrade had a really small size
 
+### Ease of async
+
+With Tardigrade's resolvers you can easily store async or dynamic derived data 
+
 
 ## Basic usage
 
@@ -268,7 +272,39 @@ tardigrade.addResolverListener("multiplyMoneyRandomly", (value) => {
 tardigrade.callResolver("multiplyMoneyRandomly");
 ```
 
-Resolver also migrate as well by merging
+Resolver also migrate as well by merging and can be imported
+
+#### Usage with async
+
+Also you can use it with async function to do stuff like that
+
+```ts
+import { createTardigrade } from "./";
+
+(async () => {
+    const tardigrade = createTardigrade();
+
+    const resolverKeys = {
+        fetchSomeSpecial: "fetchSomeSpecial",
+    };
+
+    tardigrade.addResolver(resolverKeys.fetchSomeSpecial, async () => {
+        try {
+            const response = await fetch("https://jsonplaceholder.org/posts");
+            return response.json();
+        } catch (error) {
+            console.log('Fetch error', error);
+            return null;
+            }
+    });
+
+    tardigrade.addResolverListener(resolverKeys.fetchSomeSpecial, (fetchedValue) => {
+        console.log("Fetched value is", fetchedValue);
+    });
+
+    await tardigrade.callResolver(resolverKeys.fetchSomeSpecial);
+})();
+```
 
 ---
 
