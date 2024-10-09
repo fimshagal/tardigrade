@@ -25,7 +25,7 @@ export class Tardigrade implements ITardigrade {
             console.error("Tardigrade: this store doesn't support yet");
             return;
         }
-        console.log(typeOf(resolver));
+
         if (typeOf(resolver) !== "function" && typeOf(resolver) !== "asyncfunction") {
             console.error('Tardigrade: resolver have to be a function');
             return;
@@ -355,7 +355,6 @@ export class Tardigrade implements ITardigrade {
 
         targetPropsNames
             .forEach((name) => {
-                console.log(name, this._props[name]);
                 this.handleOnSetProp(this._props[name]);
             });
     }
