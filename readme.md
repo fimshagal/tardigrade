@@ -56,14 +56,14 @@ const tardigrade = createTardigrade();
 
 ####  Adding Properties
 
-You can dynamically add properties to the state using the addProp method. Each property has a type that is locked once it is added.
+You can dynamically add properties to the state using the ```addProp``` method. Each property has a type that is locked once it is added.
 
 ```ts
 tardigrade.addProp("counter", 0);  // Adds a property 'counter' with an initial value of 0
 tardigrade.addProp("username", "guest");  // Adds a property 'username' with an initial value of 'guest'
 ```
 
-#### Updating Properties
+#### Handle Properties
 
 To update a property, use the ```setProp``` method. The new value must match the type of the property that was originally set:
 
@@ -76,6 +76,12 @@ You can also set a property to null without changing its type:
 
 ```ts
 tardigrade.setProp("username", null);  // Sets 'username' to null, but its type remains string
+```
+
+And if you need to get prop you can tackle it with ```prop``` method:
+
+```ts
+tardigrade.setProp("counter", tardigrade.prop("counter") + 1);
 ```
 
 #### Listening to Property Changes

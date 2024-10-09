@@ -8,3 +8,10 @@
 - docs
 
 ---
+
+## [1.1.7] - 2024-10-09
+### Updated
+- license to CC BY 4.0
+- docs
+
+---
