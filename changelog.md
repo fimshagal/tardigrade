@@ -29,3 +29,20 @@
 - docs
 
 ---
+
+## [1.1.9] - 2024-10-10
+### Added
+- Store getter: ```isAlive```
+- Store getter: ```mergeAgent```
+- Basic logic to pass store's initial options
+- Add store's initial options ```emitErrors```
+
+### Fixed
+- Bunch of typos
+
+### Updated
+- error handling
+- docs
+- errors messages
+
+---
