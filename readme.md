@@ -277,6 +277,14 @@ You can check activity of your store with ```isAlive``` getter
 console.log(tardigrade.isAlive); // will print store state
 ```
 
+#### Reset
+
+In any moment you can reset your alive store to empty state. All props, resolvers, global and local listeners will be removed
+
+```ts
+tardigrade.reset();
+```
+
 ---
 
 ## Resolvers
@@ -402,14 +410,6 @@ await tardigrade.callResolversChain(
     resolverKeys.resolverB, 
     resolverKeys.resolverC
 );
-```
-
-#### Reset
-
-In any moment you can reset your alive store to empty state. All props, resolvers, global and local listeners will be removed
-
-```ts
-tardigrade.reset();
 ```
 
 ---
