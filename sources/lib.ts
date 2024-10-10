@@ -22,11 +22,6 @@ export interface ITardigrade {
     importProps(target: Tardigrade, override?: boolean): void;
     importResolvers(target: Tardigrade, override?: boolean): void;
     merge(target: Tardigrade, override?: boolean): void;
-    kill(sessionKey: symbol): void;
-    exportAllPropsListenerHandlers(sessionKey: symbol): Nullable<{}>;
-    exportAllResolvers(sessionKey: symbol): Nullable<{}>;
-    exportAllResolversListenerHandlers(sessionKey: symbol): Nullable<{}>;
-    exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]>;
     addResolver(name: string, resolver: (...args: any[]) => any): void;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;
@@ -34,10 +29,23 @@ export interface ITardigrade {
     addResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;
+    //
+    setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade): void;
+    kill(sessionKey: symbol): void;
+    exportAllPropsListenerHandlers(sessionKey: symbol): Nullable<{}>;
+    exportAllResolvers(sessionKey: symbol): Nullable<{}>;
+    exportAllResolversListenerHandlers(sessionKey: symbol): Nullable<{}>;
+    exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]>;
+}
+
+export interface ITardigradeIncidentsHandler {
+    warn(message?: string): void;
+    error(message?: string): void;
 }
 
 export interface TardigradeInitialOptions {
-
+    strictObjectsInterfaces?: boolean; // not implemented
+    emitErrors?: boolean;
 }
 
 export enum TardigradeTypes {

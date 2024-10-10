@@ -3,11 +3,9 @@ import { genSessionKey } from "./gen.session.key";
 import { Dictionary, TardigradeInitialOptions, TardigradeTypes } from "../lib";
 import { typeOf } from "../type.of";
 
-const sessionKey = genSessionKey();
+const sessionKey: symbol = genSessionKey();
 
-((): void => {
-    console.log(`Tardigrade works!`);
-})();
+((): void => console.log(`Tardigrade works!`))();
 
 export const createTardigrade = (initialData?: Dictionary, initialOptions?: TardigradeInitialOptions): Tardigrade => {
     initialOptions = initialOptions || {};

@@ -10,6 +10,7 @@ Tardigrade still is under constructions
 
 There is some known issue:
 - bad import approach, you have to use direct file path instead an alias
+- haven't implemented yet full passing initial options into store
 
 ## Why this library was created
 
@@ -148,10 +149,10 @@ tardigrade.removeListener(globalListener);
 
 #### Remove All Global Listeners
 
-If you need to remove all global listeners at once, you can call ```removeAllListener```:
+If you need to remove all global listeners at once, you can call ```removeAllListeners```:
 
 ```ts
-tardigrade.removeAllListener();
+tardigrade.removeAllListeners();
 ```
 
 #### Removing Properties
@@ -204,9 +205,16 @@ consolel.log(altStore.prop("timestamp")); // would return "null" cause altStore 
 As ```importProps``` this method also has two ways to be executed
 
 ```ts
-tardigrade.merge("altStore", true);  // Will override existing props and listener handlers of this store after import
- tardigrade.merge("altStore"); // Won't override existing props and listener handlers of this store after import
+tardigrade.merge(altStore, true);  // Will override existing props and listener handlers of this store after import
+tardigrade.merge(altStore); // Won't override existing props and listener handlers of this store after import
 ````
+
+Core kills merged store to keep single truth origin, but deactivated store after merging get link to ```mergeAgent``` - store which was merged and killed it. 
+Also it can be null if store is active
+
+```ts
+const currentStore = altStore.mergeAgent || altStore;
+```
 
 #### Full Example
 
@@ -241,6 +249,14 @@ tardigrade.removeListener(globalListener);
 
 // Remove a property
 tardigrade.removeProp("username");
+```
+
+#### Getter ```isAlive(): boolean```
+
+You can check activity of your store with ```isAlive``` getter
+
+```ts
+console.log(tardigrade.isAlive); // will print store state
 ```
 
 ---
@@ -366,6 +382,29 @@ import { createTardigrade } from "./";
 })();
 
 ```
+
+#### Store initial options
+
+With second argument you can pass some initialised options for store, for instance:
+
+```ts
+import { createTardigrade } from "./";
+
+(async () => {
+    const tardigrade = createTardigrade({
+        "counter": 0,
+    }, {
+        emitErrors: true
+    });
+
+    tardigrade.setProp('text', "Lorem ipsum"); // bring real error
+})();
+```
+
+There are several options:
+
+```emitErrors: boolean``` - this options control how store react onto errors. If this prop equals true then store is going to crash after any incorrect usage. 
+If false - you get only error-messages in console without real errors. By default this initial prop equals false 
 
 ---
 
