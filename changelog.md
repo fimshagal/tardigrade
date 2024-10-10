@@ -46,3 +46,13 @@
 - errors messages
 
 ---
+
+## [1.1.10] - 2024-10-10
+### Added
+- Methods: ```reset```, ```removeAllProps```, ```removeAllResolvers```
+
+### Updated
+- Method ```kill```
+- docs
+
+---

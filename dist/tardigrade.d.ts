@@ -32,6 +32,9 @@ export declare class Tardigrade implements ITardigrade {
     importResolvers(target: Tardigrade, override?: boolean): void;
     importProps(target: Tardigrade, override?: boolean): void;
     merge(target: Tardigrade, override?: boolean): void;
+    removeAllResolvers(): void;
+    removeAllProps(): void;
+    reset(): void;
     kill(sessionKey: symbol): void;
     exportAllPropsListenerHandlers(sessionKey: symbol): Nullable<{}>;
     exportAllResolvers(sessionKey: symbol): Nullable<{}>;

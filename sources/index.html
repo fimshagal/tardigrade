@@ -25,16 +25,16 @@
             });
 
             const storeB = createTardigrade({
-                daad: 121,
+                pinch: 'a',
             });
 
-            storeB.merge(storeA, true);
+            console.log(storeA);
 
-            storeB.addResolverListener('delay', value => console.log(`delay ${value}`));
+            storeA.reset();
 
-            storeA.setProp("g", 999);
+            console.log(storeA);
 
-            await storeB.callResolver('delay');
+            storeA.merge(storeB);
 
             console.log(storeB);
 

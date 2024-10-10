@@ -7,6 +7,7 @@ export type Nullable<T> = T | null | undefined;
 export interface ITardigrade {
     addProp<T>(name: string, value: T): void;
     removeProp(name: string): void;
+    removeAllProps(): void;
     setProp<T>(name: string, newValue: T): void;
     addPropListener(name: string, handler: (value: Nullable<any>) => void): void;
     removePropListener(name: string, handler: (value: Nullable<any>) => void): void;
@@ -21,10 +22,12 @@ export interface ITardigrade {
     addResolver(name: string, resolver: (...args: any[]) => any): void;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;
+    removeAllResolvers(): void;
     callResolver(name: string): Promise<void>;
     addResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;
+    reset(): void;
     setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade): void;
     kill(sessionKey: symbol): void;
     exportAllPropsListenerHandlers(sessionKey: symbol): Nullable<{}>;

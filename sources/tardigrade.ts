@@ -1,8 +1,8 @@
-import {Dictionary, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes} from "./lib";
+import { Dictionary, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes } from "./lib";
 import { typeOf, isDef, isScalar } from "./type.of";
 import { hasOwnProperty } from "./has.own.property";
 import { TardigradeIncidentsHandler } from "./tardigrade.incidents.handler";
-import {createIncidentsHandler} from "./x/create.incidents.handler";
+import { createIncidentsHandler } from "./x/create.incidents.handler";
 
 export class Tardigrade implements ITardigrade {
     protected _resolvers: Dictionary<(...args: any[]) => any> = {};
@@ -380,20 +380,41 @@ export class Tardigrade implements ITardigrade {
             });
     }
 
+    public removeAllResolvers(): void {
+        const resolverKeys = Object.keys(this._resolvers);
+
+        for (const key of resolverKeys) {
+            this.removeAllResolverListeners(key);
+            this.removeResolver(key);
+        }
+    }
+
+    public removeAllProps() {
+        const propKeys = Object.keys(this.props);
+
+        for (const key of propKeys) {
+            this.removeAllPropListeners(key);
+            this.removeProp(key);
+        }
+    }
+
+    public reset(): void {
+        if (!this._alive) {
+            this.incidentsHandler?.error("This store doesn't support anymore");
+            return;
+        }
+
+        this.removeAllListeners();
+        this.removeAllProps();
+        this.removeAllResolvers();
+    }
+
     public kill(sessionKey: symbol): void {
         if (sessionKey !== this._sessionKey || !this._alive) {
             return;
         }
 
-        const propNames = Object
-            .keys(this._props);
-
-        this.removeAllListeners();
-
-        propNames.forEach((propName: string) => {
-            this.removeAllPropListeners(propName);
-            this.removeProp(propName);
-        });
+        this.reset();
 
         this._alive = false;
     }

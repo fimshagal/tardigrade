@@ -36,7 +36,7 @@ Tardigrade works with immutable data even if the provided data was originally mu
 
 ### Small size
 
-Tardigrade had a really small size
+Tardigrade had a small size
 
 ### Ease of async
 
@@ -83,6 +83,12 @@ And if you need to get prop you can tackle it with ```prop``` method:
 
 ```ts
 tardigrade.setProp("counter", tardigrade.prop("counter") + 1);
+```
+
+It is also possible to get all the props as simple object with getter ```props```
+
+```ts
+console.log(tardigrade.props); // will print all the props
 ```
 
 #### Listening to Property Changes
@@ -168,6 +174,12 @@ Once a property is removed, any attempt to update it will result in an error:
 tardigrade.setProp("username", "newUser");  // Throws an error since 'username' was removed
 ```
 
+You can also remove all the props by single hit with ```removeAllProps```. It is also remove all props listeners
+
+```ts
+tardigrade.removeAllProps();
+```
+
 #### Import props
 
 You can import props of another Tardigrade store into your with ```merge``` method. This will automatically replace props from target store to that you need
@@ -210,7 +222,7 @@ tardigrade.merge(altStore); // Won't override existing props and listener handle
 ````
 
 Core kills merged store to keep single truth origin, but deactivated store after merging get link to ```mergeAgent``` - store which was merged and killed it. 
-Also it can be null if store is active
+Also, it can be null if store is active
 
 ```ts
 const currentStore = altStore.mergeAgent || altStore;
@@ -298,9 +310,21 @@ tardigrade.callResolver("multiplyMoneyRandomly");
 
 Resolver also migrate as well by merging and can be imported
 
+You can also remove single resolver as well
+
+```ts
+tardigrade.removeResolver("multiplyMoneyRandomly");
+```
+
+Or you can drop all the resolvers by single hit
+
+```ts
+tardigrade.removeAllResolvers();
+```
+
 #### Usage with async
 
-Also you can use it with async function to do stuff like that
+Also, you can use it with async function to do stuff like that
 
 ```ts
 import { createTardigrade } from "./";
@@ -328,6 +352,14 @@ import { createTardigrade } from "./";
 
     await tardigrade.callResolver(resolverKeys.fetchSomeSpecial);
 })();
+```
+
+#### Reset
+
+In any moment you can reset your alive store to empty state. All props, resolvers, global and local listeners will be removed
+
+```ts
+tardigrade.reset();
 ```
 
 ---
@@ -404,7 +436,7 @@ import { createTardigrade } from "./";
 There are several options:
 
 ```emitErrors: boolean``` - this options control how store react onto errors. If this prop equals true then store is going to crash after any incorrect usage. 
-If false - you get only error-messages in console without real errors. By default this initial prop equals false 
+If false - you get only error-messages in console without real errors. By default, this initial prop equals false 
 
 ---
 
