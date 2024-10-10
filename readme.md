@@ -368,50 +368,6 @@ import { createTardigrade } from "./";
 })();
 ```
 
-Moreover, you can run resolvers one by one with ```callResolversChain```
-
-```ts
-const resolverKeys = {
-    resolverA: "resolverA",
-    resolverB: "resolverB",
-    resolverC: "resolverC",
-};
-
-const tardigrade = createTardigrade({
-    [resolverKeys.resolverA]: async () => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(`${resolverKeys.resolverA} done`);
-            }, 1000);
-        });
-    },
-    [resolverKeys.resolverB]: async () => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(`${resolverKeys.resolverB} done`);
-            }, 1000);
-        });
-    },
-    [resolverKeys.resolverC]: async () => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(`${resolverKeys.resolverC} done`);
-            }, 1000);
-        });
-    },
-});
-
-tardigrade.addResolverListener(resolverKeys.resolverA, value => console.log(value));
-tardigrade.addResolverListener(resolverKeys.resolverB, value => console.log(value));
-tardigrade.addResolverListener(resolverKeys.resolverC, value => console.log(value));
-
-await tardigrade.callResolversChain(
-    resolverKeys.resolverA, 
-    resolverKeys.resolverB, 
-    resolverKeys.resolverC
-);
-```
-
 ---
 
 ## ```createTardigrade``` variants

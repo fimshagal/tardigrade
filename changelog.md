@@ -109,3 +109,12 @@
 - docs
 
 ---
+
+## [1.1.17] - 2024-10-11
+### Remove
+- resolvers chains
+
+### Update
+- docs
+
+---

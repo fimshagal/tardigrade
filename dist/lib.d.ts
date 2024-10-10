@@ -24,7 +24,6 @@ export interface ITardigrade {
     removeResolver(name: string): void;
     removeAllResolvers(): void;
     callResolver(name: string): Promise<void>;
-    callResolversChain(...resolverNames: string[]): Promise<any>;
     addResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;
