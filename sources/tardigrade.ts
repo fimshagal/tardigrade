@@ -1,9 +1,9 @@
-import {Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes} from "./lib";
-import {isDef, isScalar, typeOf} from "./type.of";
-import {hasOwnProperty} from "./has.own.property";
-import {TardigradeIncidentsHandler} from "./tardigrade.incidents.handler";
-import {createIncidentsHandler} from "./x/create.incidents.handler";
-import {randomUUID} from "./utils";
+import { Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes } from "./lib";
+import { isDef, isScalar, typeOf } from "./type.of";
+import { hasOwnProperty } from "./has.own.property";
+import { TardigradeIncidentsHandler } from "./tardigrade.incidents.handler";
+import { createIncidentsHandler } from "./x/create.incidents.handler";
+import { randomUUID } from "./utils";
 
 export class Tardigrade implements ITardigrade {
     protected _resolvers: Dictionary<(...args: any[]) => any> = {};
@@ -209,6 +209,10 @@ export class Tardigrade implements ITardigrade {
         }
 
         if (prop.isValueScalar) {
+
+            if (newValue === prop.value) {
+                return;
+            }
             handler(name, newValue);
             return;
         }
@@ -221,7 +225,7 @@ export class Tardigrade implements ITardigrade {
         }
 
         if (this._strictObjectsInterfaces && prop.type === TardigradeTypes.Object) {
-            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue);
+            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue as Dictionary);
 
             if (!isInterfaceCorrect) {
                 this.incidentsHandler?.error("Income object interface isn't correct");
@@ -560,6 +564,10 @@ export class Tardigrade implements ITardigrade {
         }
 
         if (prop.isValueScalar) {
+            if (newValue === prop.value) {
+                return;
+            }
+
             handler(name, newValue);
             return;
         }
@@ -572,7 +580,7 @@ export class Tardigrade implements ITardigrade {
         }
 
         if (this._strictObjectsInterfaces && prop.type === TardigradeTypes.Object) {
-            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue);
+            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue as Dictionary);
 
             if (!isInterfaceCorrect) {
                 this.incidentsHandler?.error("Income object interface isn't correct");
@@ -618,12 +626,12 @@ export class Tardigrade implements ITardigrade {
         }
 
         this._props[name] = this._strictObjectsInterfaces && type === TardigradeTypes.Object
-            ? { name, value, type, isValueScalar, interface: this.extractInterface(value) } as Prop<T>
+            ? { name, value, type, isValueScalar, interface: this.extractInterface(value as Dictionary) } as Prop<T>
             : { name, value, type, isValueScalar } as Prop<T>;
     }
 
     protected extractInterface(object: Dictionary): Dictionary {
-        const response = {};
+        const response: any = {};
 
         Object
             .entries(object)
@@ -638,7 +646,7 @@ export class Tardigrade implements ITardigrade {
                 response[key] = type;
             });
 
-        return response;
+        return response as Dictionary;
     }
 
     protected importAllResolversListenerHandlers(target: Tardigrade, override?: boolean): void {

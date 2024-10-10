@@ -1,4 +1,4 @@
-/* Tardigrade store v1.1.12 */
+/* Tardigrade store v1.1.13 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -186,6 +186,8 @@ class O {
       return;
     }
     if (t.isValueScalar) {
+      if (r === t.value)
+        return;
       s(e, r);
       return;
     }
@@ -416,6 +418,8 @@ class O {
       return;
     }
     if (t.isValueScalar) {
+      if (r === t.value)
+        return;
       s(e, r);
       return;
     }

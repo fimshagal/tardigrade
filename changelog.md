@@ -78,3 +78,12 @@
 - docs
 
 ---
+
+## [1.1.13] - 2024-10-10
+### Added
+- Special optimisation to skip same income value
+
+### Update
+- docs
+
+---

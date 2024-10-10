@@ -18,6 +18,12 @@ This library was created to offer a simplified approach to state management with
 
 ---
 
+## Change log
+
+There is ```changelog.md``` file, and you can easily check all changes that was added 
+
+---
+
 ## Advantages of Tardigrade 
 
 I've designed Tardigrade to offer a flexible, safe, and intuitive way to manage state in applications. Here's why this approach stands out:
@@ -442,7 +448,7 @@ If false - you get only error-messages in console without real errors. By defaul
 By default, name equals random uuid
 
 ```strictObjectsInterfaces``` - this parameter specifies how strictly to enforce type-checking on prop that has ```object``` type.
-If the parameter equals ```true```, it's not possible to assugn an object to a prop if its interface differs from the expected one
+If the parameter equals ```true```, it's not possible to assign an object to a prop if its interface differs from the expected one
 
 For instance
 
