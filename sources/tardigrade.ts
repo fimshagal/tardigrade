@@ -1,27 +1,38 @@
-import { Dictionary, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes } from "./lib";
-import { typeOf, isDef, isScalar } from "./type.of";
-import { hasOwnProperty } from "./has.own.property";
-import { TardigradeIncidentsHandler } from "./tardigrade.incidents.handler";
-import { createIncidentsHandler } from "./x/create.incidents.handler";
+import {Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes} from "./lib";
+import {isDef, isScalar, typeOf} from "./type.of";
+import {hasOwnProperty} from "./has.own.property";
+import {TardigradeIncidentsHandler} from "./tardigrade.incidents.handler";
+import {createIncidentsHandler} from "./x/create.incidents.handler";
+import {randomUUID} from "./utils";
 
 export class Tardigrade implements ITardigrade {
     protected _resolvers: Dictionary<(...args: any[]) => any> = {};
     protected _props: Dictionary<Prop<any>> = {};
     protected _resolverListenerHandlers: Dictionary<((...args: any[]) => void)[]> = {};
-    protected _propListenerHandlers: Dictionary = {};
+    protected _propListenerHandlers: Dictionary<((...args: any[]) => void)[]> = {};
     protected _listenerHandlers: ((...args: any[]) => void)[] = [];
     protected _alive: boolean = true;
     protected _mergeAgent: Nullable<Tardigrade> = null;
 
     protected readonly _incidentsHandler: Nullable<TardigradeIncidentsHandler> = null;
     protected readonly _sessionKey: Nullable<symbol> = null;
+    protected readonly _strictObjectsInterfaces: boolean = false;
+    protected readonly _name: DictionaryKey = randomUUID();
 
     constructor(sessionKey: symbol, initialOptions: TardigradeInitialOptions) {
         if (!sessionKey) {
             throw Error("Tardigrade constructor error");
         }
 
-        const { emitErrors } = initialOptions;
+        const { emitErrors, name, strictObjectsInterfaces } = initialOptions;
+
+        if (name) {
+            this._name = name;
+        }
+
+        if (strictObjectsInterfaces) {
+            this._strictObjectsInterfaces = strictObjectsInterfaces;
+        }
 
         this._incidentsHandler = createIncidentsHandler(emitErrors);
 
@@ -197,15 +208,6 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        if (!prop.isValueScalar) {
-            try {
-                JSON.stringify(newValue);
-            } catch (error) {
-                this.incidentsHandler?.error("Complex data has to be json-friendly");
-                return;
-            }
-        }
-
         if (prop.isValueScalar) {
             handler(name, newValue);
             return;
@@ -215,6 +217,18 @@ export class Tardigrade implements ITardigrade {
 
         if (!isComplexDataJsonFriendly) {
             this.incidentsHandler?.error("Complex data has to be json-friendly");
+            return;
+        }
+
+        if (this._strictObjectsInterfaces && prop.type === TardigradeTypes.Object) {
+            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue);
+
+            if (!isInterfaceCorrect) {
+                this.incidentsHandler?.error("Income object interface isn't correct");
+                return;
+            }
+
+            handler(name, newValue);
             return;
         }
 
@@ -475,6 +489,33 @@ export class Tardigrade implements ITardigrade {
         this._mergeAgent = mergeAgent;
     }
 
+    protected checkObjectInterface(checkerInterface: Dictionary, object: Dictionary): boolean {
+        const interfaceKeys: string[] = Object.keys(checkerInterface);
+        const objectKeys: string[] = Object.keys(checkerInterface);
+
+        if (interfaceKeys.length !== objectKeys.length) {
+            return false;
+        }
+
+        for (const interfaceKey of interfaceKeys) {
+            const interfaceType = checkerInterface[interfaceKey];
+
+            if (!hasOwnProperty(object, interfaceKey)) {
+                return false;
+            }
+
+            if (interfaceType === TardigradeTypes.Any) {
+                continue;
+            }
+
+            if (typeOf(object[interfaceKey]) !== interfaceType) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     protected silentImportProps(target: Tardigrade, override?: boolean): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
@@ -530,6 +571,18 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
+        if (this._strictObjectsInterfaces && prop.type === TardigradeTypes.Object) {
+            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue);
+
+            if (!isInterfaceCorrect) {
+                this.incidentsHandler?.error("Income object interface isn't correct");
+                return;
+            }
+
+            handler(name, newValue);
+            return;
+        }
+
         handler(name, newValue);
     }
 
@@ -564,7 +617,28 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        this._props[name] = { name, value, type, isValueScalar } as Prop<T>;
+        this._props[name] = this._strictObjectsInterfaces && type === TardigradeTypes.Object
+            ? { name, value, type, isValueScalar, interface: this.extractInterface(value) } as Prop<T>
+            : { name, value, type, isValueScalar } as Prop<T>;
+    }
+
+    protected extractInterface(object: Dictionary): Dictionary {
+        const response = {};
+
+        Object
+            .entries(object)
+            .forEach(([key, value]) => {
+                const type: TardigradeTypes = typeOf(value) as TardigradeTypes;
+
+                if (type === TardigradeTypes.Null || type === TardigradeTypes.Undefined) {
+                    response[key] = TardigradeTypes.Any;
+                    return;
+                }
+
+                response[key] = type;
+            });
+
+        return response;
     }
 
     protected importAllResolversListenerHandlers(target: Tardigrade, override?: boolean): void {
@@ -644,6 +718,10 @@ export class Tardigrade implements ITardigrade {
 
     public get isAlive(): boolean {
         return this._alive;
+    }
+
+    public get name(): DictionaryKey {
+        return this._name;
     }
 
     public get props(): Dictionary {

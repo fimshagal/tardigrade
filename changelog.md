@@ -56,3 +56,25 @@
 - docs
 
 ---
+
+## [1.1.11] - 2024-10-10
+### Added
+- Prop and options item ```name```
+
+### Fix
+- Method ```setProp```
+
+### Update
+- docs
+
+---
+
+## [1.1.12] - 2024-10-10
+### Added
+- Prop and option's item ```strictObjectsInterfaces``` and some logic to tackle this state
+
+### Update
+- Public methods ```setProp``` and semi-public ```silentSetProp``` and ```silentAddProp```
+- docs
+
+---

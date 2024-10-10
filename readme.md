@@ -436,7 +436,46 @@ import { createTardigrade } from "./";
 There are several options:
 
 ```emitErrors: boolean``` - this options control how store react onto errors. If this prop equals true then store is going to crash after any incorrect usage. 
-If false - you get only error-messages in console without real errors. By default, this initial prop equals false 
+If false - you get only error-messages in console without real errors. By default, this initial prop equals false
+
+```name: string | number | symbol``` - it is basically name of your store. It can be useful in case you want to get some store from array.
+By default, name equals random uuid
+
+```strictObjectsInterfaces``` - this parameter specifies how strictly to enforce type-checking on prop that has ```object``` type.
+If the parameter equals ```true```, it's not possible to assugn an object to a prop if its interface differs from the expected one
+
+For instance
+
+```ts
+const propNames = {
+    user: "user",
+};
+
+const store = createTardigrade({
+    [propNames.user]: {
+        name: "Alise", // will get string type
+        age: 100, // will get number type
+        data: null, // will get any type, you can write any type here later
+    },
+}, 
+{
+    strictObjectsInterfaces: true
+});
+
+store.addPropListener(propNames.user, value => console.log(value));
+
+store.setProp(propNames.user, {
+    name: "Bob",
+    age: 200,
+    data: Symbol("Bob")
+});
+
+store.setProp(propNames.user, {
+    name: "Frank",
+    age: "200",
+}); // Bring error cause interface isn't the same
+
+```
 
 ---
 

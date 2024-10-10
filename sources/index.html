@@ -12,31 +12,26 @@
         import { createTardigrade } from "./";
 
         (async () => {
-            const storeA = createTardigrade({
-                momo: 'a',
-                daad: 21,
-                delay: async () => {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            resolve(Math.random());
-                        }, 5000);
-                    });
+            const propNames = {
+                user: "user",
+            };
+
+            const store = createTardigrade({
+                [propNames.user]: {
+                    name: "Alise",
+                    age: 100,
+                    data: null,
                 },
+            }, {
+                strictObjectsInterfaces: true
             });
 
-            const storeB = createTardigrade({
-                pinch: 'a',
+            store.addPropListener(propNames.user, value => console.log(value));
+
+            store.setProp(propNames.user, {
+                name: "Box",
+                age: 200,
             });
-
-            console.log(storeA);
-
-            storeA.reset();
-
-            console.log(storeA);
-
-            storeA.merge(storeB);
-
-            console.log(storeB);
 
         })();
 

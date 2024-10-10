@@ -40,6 +40,7 @@ export interface ITardigradeIncidentsHandler {
     error(message?: string): void;
 }
 export interface TardigradeInitialOptions {
+    name?: DictionaryKey;
     strictObjectsInterfaces?: boolean;
     emitErrors?: boolean;
 }
@@ -52,11 +53,13 @@ export declare enum TardigradeTypes {
     String = "string",
     Boolean = "boolean",
     Array = "array",
-    Object = "object"
+    Object = "object",
+    Any = "any"
 }
 export interface Prop<T> {
     name: string;
     value: T;
     type: TardigradeTypes;
     isValueScalar: boolean;
+    interface?: Dictionary<string>;
 }

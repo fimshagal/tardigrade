@@ -1,3 +1,5 @@
+import { randomUUID } from "../utils";
+
 export const genSessionKey = (): symbol => {
-    return Symbol(crypto.randomUUID());
+    return Symbol(randomUUID());
 };
