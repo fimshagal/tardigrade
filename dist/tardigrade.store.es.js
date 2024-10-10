@@ -547,7 +547,7 @@ class O {
   }
 }
 const j = () => Symbol(y()), R = j();
-console.log("Tardigrade works!");
+console.log("Tardigrade v1.1.13");
 const I = (i, e) => {
   e = e || {};
   const r = new O(R, e);
