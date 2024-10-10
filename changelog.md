@@ -91,5 +91,9 @@
 ## [1.1.14] - 2024-10-11
 ### Added
 - Build preprocessing 
+- Method ```callResolversChain```
+
+### Update
+- docs
 
 ---

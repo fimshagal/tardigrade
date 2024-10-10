@@ -17,6 +17,7 @@ export declare class Tardigrade implements ITardigrade {
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;
     callResolver(name: string): Promise<void>;
+    callResolversChain(...resolverNames: string[]): Promise<any>;
     addResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;

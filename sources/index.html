@@ -12,26 +12,45 @@
         import { createTardigrade } from "./";
 
         (async () => {
-            const propNames = {
-                user: "user",
+            const resolverKeys = {
+                resolverA: "resolverA",
+                resolverB: "resolverB",
+                resolverC: "resolverC",
             };
 
-            const store = createTardigrade({
-                [propNames.user]: {
-                    name: "Alise",
-                    age: 100,
-                    data: null,
+            const tardigrade = createTardigrade({
+                [resolverKeys.resolverA]: async () => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve(`${resolverKeys.resolverA} done`);
+                        }, 1000);
+                    });
                 },
-            }, {
-                strictObjectsInterfaces: true
+                [resolverKeys.resolverB]: async () => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve(`${resolverKeys.resolverB} done`);
+                        }, 1000);
+                    });
+                },
+                [resolverKeys.resolverC]: async () => {
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            resolve(`${resolverKeys.resolverC} done`);
+                        }, 1000);
+                    });
+                },
             });
 
-            store.addPropListener(propNames.user, value => console.log(value));
+            tardigrade.addResolverListener(resolverKeys.resolverA, value => console.log(value));
+            tardigrade.addResolverListener(resolverKeys.resolverB, value => console.log(value));
+            tardigrade.addResolverListener(resolverKeys.resolverC, value => console.log(value));
 
-            store.setProp(propNames.user, {
-                name: "Box",
-                age: 200,
-            });
+            await tardigrade.callResolversChain(
+                resolverKeys.resolverA,
+                resolverKeys.resolverB,
+                resolverKeys.resolverC
+            );
 
         })();
 

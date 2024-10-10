@@ -114,6 +114,12 @@ export class Tardigrade implements ITardigrade {
             .forEach((handler) => handler(value));
     }
 
+    public async callResolversChain(...resolverNames: string[]): Promise<any> {
+        for (const resolverName of resolverNames) {
+            await this.callResolver(resolverName);
+        }
+    }
+
     public addResolverListener(name: string, handler: (value: Nullable<any>) => void): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");

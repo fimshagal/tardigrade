@@ -8,12 +8,12 @@ const version = `console.log('Tardigrade v${pkg.version}');`;
 
 let fileContent = fs.readFileSync(filePath, 'utf-8');
 
-const versionRegex = /\/\/ processing-version <<[\s\S]*?\/\/ processing-version >>/;
+const versionRegex = /\/\/\/ processing-version <<[\s\S]*?\/\/\/ processing-version >>/;
 
-fileContent = fileContent.replace(versionRegex, `// processing-version <<\n${version}\n// processing-version >>`);
+fileContent = fileContent.replace(versionRegex, `/// processing-version <<\n${version}\n/// processing-version >>`);
 
 fs.writeFileSync(filePath, fileContent);
 
-console.log(`Updated version to ${version} in "${filePath}"`);
+console.log(`Added text "${version}" in file "${filePath}"`);
 
 

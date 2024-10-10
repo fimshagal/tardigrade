@@ -1,4 +1,4 @@
-/* Tardigrade store v1.1.13 */
+/* Tardigrade store v1.1.14 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -14,8 +14,8 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-var m = Object.defineProperty;
-var b = (i, e, r) => e in i ? m(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
+var L = Object.defineProperty;
+var b = (i, e, r) => e in i ? L(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
 var l = (i, e, r) => (b(i, typeof e != "symbol" ? e + "" : e, r), r);
 var o = /* @__PURE__ */ ((i) => (i.Null = "null", i.Undefined = "undefined", i.Function = "function", i.AsyncFunction = "asyncfunction", i.Number = "number", i.String = "string", i.Boolean = "boolean", i.Array = "array", i.Object = "object", i.Any = "any", i))(o || {});
 const d = (i) => Object.prototype.toString.call(i).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), H = (i) => {
@@ -24,7 +24,7 @@ const d = (i) => Object.prototype.toString.call(i).replace(/^\[object (.+)\]$/, 
 }, x = (i) => {
   const e = d(i);
   return e === "string" || e === "number" || e === "symbol";
-}, a = (i, e) => Object.prototype.hasOwnProperty.call(i, e);
+}, h = (i, e) => Object.prototype.hasOwnProperty.call(i, e);
 class P {
   constructor() {
     l(this, "_header", "Tardigrade");
@@ -78,7 +78,7 @@ class O {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
-    if (a(this._resolvers, e)) {
+    if (h(this._resolvers, e)) {
       (n = this.incidentsHandler) == null || n.error("Resolver has been planted");
       return;
     }
@@ -94,7 +94,7 @@ class O {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
-    if (!a(this._resolvers, e)) {
+    if (!h(this._resolvers, e)) {
       (n = this.incidentsHandler) == null || n.error("Resolver has been planted");
       return;
     }
@@ -106,7 +106,7 @@ class O {
       (r = this.incidentsHandler) == null || r.error("This store doesn't support anymore");
       return;
     }
-    a(this._resolvers, e) && (delete this._resolvers[e], delete this._resolverListenerHandlers[e]);
+    h(this._resolvers, e) && (delete this._resolvers[e], delete this._resolverListenerHandlers[e]);
   }
   async callResolver(e) {
     var s, t;
@@ -114,12 +114,16 @@ class O {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (!a(this._resolvers, e)) {
+    if (!h(this._resolvers, e)) {
       (t = this.incidentsHandler) == null || t.error("This resolver hasn't been created yet or been deleted");
       return;
     }
     const r = await this._resolvers[e](this.props);
-    this.handleOnCallResolver(e, r), a(this._resolverListenerHandlers, e) && this._resolverListenerHandlers[e].forEach((n) => n(r));
+    this.handleOnCallResolver(e, r), h(this._resolverListenerHandlers, e) && this._resolverListenerHandlers[e].forEach((n) => n(r));
+  }
+  async callResolversChain(...e) {
+    for (const r of e)
+      await this.callResolver(r);
   }
   addResolverListener(e, r) {
     var s, t;
@@ -127,11 +131,11 @@ class O {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (!a(this._resolvers, e)) {
+    if (!h(this._resolvers, e)) {
       (t = this.incidentsHandler) == null || t.error(`There is no resolver with name "${e}"`);
       return;
     }
-    a(this._resolverListenerHandlers, e) || (this._resolverListenerHandlers[e] = []), this._resolverListenerHandlers[e].push(r);
+    h(this._resolverListenerHandlers, e) || (this._resolverListenerHandlers[e] = []), this._resolverListenerHandlers[e].push(r);
   }
   removeResolverListener(e, r) {
     var s;
@@ -139,7 +143,7 @@ class O {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    a(this._resolverListenerHandlers, e) && (this._resolverListenerHandlers[e] = this._resolverListenerHandlers[e].filter((t) => t !== r));
+    h(this._resolverListenerHandlers, e) && (this._resolverListenerHandlers[e] = this._resolverListenerHandlers[e].filter((t) => t !== r));
   }
   removeAllResolverListeners(e) {
     var r;
@@ -147,7 +151,7 @@ class O {
       (r = this.incidentsHandler) == null || r.error("This store doesn't support anymore");
       return;
     }
-    a(this._resolverListenerHandlers, e) && delete this._resolverListenerHandlers[e];
+    h(this._resolverListenerHandlers, e) && delete this._resolverListenerHandlers[e];
   }
   addProp(e, r) {
     this.silentAddProp(e, r), this.handleOnSetProp(this._props[e]);
@@ -174,8 +178,8 @@ class O {
       (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (v, L) => {
-      this._props[v].value = L, this.handleOnSetProp(this._props[v]);
+    const s = (v, m) => {
+      this._props[v].value = m, this.handleOnSetProp(this._props[v]);
     }, t = this._props[e], n = d(r);
     if (!H(r)) {
       s(e, null);
@@ -252,7 +256,7 @@ class O {
   }
   hasProp(e) {
     var r;
-    return this._alive ? a(this._props, e) : ((r = this.incidentsHandler) == null || r.error("This store doesn't support anymore"), !1);
+    return this._alive ? h(this._props, e) : ((r = this.incidentsHandler) == null || r.error("This store doesn't support anymore"), !1);
   }
   addListener(e) {
     var r;
@@ -295,13 +299,13 @@ class O {
       return;
     }
     const s = e.props;
-    Object.entries(s).forEach(([n, h]) => {
+    Object.entries(s).forEach(([n, a]) => {
       if (this.hasProp(n)) {
         if (!r)
           return;
-        this.setProp(n, h);
+        this.setProp(n, a);
       } else
-        this.addProp(n, h);
+        this.addProp(n, a);
     });
   }
   merge(e, r) {
@@ -376,10 +380,10 @@ class O {
     if (s.length !== t.length)
       return !1;
     for (const n of s) {
-      const h = e[n];
-      if (!a(r, n))
+      const a = e[n];
+      if (!h(r, n))
         return !1;
-      if (h !== o.Any && d(r[n]) !== h)
+      if (a !== o.Any && d(r[n]) !== a)
         return !1;
     }
     return !0;
@@ -391,13 +395,13 @@ class O {
       return;
     }
     const s = e.props;
-    Object.entries(s).forEach(([n, h]) => {
+    Object.entries(s).forEach(([n, a]) => {
       if (this.hasProp(n)) {
         if (!r)
           return;
-        this.silentSetProp(n, h);
+        this.silentSetProp(n, a);
       } else
-        this.silentAddProp(n, h);
+        this.silentAddProp(n, a);
     });
   }
   silentSetProp(e, r) {
@@ -438,9 +442,9 @@ class O {
     s(e, r);
   }
   silentAddProp(e, r) {
-    var h, c, p, u;
+    var a, c, p, u;
     if (!this._alive) {
-      (h = this.incidentsHandler) == null || h.error("This store doesn't support anymore");
+      (a = this.incidentsHandler) == null || a.error("This store doesn't support anymore");
       return;
     }
     if (this.hasProp(e)) {
@@ -501,7 +505,7 @@ class O {
     this._listenerHandlers = r ? [...new Set(t)] : t;
   }
   isPropListened(e) {
-    return a(this._propListenerHandlers, e);
+    return h(this._propListenerHandlers, e);
   }
   handleOnCallResolver(e, r) {
     for (const s of this._listenerHandlers)
@@ -547,7 +551,7 @@ class O {
   }
 }
 const j = () => Symbol(y()), R = j();
-console.log("Tardigrade v1.1.13");
+console.log("Tardigrade v1.1.14");
 const I = (i, e) => {
   e = e || {};
   const r = new O(R, e);

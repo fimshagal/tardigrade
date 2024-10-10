@@ -5,11 +5,9 @@ import { typeOf } from "../type.of";
 
 const sessionKey: symbol = genSessionKey();
 
-((): void => {
-    // processing-version <<
-console.log('Tardigrade v1.1.13');
-// processing-version >>
-})();
+/// processing-version <<
+console.log('Tardigrade v1.1.14');
+/// processing-version >>
 
 export const createTardigrade = (initialData?: Dictionary, initialOptions?: TardigradeInitialOptions): Tardigrade => {
     initialOptions = initialOptions || {};
