@@ -4,13 +4,15 @@ Tardigrade is free lightweight zero-dependency javascript library for managing s
 
 ---
 
+## Stable version soon!
+
+I am going to drop first stable build soon
+
+---
+
 ## Attention!
 
 Tardigrade still is under constructions
-
-There is some known issue:
-- bad import approach, you have to use direct file path instead an alias
-- haven't implemented yet full passing initial options into store
 
 ## Why this library was created
 

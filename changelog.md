@@ -133,3 +133,12 @@
 -docs
 
 ---
+
+## [1.1.20] - 2024-10-11
+### Fix
+- import approach: polished
+
+### Update
+-docs
+
+---
