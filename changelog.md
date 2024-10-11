@@ -118,3 +118,9 @@
 - docs
 
 ---
+
+## [1.1.18] - 2024-10-11
+### Update
+- added logic to prevent write function as prop
+
+---

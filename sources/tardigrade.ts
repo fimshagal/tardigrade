@@ -39,13 +39,18 @@ export class Tardigrade implements ITardigrade {
         this._sessionKey = sessionKey;
     }
 
+    protected static isFn(object: any): boolean {
+        const type = typeOf(object);
+        return type === TardigradeTypes.Function || type === TardigradeTypes.AsyncFunction;
+    }
+
     public addResolver(name: string, resolver: (...args: any[]) => any): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
         }
 
-        if (typeOf(resolver) !== TardigradeTypes.Function && typeOf(resolver) !== TardigradeTypes.AsyncFunction) {
+        if (!Tardigrade.isFn(resolver)) {
             this.incidentsHandler?.error('Resolver have to be a function');
             return;
         }
@@ -160,6 +165,11 @@ export class Tardigrade implements ITardigrade {
     }
 
     public addProp<T>(name: string, value: T): void {
+        if (Tardigrade.isFn(value)) {
+            this.incidentsHandler?.error("Prop can't be a function. Use resolvers for this purpose");
+            return;
+        }
+
         this.silentAddProp(name, value);
         this.handleOnSetProp(this._props[name]);
     }
@@ -597,6 +607,11 @@ export class Tardigrade implements ITardigrade {
     protected silentAddProp<T>(name: string, value: T): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
+            return;
+        }
+
+        if (Tardigrade.isFn(value)) {
+            this.incidentsHandler?.error("Prop can't be a function. Use resolvers for this purpose");
             return;
         }
 

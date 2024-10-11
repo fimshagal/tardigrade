@@ -1,4 +1,4 @@
-/* Tardigrade store v1.1.17 */
+/* Tardigrade store v1.1.18 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -15,17 +15,17 @@
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
 var m = Object.defineProperty;
-var b = (i, e, r) => e in i ? m(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
-var l = (i, e, r) => (b(i, typeof e != "symbol" ? e + "" : e, r), r);
-var o = /* @__PURE__ */ ((i) => (i.Null = "null", i.Undefined = "undefined", i.Function = "function", i.AsyncFunction = "asyncfunction", i.Number = "number", i.String = "string", i.Boolean = "boolean", i.Array = "array", i.Object = "object", i.Any = "any", i))(o || {});
-const d = (i) => Object.prototype.toString.call(i).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), H = (i) => {
-  const e = d(i);
+var x = (n, e, r) => e in n ? m(n, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[e] = r;
+var l = (n, e, r) => (x(n, typeof e != "symbol" ? e + "" : e, r), r);
+var o = /* @__PURE__ */ ((n) => (n.Null = "null", n.Undefined = "undefined", n.Function = "function", n.AsyncFunction = "asyncfunction", n.Number = "number", n.String = "string", n.Boolean = "boolean", n.Array = "array", n.Object = "object", n.Any = "any", n))(o || {});
+const d = (n) => Object.prototype.toString.call(n).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), y = (n) => {
+  const e = d(n);
   return e !== "null" && e !== "undefined";
-}, x = (i) => {
-  const e = d(i);
+}, P = (n) => {
+  const e = d(n);
   return e === "string" || e === "number" || e === "symbol";
-}, a = (i, e) => Object.prototype.hasOwnProperty.call(i, e);
-class P {
+}, a = (n, e) => Object.prototype.hasOwnProperty.call(n, e);
+class A {
   constructor() {
     l(this, "_header", "Tardigrade");
     l(this, "_emitErrors", !1);
@@ -42,15 +42,15 @@ class P {
     this._emitErrors = e;
   }
 }
-const A = (i) => {
-  i = i || !1;
-  const e = new P();
-  return e.emitErrors = i, e;
-}, y = () => typeof crypto.randomUUID == "function" ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (i) => {
+const O = (n) => {
+  n = n || !1;
+  const e = new A();
+  return e.emitErrors = n, e;
+}, b = () => typeof crypto.randomUUID == "function" ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (n) => {
   const e = Math.random() * 16 | 0;
-  return (i === "x" ? e : e & 3 | 8).toString(16);
+  return (n === "x" ? e : e & 3 | 8).toString(16);
 });
-class O {
+class H {
   constructor(e, r) {
     l(this, "_resolvers", {});
     l(this, "_props", {});
@@ -62,30 +62,34 @@ class O {
     l(this, "_incidentsHandler", null);
     l(this, "_sessionKey", null);
     l(this, "_strictObjectsInterfaces", !1);
-    l(this, "_name", y());
+    l(this, "_name", b());
     if (!e)
       throw Error("Tardigrade constructor error");
-    const { emitErrors: s, name: t, strictObjectsInterfaces: n } = r;
-    t && (this._name = t), n && (this._strictObjectsInterfaces = n), this._incidentsHandler = A(s), this._sessionKey = e;
+    const { emitErrors: s, name: t, strictObjectsInterfaces: i } = r;
+    t && (this._name = t), i && (this._strictObjectsInterfaces = i), this._incidentsHandler = O(s), this._sessionKey = e;
+  }
+  static isFn(e) {
+    const r = d(e);
+    return r === o.Function || r === o.AsyncFunction;
   }
   addResolver(e, r) {
-    var s, t, n;
+    var s, t, i;
     if (!this._alive) {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (d(r) !== o.Function && d(r) !== o.AsyncFunction) {
+    if (!H.isFn(r)) {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
     if (a(this._resolvers, e)) {
-      (n = this.incidentsHandler) == null || n.error("Resolver has been planted");
+      (i = this.incidentsHandler) == null || i.error("Resolver has been planted");
       return;
     }
     this._resolvers[e] = r;
   }
   setResolver(e, r) {
-    var s, t, n;
+    var s, t, i;
     if (!this._alive) {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
@@ -95,7 +99,7 @@ class O {
       return;
     }
     if (!a(this._resolvers, e)) {
-      (n = this.incidentsHandler) == null || n.error("Resolver has been planted");
+      (i = this.incidentsHandler) == null || i.error("Resolver has been planted");
       return;
     }
     this._resolvers[e] = r;
@@ -119,7 +123,7 @@ class O {
       return;
     }
     const r = await this._resolvers[e](this.props);
-    this.handleOnCallResolver(e, r), a(this._resolverListenerHandlers, e) && this._resolverListenerHandlers[e].forEach((n) => n(r));
+    this.handleOnCallResolver(e, r), a(this._resolverListenerHandlers, e) && this._resolverListenerHandlers[e].forEach((i) => i(r));
   }
   addResolverListener(e, r) {
     var s, t;
@@ -150,6 +154,11 @@ class O {
     a(this._resolverListenerHandlers, e) && delete this._resolverListenerHandlers[e];
   }
   addProp(e, r) {
+    var s;
+    if (H.isFn(r)) {
+      (s = this.incidentsHandler) == null || s.error("Prop can't be a function. Use resolvers for this purpose");
+      return;
+    }
     this.silentAddProp(e, r), this.handleOnSetProp(this._props[e]);
   }
   removeProp(e) {
@@ -165,7 +174,7 @@ class O {
     this.removeAllPropListeners(e), delete this._props[e];
   }
   setProp(e, r) {
-    var c, p, u, f, _;
+    var c, p, u, f, v;
     if (!this._alive) {
       (c = this.incidentsHandler) == null || c.error("This store doesn't support anymore");
       return;
@@ -174,14 +183,14 @@ class O {
       (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (v, L) => {
-      this._props[v].value = L, this.handleOnSetProp(this._props[v]);
-    }, t = this._props[e], n = d(r);
-    if (!H(r)) {
+    const s = (_, L) => {
+      this._props[_].value = L, this.handleOnSetProp(this._props[_]);
+    }, t = this._props[e], i = d(r);
+    if (!y(r)) {
       s(e, null);
       return;
     }
-    if (t.type !== n) {
+    if (t.type !== i) {
       (u = this.incidentsHandler) == null || u.error(`New value must have same type as initial value for prop "${e}"`);
       return;
     }
@@ -197,7 +206,7 @@ class O {
     }
     if (this._strictObjectsInterfaces && t.type === o.Object) {
       if (!this.checkObjectInterface(t.interface, r)) {
-        (_ = this.incidentsHandler) == null || _.error("Income object interface isn't correct");
+        (v = this.incidentsHandler) == null || v.error("Income object interface isn't correct");
         return;
       }
       s(e, r);
@@ -227,7 +236,7 @@ class O {
       (t = this.incidentsHandler) == null || t.error(`Prop "${e}" doesn't have any listeners`);
       return;
     }
-    this._propListenerHandlers[e] = this._propListenerHandlers[e].filter((n) => n !== r);
+    this._propListenerHandlers[e] = this._propListenerHandlers[e].filter((i) => i !== r);
   }
   removeAllPropListeners(e) {
     var r, s;
@@ -295,13 +304,13 @@ class O {
       return;
     }
     const s = e.props;
-    Object.entries(s).forEach(([n, h]) => {
-      if (this.hasProp(n)) {
+    Object.entries(s).forEach(([i, h]) => {
+      if (this.hasProp(i)) {
         if (!r)
           return;
-        this.setProp(n, h);
+        this.setProp(i, h);
       } else
-        this.addProp(n, h);
+        this.addProp(i, h);
     });
   }
   merge(e, r) {
@@ -311,8 +320,8 @@ class O {
       return;
     }
     const s = Object.keys(e.props);
-    this.silentImportProps(e, r), this.importAllPropsListenerHandlers(e, r), this.importAllListenersHandlers(e, r), this.importResolvers(e, r), this.importAllResolversListenerHandlers(e, r), e.kill(this._sessionKey), e.setMergeAgent(this._sessionKey, this), s.forEach((n) => {
-      this.handleOnSetProp(this._props[n]);
+    this.silentImportProps(e, r), this.importAllPropsListenerHandlers(e, r), this.importAllListenersHandlers(e, r), this.importResolvers(e, r), this.importAllResolversListenerHandlers(e, r), e.kill(this._sessionKey), e.setMergeAgent(this._sessionKey, this), s.forEach((i) => {
+      this.handleOnSetProp(this._props[i]);
     });
   }
   removeAllResolvers() {
@@ -375,11 +384,11 @@ class O {
     const s = Object.keys(e), t = Object.keys(e);
     if (s.length !== t.length)
       return !1;
-    for (const n of s) {
-      const h = e[n];
-      if (!a(r, n))
+    for (const i of s) {
+      const h = e[i];
+      if (!a(r, i))
         return !1;
-      if (h !== o.Any && d(r[n]) !== h)
+      if (h !== o.Any && d(r[i]) !== h)
         return !1;
     }
     return !0;
@@ -391,13 +400,13 @@ class O {
       return;
     }
     const s = e.props;
-    Object.entries(s).forEach(([n, h]) => {
-      if (this.hasProp(n)) {
+    Object.entries(s).forEach(([i, h]) => {
+      if (this.hasProp(i)) {
         if (!r)
           return;
-        this.silentSetProp(n, h);
+        this.silentSetProp(i, h);
       } else
-        this.silentAddProp(n, h);
+        this.silentAddProp(i, h);
     });
   }
   silentSetProp(e, r) {
@@ -406,14 +415,14 @@ class O {
       (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (_, v) => {
-      this._props[_].value = v;
-    }, t = this._props[e], n = d(r);
-    if (!H(r)) {
+    const s = (v, _) => {
+      this._props[v].value = _;
+    }, t = this._props[e], i = d(r);
+    if (!y(r)) {
       s(e, null);
       return;
     }
-    if (t.type !== n) {
+    if (t.type !== i) {
       (p = this.incidentsHandler) == null || p.error(`New value must have same type as initial value for prop "${e}"`);
       return;
     }
@@ -438,26 +447,30 @@ class O {
     s(e, r);
   }
   silentAddProp(e, r) {
-    var h, c, p, u;
+    var h, c, p, u, f;
     if (!this._alive) {
       (h = this.incidentsHandler) == null || h.error("This store doesn't support anymore");
       return;
     }
+    if (H.isFn(r)) {
+      (c = this.incidentsHandler) == null || c.error("Prop can't be a function. Use resolvers for this purpose");
+      return;
+    }
     if (this.hasProp(e)) {
-      (c = this.incidentsHandler) == null || c.error("Prop can't be override, you have to remove prop first");
+      (p = this.incidentsHandler) == null || p.error("Prop can't be override, you have to remove prop first");
       return;
     }
-    if (!H(r)) {
-      (p = this.incidentsHandler) == null || p.error("Value can't be nullable");
+    if (!y(r)) {
+      (u = this.incidentsHandler) == null || u.error("Value can't be nullable");
       return;
     }
-    const s = d(r), t = x(r);
+    const s = d(r), t = P(r);
     if (t) {
       this._props[e] = { name: e, value: r, type: s, isValueScalar: t };
       return;
     }
     if (!this.isObjectJsonFriendly(r)) {
-      (u = this.incidentsHandler) == null || u.error("Complex data has to be json-friendly");
+      (f = this.incidentsHandler) == null || f.error("Complex data has to be json-friendly");
       return;
     }
     this._props[e] = this._strictObjectsInterfaces && s === o.Object ? { name: e, value: r, type: s, isValueScalar: t, interface: this.extractInterface(r) } : { name: e, value: r, type: s, isValueScalar: t };
@@ -465,12 +478,12 @@ class O {
   extractInterface(e) {
     const r = {};
     return Object.entries(e).forEach(([s, t]) => {
-      const n = d(t);
-      if (n === o.Null || n === o.Undefined) {
+      const i = d(t);
+      if (i === o.Null || i === o.Undefined) {
         r[s] = o.Any;
         return;
       }
-      r[s] = n;
+      r[s] = i;
     }), r;
   }
   importAllResolversListenerHandlers(e, r) {
@@ -546,12 +559,12 @@ class O {
     return this._incidentsHandler;
   }
 }
-const j = () => Symbol(y()), R = j();
-console.log("Tardigrade v1.1.17");
-const I = (i, e) => {
+const j = () => Symbol(b()), R = j();
+console.log("Tardigrade v1.1.18");
+const I = (n, e) => {
   e = e || {};
-  const r = new O(R, e);
-  return i && Object.entries(i).forEach(([s, t]) => {
+  const r = new H(R, e);
+  return n && Object.entries(n).forEach(([s, t]) => {
     switch (d(t)) {
       case o.Function:
       case o.AsyncFunction:

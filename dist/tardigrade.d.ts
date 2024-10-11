@@ -13,6 +13,7 @@ export declare class Tardigrade implements ITardigrade {
     protected readonly _strictObjectsInterfaces: boolean;
     protected readonly _name: DictionaryKey;
     constructor(sessionKey: symbol, initialOptions: TardigradeInitialOptions);
+    protected static isFn(object: any): boolean;
     addResolver(name: string, resolver: (...args: any[]) => any): void;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;

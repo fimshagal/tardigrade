@@ -9,49 +9,14 @@
 </head>
 <body>
     <script type="module">
-        import { createTardigrade } from "./";
+        import { createTardigrade } from "./../dist/tardigrade.store.es";
 
         (async () => {
-            const resolverKeys = {
-                resolverA: "resolverA",
-                resolverB: "resolverB",
-                resolverC: "resolverC",
-            };
+            const store = createTardigrade({ misha: "misha" }, { name: 'misha' });
 
-            const tardigrade = createTardigrade({
-                [resolverKeys.resolverA]: async () => {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            resolve(`${resolverKeys.resolverA} done`);
-                        }, 1000);
-                    });
-                },
-                [resolverKeys.resolverB]: async () => {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            resolve(`${resolverKeys.resolverB} done`);
-                        }, 1000);
-                    });
-                },
-                [resolverKeys.resolverC]: async () => {
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            resolve(`${resolverKeys.resolverC} done`);
-                        }, 1000);
-                    });
-                },
-            });
+            store.addProp("sasha", () => {});
 
-            tardigrade.addResolverListener(resolverKeys.resolverA, value => console.log(value));
-            tardigrade.addResolverListener(resolverKeys.resolverB, value => console.log(value));
-            tardigrade.addResolverListener(resolverKeys.resolverC, value => console.log(value));
-
-            await tardigrade.callResolversChain(
-                resolverKeys.resolverA,
-                resolverKeys.resolverB,
-                resolverKeys.resolverC
-            );
-
+            console.log(store);
         })();
 
     </script>
