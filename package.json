@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.1.20",
+  "version": "1.1.21",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "dist/tardigrade.store.es.js",
@@ -19,7 +19,7 @@
   "exports": {
     ".": {
       "require": "./dist/tardigrade.store.cjs.js",
-      "import": "./dist/tardigrade.store.es.js",
+      "import": "./index.js",
       "browser": "./dist/tardigrade.store.iife.js",
       "default": "./dist/tardigrade.store.es.js"
     }
