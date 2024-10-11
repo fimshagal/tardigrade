@@ -38,6 +38,7 @@ export default defineConfig({
         output: {
             dir: "dist",
             preserveModules: true,
+            globals: {},
         },
     },
     server: {

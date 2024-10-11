@@ -14,6 +14,14 @@ I am going to drop first stable build soon
 
 Tardigrade still is under constructions
 
+There is import issue wit some builders (for instance parcel.js), but you can tackle it with
+
+```ts
+import { createTardigrade } from "tardigrade-store/dist/tardigrade.store.es";
+```
+
+I am still working to rollup it properly
+
 ## Why this library was created
 
 This library was created to offer a simplified approach to state management with enhanced type safety, addressing some of the complexities and boilerplate often found in solutions like Redux. With this library, the goal was to create a lightweight state management tool that eliminates unnecessary configuration and ensures strict type control, while still being flexible enough to handle dynamic state changes and listeners
