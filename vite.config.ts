@@ -34,6 +34,12 @@ export default defineConfig({
             formats: ['es', 'cjs', 'umd', 'iife'],
         },
     },
+    rollupOptions: {
+        output: {
+            dir: "dist",
+            preserveModules: true,
+        },
+    },
     server: {
         open: 'sources/index.html',
     }

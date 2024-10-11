@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "dist/tardigrade.store.es.js",
@@ -8,7 +8,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "preprocessing": "node processing/update.version",
-    "build": "npm run clean && npm run preprocessing && vite build && tsc --emitDeclarationOnly --project tsconfig.json",
+    "postprocessing": "node processing/create.index",
+    "build": "npm run clean && npm run preprocessing && vite build && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
