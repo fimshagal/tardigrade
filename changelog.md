@@ -124,3 +124,12 @@
 - added logic to prevent write function as prop
 
 ---
+
+## [1.1.19] - 2024-10-11
+### Fix
+- import approach: added index file to export es module
+
+### Update
+-docs
+
+---
