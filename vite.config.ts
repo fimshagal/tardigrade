@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 //@ts-nocheck
 
 import { defineConfig } from "vite";
@@ -23,6 +24,11 @@ const bannerText: string = `/* Tardigrade store v${pkg.version} */
  */`;
 
 export default defineConfig({
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        include: ['tests/**/*.test.{js,ts}'],
+    },
     plugins: [
         banner(bannerText),
     ],

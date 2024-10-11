@@ -40,7 +40,7 @@ export class Tardigrade implements ITardigrade {
     }
 
     protected static isFn(object: any): boolean {
-        const type = typeOf(object);
+        const type: TardigradeTypes = typeOf(object) as TardigradeTypes;
         return type === TardigradeTypes.Function || type === TardigradeTypes.AsyncFunction;
     }
 
@@ -69,7 +69,7 @@ export class Tardigrade implements ITardigrade {
             return;
         }
 
-        if (typeOf(resolver) !== TardigradeTypes.Function && typeOf(resolver) !== TardigradeTypes.AsyncFunction) {
+        if (!Tardigrade.isFn(resolver)) {
             this.incidentsHandler?.error('Resolver have to be a function');
             return;
         }

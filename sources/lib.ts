@@ -39,6 +39,10 @@ export interface ITardigrade {
     exportAllResolvers(sessionKey: symbol): Nullable<{}>;
     exportAllResolversListenerHandlers(sessionKey: symbol): Nullable<{}>;
     exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]>;
+
+    get name(): DictionaryKey;
+    get isAlive(): boolean;
+    get mergeAgent(): Nullable<Tardigrade>;
 }
 
 export interface ITardigradeIncidentsHandler {
