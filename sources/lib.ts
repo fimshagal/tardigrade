@@ -32,7 +32,7 @@ export interface ITardigrade {
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;
     reset(): void;
-    //
+
     setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade): void;
     kill(sessionKey: symbol): void;
     exportAllPropsListenerHandlers(sessionKey: symbol): Nullable<{}>;
