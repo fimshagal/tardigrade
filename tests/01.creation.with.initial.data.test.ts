@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import {describe, it, expect, vi, Mock} from "vitest";
 import { createTardigrade } from "../sources";
 import { Tardigrade } from "../sources/tardigrade";
 import { getTardigradeMethodsNames } from "./get.tardigrade.methods.names";
@@ -12,7 +12,7 @@ describe('Tardigrade Store creation with initial data', () => {
             resolverB,
         };
 
-        const resolverListener = vi.fn();
+        const resolverListener: Mock = vi.fn();
 
         const tardigrade: Tardigrade = createTardigrade(initialData);
 

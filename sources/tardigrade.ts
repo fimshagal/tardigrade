@@ -44,6 +44,15 @@ export class Tardigrade implements ITardigrade {
         return type === TardigradeTypes.Function || type === TardigradeTypes.AsyncFunction;
     }
 
+    public hasResolver(name: string): boolean {
+        if (!this._alive) {
+            this.incidentsHandler?.error("This store doesn't support anymore");
+            return false;
+        }
+
+        return hasOwnProperty(this._resolvers, name);
+    }
+
     public addResolver(name: string, resolver: (...args: any[]) => any): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
@@ -56,7 +65,7 @@ export class Tardigrade implements ITardigrade {
         }
 
         if (hasOwnProperty(this._resolvers, name)) {
-            this.incidentsHandler?.error('Resolver has been planted');
+            this.incidentsHandler?.error('Resolver has been already planted');
             return;
         }
 
@@ -172,6 +181,15 @@ export class Tardigrade implements ITardigrade {
 
         this.silentAddProp(name, value);
         this.handleOnSetProp(this._props[name]);
+    }
+
+    public hasProp(name: string): boolean {
+        if (!this._alive) {
+            this.incidentsHandler?.error("This store doesn't support anymore");
+            return false;
+        }
+
+        return hasOwnProperty(this._props, name);
     }
 
     public removeProp(name: string): void {
