@@ -334,15 +334,6 @@ export class Tardigrade implements ITardigrade {
         return this.cloneComplexData(prop.value);
     }
 
-    public hasProp(name: string): boolean {
-        if (!this._alive) {
-            this.incidentsHandler?.error("This store doesn't support anymore");
-            return false;
-        }
-
-        return hasOwnProperty(this._props, name);
-    }
-
     public addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
@@ -372,6 +363,11 @@ export class Tardigrade implements ITardigrade {
     }
 
     public importResolvers(target: Tardigrade, override?: boolean): void {
+        if (!this._alive) {
+            this.incidentsHandler?.error("This store doesn't support anymore");
+            return;
+        }
+
         const importedResolvers = target.exportAllResolvers(this._sessionKey!);
 
         this._resolvers = override ? {

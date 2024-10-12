@@ -6,6 +6,7 @@ export type Dictionary<T = any> = {
 export type Nullable<T> = T | null | undefined;
 export interface ITardigrade {
     addProp<T>(name: string, value: T): void;
+    hasProp(name: string): boolean;
     removeProp(name: string): void;
     removeAllProps(): void;
     setProp<T>(name: string, newValue: T): void;
@@ -20,6 +21,7 @@ export interface ITardigrade {
     importResolvers(target: Tardigrade, override?: boolean): void;
     merge(target: Tardigrade, override?: boolean): void;
     addResolver(name: string, resolver: (...args: any[]) => any): void;
+    hasResolver(name: string): boolean;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;
     removeAllResolvers(): void;
@@ -34,6 +36,9 @@ export interface ITardigrade {
     exportAllResolvers(sessionKey: symbol): Nullable<{}>;
     exportAllResolversListenerHandlers(sessionKey: symbol): Nullable<{}>;
     exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]>;
+    get name(): DictionaryKey;
+    get isAlive(): boolean;
+    get mergeAgent(): Nullable<Tardigrade>;
 }
 export interface ITardigradeIncidentsHandler {
     warn(message?: string): void;

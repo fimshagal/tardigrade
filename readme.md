@@ -107,6 +107,13 @@ It is also possible to get all the props as simple object with getter ```props``
 console.log(tardigrade.props); // will print all the props
 ```
 
+To check was prop added use ```hasProp``` method
+
+```ts
+tardigrade.addProp("role", "customer");
+console.log(tardigrade.hasProp("role")); // return true
+```
+
 #### Listening to Property Changes
 
 There are two types of listeners you can add:
@@ -344,6 +351,13 @@ Or you can drop all the resolvers by single hit
 
 ```ts
 tardigrade.removeAllResolvers();
+```
+
+To check was resolver added use ```hasResolver``` method
+
+```ts
+tardigrade.addResolver("getUsers", async () => { /* ...some stuff */ });
+console.log(tardigrade.hasProp("getUsers")); // return true
 ```
 
 #### Usage with async

@@ -12,9 +12,20 @@
         import { createTardigrade } from "../";
 
         (async () => {
-            const store = createTardigrade({ misha: "misha" }, { name: 'misha' });
+            const donorStore = createTardigrade();
+            const store = createTardigrade();
 
-            store.addProp("sasha", () => {});
+            store.addResolver("resolverA", () => "valueA");
+            store.addResolverListener("resolverA", value => console.log('Resolver A get value', value));
+            store.addResolver("resolverB", () => "oldValueB");
+            store.addResolverListener("resolverB", value => console.log('Resolver B get value', value));
+
+            donorStore.addResolver("resolverC", () => "valueC");
+            donorStore.addResolver("resolverB", () => "valueB");
+
+            store.importResolvers(donorStore, true);
+
+            await store.callResolver('resolverB');
 
             console.log(store);
         })();

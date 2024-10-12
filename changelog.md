@@ -61,10 +61,10 @@
 ### Added
 - Prop and options item ```name```
 
-### Fix
+### Fixed
 - Method ```setProp```
 
-### Update
+### Updated
 - docs
 
 ---
@@ -73,7 +73,7 @@
 ### Added
 - Prop and option's item ```strictObjectsInterfaces``` and some logic to tackle this state
 
-### Update
+### Updated
 - Public methods ```setProp``` and semi-public ```silentSetProp``` and ```silentAddProp```
 - docs
 
@@ -83,7 +83,7 @@
 ### Added
 - Special optimisation to skip same income value
 
-### Update
+### Updated
 - docs
 
 ---
@@ -93,57 +93,68 @@
 - Build preprocessing 
 - Method ```callResolversChain```
 
-### Update
+### Updated
 - docs
 
 ---
 
 ## [1.1.15] - 2024-10-11
-### Update
+### Updated
 - docs
 
 ---
 
 ## [1.1.16] - 2024-10-11
-### Update
+### Updated
 - docs
 
 ---
 
 ## [1.1.17] - 2024-10-11
-### Remove
+### Removed
 - resolvers chains
 
-### Update
+### Updated
 - docs
 
 ---
 
 ## [1.1.18] - 2024-10-11
-### Update
+### Updated
 - added logic to prevent write function as prop
 
 ---
 
 ## [1.1.19] - 2024-10-11
-### Fix
+### Fixed
 - import approach: added index file to export es module
 
-### Update
+### Updated
 -docs
 
 ---
 
 ## [1.1.20] - 2024-10-11
-### Fix
+### Fixed
 - import approach: polished
 
-### Update
+### Updated
 -docs
 
 ---
 
 ## [1.1.21-1.1.23] - 2024-10-11
 ### Tidy
+
+---
+
+## [1.1.24] - 2024-10-11
+### Added
+- method ```hasProp```
+- method ```hasResolver```
+- tests (check Github)
+
+### Updated
+- docs
 
 ---

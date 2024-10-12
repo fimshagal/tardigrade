@@ -1,4 +1,4 @@
-/* Tardigrade store v1.1.23 */
+/* Tardigrade store v1.1.24 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -14,8 +14,8 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-var m = Object.defineProperty;
-var x = (n, e, r) => e in n ? m(n, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[e] = r;
+var L = Object.defineProperty;
+var x = (n, e, r) => e in n ? L(n, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[e] = r;
 var l = (n, e, r) => (x(n, typeof e != "symbol" ? e + "" : e, r), r);
 var o = /* @__PURE__ */ ((n) => (n.Null = "null", n.Undefined = "undefined", n.Function = "function", n.AsyncFunction = "asyncfunction", n.Number = "number", n.String = "string", n.Boolean = "boolean", n.Array = "array", n.Object = "object", n.Any = "any", n))(o || {});
 const d = (n) => Object.prototype.toString.call(n).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), y = (n) => {
@@ -46,11 +46,11 @@ const O = (n) => {
   n = n || !1;
   const e = new A();
   return e.emitErrors = n, e;
-}, b = () => typeof crypto.randomUUID == "function" ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (n) => {
+}, m = () => typeof crypto.randomUUID == "function" ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (n) => {
   const e = Math.random() * 16 | 0;
   return (n === "x" ? e : e & 3 | 8).toString(16);
 });
-class H {
+class v {
   constructor(e, r) {
     l(this, "_resolvers", {});
     l(this, "_props", {});
@@ -62,7 +62,7 @@ class H {
     l(this, "_incidentsHandler", null);
     l(this, "_sessionKey", null);
     l(this, "_strictObjectsInterfaces", !1);
-    l(this, "_name", b());
+    l(this, "_name", m());
     if (!e)
       throw Error("Tardigrade constructor error");
     const { emitErrors: s, name: t, strictObjectsInterfaces: i } = r;
@@ -72,18 +72,22 @@ class H {
     const r = d(e);
     return r === o.Function || r === o.AsyncFunction;
   }
+  hasResolver(e) {
+    var r;
+    return this._alive ? a(this._resolvers, e) : ((r = this.incidentsHandler) == null || r.error("This store doesn't support anymore"), !1);
+  }
   addResolver(e, r) {
     var s, t, i;
     if (!this._alive) {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (!H.isFn(r)) {
+    if (!v.isFn(r)) {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
     if (a(this._resolvers, e)) {
-      (i = this.incidentsHandler) == null || i.error("Resolver has been planted");
+      (i = this.incidentsHandler) == null || i.error("Resolver has been already planted");
       return;
     }
     this._resolvers[e] = r;
@@ -94,7 +98,7 @@ class H {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (d(r) !== o.Function && d(r) !== o.AsyncFunction) {
+    if (!v.isFn(r)) {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
@@ -155,11 +159,15 @@ class H {
   }
   addProp(e, r) {
     var s;
-    if (H.isFn(r)) {
+    if (v.isFn(r)) {
       (s = this.incidentsHandler) == null || s.error("Prop can't be a function. Use resolvers for this purpose");
       return;
     }
     this.silentAddProp(e, r), this.handleOnSetProp(this._props[e]);
+  }
+  hasProp(e) {
+    var r;
+    return this._alive ? a(this._props, e) : ((r = this.incidentsHandler) == null || r.error("This store doesn't support anymore"), !1);
   }
   removeProp(e) {
     var r, s;
@@ -174,17 +182,17 @@ class H {
     this.removeAllPropListeners(e), delete this._props[e];
   }
   setProp(e, r) {
-    var c, p, u, f, v;
+    var p, c, u, f, _;
     if (!this._alive) {
-      (c = this.incidentsHandler) == null || c.error("This store doesn't support anymore");
+      (p = this.incidentsHandler) == null || p.error("This store doesn't support anymore");
       return;
     }
     if (!this.hasProp(e)) {
-      (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
+      (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (_, L) => {
-      this._props[_].value = L, this.handleOnSetProp(this._props[_]);
+    const s = (H, b) => {
+      this._props[H].value = b, this.handleOnSetProp(this._props[H]);
     }, t = this._props[e], i = d(r);
     if (!y(r)) {
       s(e, null);
@@ -206,7 +214,7 @@ class H {
     }
     if (this._strictObjectsInterfaces && t.type === o.Object) {
       if (!this.checkObjectInterface(t.interface, r)) {
-        (v = this.incidentsHandler) == null || v.error("Income object interface isn't correct");
+        (_ = this.incidentsHandler) == null || _.error("Income object interface isn't correct");
         return;
       }
       s(e, r);
@@ -259,10 +267,6 @@ class H {
     const r = this._props[e];
     return r.isValueScalar ? r.value : this.cloneComplexData(r.value);
   }
-  hasProp(e) {
-    var r;
-    return this._alive ? a(this._props, e) : ((r = this.incidentsHandler) == null || r.error("This store doesn't support anymore"), !1);
-  }
   addListener(e) {
     var r;
     if (!this._alive) {
@@ -288,6 +292,11 @@ class H {
     this._listenerHandlers = [];
   }
   importResolvers(e, r) {
+    var t;
+    if (!this._alive) {
+      (t = this.incidentsHandler) == null || t.error("This store doesn't support anymore");
+      return;
+    }
     const s = e.exportAllResolvers(this._sessionKey);
     this._resolvers = r ? {
       ...this._resolvers,
@@ -410,20 +419,20 @@ class H {
     });
   }
   silentSetProp(e, r) {
-    var c, p, u, f;
+    var p, c, u, f;
     if (!this.hasProp(e)) {
-      (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
+      (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (v, _) => {
-      this._props[v].value = _;
+    const s = (_, H) => {
+      this._props[_].value = H;
     }, t = this._props[e], i = d(r);
     if (!y(r)) {
       s(e, null);
       return;
     }
     if (t.type !== i) {
-      (p = this.incidentsHandler) == null || p.error(`New value must have same type as initial value for prop "${e}"`);
+      (c = this.incidentsHandler) == null || c.error(`New value must have same type as initial value for prop "${e}"`);
       return;
     }
     if (t.isValueScalar) {
@@ -447,17 +456,17 @@ class H {
     s(e, r);
   }
   silentAddProp(e, r) {
-    var h, c, p, u, f;
+    var h, p, c, u, f;
     if (!this._alive) {
       (h = this.incidentsHandler) == null || h.error("This store doesn't support anymore");
       return;
     }
-    if (H.isFn(r)) {
-      (c = this.incidentsHandler) == null || c.error("Prop can't be a function. Use resolvers for this purpose");
+    if (v.isFn(r)) {
+      (p = this.incidentsHandler) == null || p.error("Prop can't be a function. Use resolvers for this purpose");
       return;
     }
     if (this.hasProp(e)) {
-      (p = this.incidentsHandler) == null || p.error("Prop can't be override, you have to remove prop first");
+      (c = this.incidentsHandler) == null || c.error("Prop can't be override, you have to remove prop first");
       return;
     }
     if (!y(r)) {
@@ -559,11 +568,11 @@ class H {
     return this._incidentsHandler;
   }
 }
-const j = () => Symbol(b()), R = j();
-console.log("Tardigrade v1.1.23");
-const I = (n, e) => {
+const j = () => Symbol(m()), R = j();
+console.log("Tardigrade v1.1.24");
+const S = (n, e) => {
   e = e || {};
-  const r = new H(R, e);
+  const r = new v(R, e);
   return n && Object.entries(n).forEach(([s, t]) => {
     switch (d(t)) {
       case o.Function:
@@ -586,5 +595,5 @@ const I = (n, e) => {
   }), r;
 };
 export {
-  I as createTardigrade
+  S as createTardigrade
 };

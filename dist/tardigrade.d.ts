@@ -14,6 +14,7 @@ export declare class Tardigrade implements ITardigrade {
     protected readonly _name: DictionaryKey;
     constructor(sessionKey: symbol, initialOptions: TardigradeInitialOptions);
     protected static isFn(object: any): boolean;
+    hasResolver(name: string): boolean;
     addResolver(name: string, resolver: (...args: any[]) => any): void;
     setResolver(name: string, resolver: (...args: any[]) => any): void;
     removeResolver(name: string): void;
@@ -22,13 +23,13 @@ export declare class Tardigrade implements ITardigrade {
     removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllResolverListeners(name: string): void;
     addProp<T>(name: string, value: T): void;
+    hasProp(name: string): boolean;
     removeProp(name: string): void;
     setProp<T>(name: string, newValue: T): void;
     addPropListener(name: string, handler: (value: Nullable<any>) => void): void;
     removePropListener(name: string, handler: (value: Nullable<any>) => void): void;
     removeAllPropListeners(name: string): void;
     prop(name: string): Nullable<any>;
-    hasProp(name: string): boolean;
     addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
     removeAllListeners(): void;
