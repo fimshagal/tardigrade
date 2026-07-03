@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 //@ts-nocheck
 
 import { defineConfig } from "vite";
@@ -6,7 +5,7 @@ import * as path from "node:path";
 import pkg from "./package.json";
 import banner from "vite-plugin-banner";
 
-const bannerText: string = `/* Tardigrade store v${pkg.version} */
+const bannerText: string = `/* Tardigrade store react bridge v${pkg.version} */
 
 /* Created by ${pkg.author} | fimashagal@gmail.com */
            
@@ -24,35 +23,27 @@ const bannerText: string = `/* Tardigrade store v${pkg.version} */
  */`;
 
 export default defineConfig({
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        include: ['tests/**/*.test.{js,ts,tsx}'],
-    },
-    resolve: {
-        alias: {
-            "tardigrade-store": path.resolve(__dirname, 'sources/index.ts'),
-        },
-    },
     plugins: [
         banner(bannerText),
     ],
     build: {
+        outDir: "dist/react",
+        emptyOutDir: false,
         lib: {
-            entry: path.resolve(__dirname, 'sources/index.ts'),
-            name: 'TardigradeStore',
-            fileName: (format: any) => `tardigrade.store.${format}.js`,
-            formats: ['es', 'cjs', 'umd', 'iife'],
+            entry: path.resolve(__dirname, 'sources/react/index.ts'),
+            name: 'TardigradeStoreReact',
+            fileName: (format: any) => `tardigrade.store.react.${format}.js`,
+            formats: ['es', 'cjs'],
+        },
+        rollupOptions: {
+            // keep react and the core out of the bridge bundle:
+            // the core must stay a single module instance (shared sessionKey)
+            external: ["react", "react/jsx-runtime", "tardigrade-store"],
+            output: {
+                globals: {
+                    react: "React",
+                },
+            },
         },
     },
-    rollupOptions: {
-        output: {
-            dir: "dist",
-            preserveModules: true,
-            globals: {},
-        },
-    },
-    server: {
-        open: 'sources/index.html',
-    }
 });

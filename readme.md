@@ -509,6 +509,94 @@ store.setProp(propNames.user, {
 
 ---
 
+## React bridge
+
+Tardigrade ships with a react bridge out of the box. It lives in a separate subpath export, so it doesn't affect bundle size or projects without react. React (>=16.8) is an optional peer dependency: install it only if you are going to use the bridge
+
+```ts
+import { TardigradeProvider, useTardigrade, useTardigradeProp } from "tardigrade-store/react";
+```
+
+#### ```useTardigrade(initialData?, initialOptions?)```
+
+Creates a store bound to the component lifecycle. The store is created once on the first render and kept between re-renders
+
+```tsx
+import { useTardigrade, useTardigradeProp } from "tardigrade-store/react";
+
+const Counter = () => {
+    const store = useTardigrade({ counter: 0 });
+    const [counter, setCounter] = useTardigradeProp<number>("counter", store);
+
+    return <button onClick={() => setCounter(counter! + 1)}>{counter}</button>;
+};
+```
+
+#### ```TardigradeProvider``` and shared stores
+
+To share a single store across the component tree wrap it with the provider. All the bridge hooks look up the store from context when it isn't passed directly
+
+```tsx
+import { createTardigrade } from "tardigrade-store";
+import { TardigradeProvider, useTardigradeProp } from "tardigrade-store/react";
+
+const store = createTardigrade({ username: "guest" });
+
+const UserBadge = () => {
+    const [username] = useTardigradeProp<string>("username"); // taken from context
+    return <span>{username}</span>;
+};
+
+const App = () => (
+    <TardigradeProvider store={store}>
+        <UserBadge />
+    </TardigradeProvider>
+);
+```
+
+#### ```useTardigradeProp<T>(name, store?)```
+
+Subscribes the component to a single prop. Returns a tuple ```[value, setValue]``` similar to ```useState```. The component re-renders only when this prop changes
+
+```tsx
+const [counter, setCounter] = useTardigradeProp<number>("counter");
+
+setCounter(5); // same as store.setProp("counter", 5)
+```
+
+#### ```useTardigradeProps(store?)```
+
+Subscribes to all props at once and returns them as a plain object. The component re-renders on any store update
+
+```tsx
+const props = useTardigradeProps();
+console.log(props.counter, props.username);
+```
+
+#### ```useTardigradeResolver<T>(name, store?)```
+
+Wires a resolver into the component. Returns a tuple ```[callResolver, lastValue]```. The last value updates every time the resolver is called — by this component or anywhere else in the app
+
+```tsx
+const [fetchPosts, posts] = useTardigradeResolver<Post[]>("fetchPosts");
+
+useEffect(() => {
+    fetchPosts();
+}, [fetchPosts]);
+```
+
+#### ```useTardigradeStore(store?)```
+
+Low-level hook used by the bridge itself. Returns the passed store or the one from the nearest ```TardigradeProvider```, and throws if neither exists. Useful to build custom hooks on top of the bridge
+
+All the bridge hooks unsubscribe automatically on unmount, so there are no leaked listeners
+
+#### Objects handling
+
+The bridge keeps object props referentially stable: if an update brings an object with the same content, the component doesn't re-render and keeps the previous reference, so it's safe to use hook values in ```useEffect``` dependency arrays. Values stored in react state are always clones — mutating them never affects the store internals
+
+---
+
 ## Links
 
 Github: [fimshagal/tardigrade](https://github.com/fimshagal/tardigrade)

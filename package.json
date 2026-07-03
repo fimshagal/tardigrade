@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.1.24",
+  "version": "1.2.0",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "preprocessing": "node processing/update.version",
     "postprocessing": "node processing/create.index",
-    "build": "npm run clean && npm run preprocessing && vite build && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
+    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
@@ -18,21 +18,41 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "require": "./dist/tardigrade.store.cjs.js",
       "import": "./index.js",
       "browser": "./dist/tardigrade.store.iife.js",
       "default": "./dist/tardigrade.store.es.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "require": "./dist/react/tardigrade.store.react.cjs.js",
+      "import": "./dist/react/tardigrade.store.react.es.js",
+      "default": "./dist/react/tardigrade.store.react.es.js"
+    }
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
     }
   },
   "author": "fSha",
   "license": "CHECK LICENSE IN LICENSE FILE",
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^18.3.31",
     "@typescript-eslint/eslint-plugin": "^8.8.1",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "jsdom": "^25.0.1",
     "prettier": "^3.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rimraf": "^5.0.0",
     "typescript": "^5.6.2",
     "vite": "^4.5.0",

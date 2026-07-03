@@ -39,6 +39,7 @@ export interface ITardigrade {
     get name(): DictionaryKey;
     get isAlive(): boolean;
     get mergeAgent(): Nullable<Tardigrade>;
+    get props(): Dictionary;
 }
 export interface ITardigradeIncidentsHandler {
     warn(message?: string): void;

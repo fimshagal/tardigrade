@@ -1,4 +1,4 @@
-/* Tardigrade store v1.1.24 */
+/* Tardigrade store v1.2.0 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -569,7 +569,7 @@ class v {
   }
 }
 const j = () => Symbol(m()), R = j();
-console.log("Tardigrade v1.1.24");
+console.log("Tardigrade v1.2.0");
 const S = (n, e) => {
   e = e || {};
   const r = new v(R, e);
@@ -595,5 +595,7 @@ const S = (n, e) => {
   }), r;
 };
 export {
+  v as Tardigrade,
+  o as TardigradeTypes,
   S as createTardigrade
 };

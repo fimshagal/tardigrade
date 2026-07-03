@@ -158,3 +158,23 @@
 - docs
 
 ---
+
+## [1.2.0] - 2026-07-04
+### Added
+- React bridge out of the box: subpath export ```tardigrade-store/react```
+- ```useTardigrade``` hook to create component-scoped store
+- ```useTardigradeProp``` hook to subscribe to single prop
+- ```useTardigradeProps``` hook to subscribe to all props
+- ```useTardigradeResolver``` hook to call resolver and read its value
+- ```TardigradeProvider``` and ```useTardigradeStore``` to share store via react context
+- ```react``` as optional peer dependency
+- referential stability for object props in react bridge: content-equal updates don't cause re-renders, react state never holds store's internal references
+- tests for react bridge
+
+### Updated
+- exports map: added ```types``` conditions and ```./react``` subpath
+- ```ITardigrade``` interface: added ```props``` getter
+- root export: types and ```Tardigrade``` class are exported now
+- docs
+
+---

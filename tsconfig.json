@@ -11,7 +11,11 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "tardigrade-store": ["./sources/index.ts"]
+    }
   },
   "include": ["sources/**/*.ts"],
   "exclude": ["node_modules", "dist"]
