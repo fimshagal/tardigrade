@@ -216,13 +216,14 @@ tardigrade.removeAllProps();
 
 #### Import props
 
-You can import props of another Tardigrade store into your with ```merge``` method. This will automatically replace props from target store to that you need
+You can import props of another Tardigrade store into yours with the ```importProps``` method. This will copy props from the target store into your store
 
 ```ts
 const altStore = createTardigrade();
-altStore.addProps("timestamp", 0);
+altStore.addProp("timestamp", 0);
 
-tardigrade.importProps("altStore");  // Replaced "timestamp" prop into our base store
+const tardigrade = createTardigrade();
+tardigrade.importProps(altStore);  // "timestamp" prop is copied into our store
 ````
 
 ```importProps``` method replace only props, without prop's listener handlers
@@ -230,8 +231,8 @@ tardigrade.importProps("altStore");  // Replaced "timestamp" prop into our base 
 There are two ways to import props: without override or with
 
 ```ts
-tardigrade.importProps("altStore", true);  // Will override existing props of this store after import
-tardigrade.importProps("altStore"); // Won't override existing props of this store after import
+tardigrade.importProps(altStore, true);  // Will override existing props of this store after import
+tardigrade.importProps(altStore); // Won't override existing props of this store after import
 ````
 
 #### Merge stores
@@ -240,12 +241,13 @@ You can merge one store into another. Merging replace not only props but all the
 
 ```ts
 const altStore = createTardigrade();
-altStore.addProps("timestamp", 0);
+altStore.addProp("timestamp", 0);
 altStore.addPropListener("timestamp", (value) => console.log(value));
 
+const tardigrade = createTardigrade();
 tardigrade.merge(altStore);  // Replaced "timestamp" prop and all the prop listener handlers
 
-consolel.log(altStore.prop("timestamp")); // would return "null" cause altStore was killed after merging
+console.log(altStore.prop("timestamp")); // returns null because altStore was killed after merging
 ````
 
 As ```importProps``` this method also has two ways to be executed
@@ -407,7 +409,7 @@ To check was resolver added use ```hasResolver``` method
 
 ```ts
 tardigrade.addResolver("getUsers", async () => { /* ...some stuff */ });
-console.log(tardigrade.hasProp("getUsers")); // return true
+console.log(tardigrade.hasResolver("getUsers")); // return true
 ```
 
 #### Usage with async
