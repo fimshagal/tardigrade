@@ -26,8 +26,17 @@ export const useTardigradeProp = <T>(name: string, store?: Tardigrade<any>): [Nu
         // re-read value in case it changed between render and effect
         applyValue(targetStore.hasProp(name) ? targetStore.prop(name) : null);
 
-        // global listener catches updates even for props added after mount
-        const handler = (updatedName: string, updatedValue: Nullable<T>): void => {
+        // global listener catches updates even for props added after mount;
+        // batched setProps updates arrive as (names[], values dictionary)
+        const handler = (updatedName: string | string[], updatedValue: any): void => {
+            if (Array.isArray(updatedName)) {
+                if (!updatedName.includes(name)) {
+                    return;
+                }
+                applyValue(updatedValue[name]);
+                return;
+            }
+
             if (updatedName !== name) {
                 return;
             }

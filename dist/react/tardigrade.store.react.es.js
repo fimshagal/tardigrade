@@ -1,4 +1,4 @@
-/* Tardigrade store react bridge v1.2.1 */
+/* Tardigrade store react bridge v1.3.0 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -16,15 +16,15 @@
  */
 import { createContext as T, createElement as h, useContext as R, useRef as p, useState as f, useEffect as g, useCallback as P } from "react";
 import { createTardigrade as C } from "tardigrade-store";
-const S = T(null), O = ({ store: r, children: t }) => h(S.Provider, { value: r }, t), v = (r) => {
-  const t = R(S), e = r ?? t;
+const y = T(null), A = ({ store: r, children: t }) => h(y.Provider, { value: r }, t), v = (r) => {
+  const t = R(y), e = r ?? t;
   if (!e)
     throw new Error("Tardigrade react bridge: store wasn't provided. Pass it into the hook directly or wrap your components with <TardigradeProvider store={...}>");
   return e;
-}, V = (r, t) => {
+}, O = (r, t) => {
   const e = p(null);
   return e.current || (e.current = C(r, t)), e.current;
-}, d = (r) => typeof r == "object" && r !== null, x = (r) => d(r) ? typeof structuredClone == "function" ? structuredClone(r) : JSON.parse(JSON.stringify(r)) : r, y = (r, t) => {
+}, d = (r) => typeof r == "object" && r !== null, x = (r) => d(r) ? typeof structuredClone == "function" ? structuredClone(r) : JSON.parse(JSON.stringify(r)) : r, S = (r, t) => {
   if (Object.is(r, t))
     return !0;
   if (!d(r) || !d(t))
@@ -35,54 +35,60 @@ const S = T(null), O = ({ store: r, children: t }) => h(S.Provider, { value: r }
     return !1;
   }
 }, E = (r, t) => {
-  const e = v(t), [n, c] = f(() => e.hasProp(r) ? e.prop(r) : null), s = p(n);
+  const e = v(t), [c, i] = f(() => e.hasProp(r) ? e.prop(r) : null), s = p(c);
   g(() => {
-    const u = (l) => {
-      if (y(s.current, l))
+    const n = (u) => {
+      if (S(s.current, u))
         return;
-      const a = x(l);
-      s.current = a, c(a);
+      const l = x(u);
+      s.current = l, i(l);
     };
-    u(e.hasProp(r) ? e.prop(r) : null);
-    const i = (l, a) => {
-      l === r && u(a);
+    n(e.hasProp(r) ? e.prop(r) : null);
+    const a = (u, l) => {
+      if (Array.isArray(u)) {
+        if (!u.includes(r))
+          return;
+        n(l[r]);
+        return;
+      }
+      u === r && n(l);
     };
-    return e.addListener(i), () => {
-      e.isAlive && e.removeListener(i);
+    return e.addListener(a), () => {
+      e.isAlive && e.removeListener(a);
     };
   }, [e, r]);
-  const o = P((u) => {
-    e.setProp(r, u);
+  const o = P((n) => {
+    e.setProp(r, n);
   }, [e, r]);
-  return [n, o];
+  return [c, o];
 }, J = (r) => {
-  const t = v(r), [e, n] = f(() => t.props), c = p(e);
+  const t = v(r), [e, c] = f(() => t.props), i = p(e);
   return g(() => {
     const s = () => {
       const o = t.props;
-      y(c.current, o) || (c.current = o, n(o));
+      S(i.current, o) || (i.current = o, c(o));
     };
     return s(), t.addListener(s), () => {
       t.isAlive && t.removeListener(s);
     };
   }, [t]), e;
-}, N = (r, t) => {
-  const e = v(t), [n, c] = f(null);
+}, V = (r, t) => {
+  const e = v(t), [c, i] = f(null);
   return g(() => {
-    const o = (u, i) => {
-      u === r && c(i);
+    const o = (n, a) => {
+      n === r && i(a);
     };
     return e.addListener(o), () => {
       e.isAlive && e.removeListener(o);
     };
-  }, [e, r]), [P(() => e.callResolver(r), [e, r]), n];
+  }, [e, r]), [P(() => e.callResolver(r), [e, r]), c];
 };
 export {
-  S as TardigradeContext,
-  O as TardigradeProvider,
-  V as useTardigrade,
+  y as TardigradeContext,
+  A as TardigradeProvider,
+  O as useTardigrade,
   E as useTardigradeProp,
   J as useTardigradeProps,
-  N as useTardigradeResolver,
+  V as useTardigradeResolver,
   v as useTardigradeStore
 };

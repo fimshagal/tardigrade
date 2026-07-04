@@ -8,6 +8,7 @@ import {
     PropsOf,
     StoreListener,
     StorePropName,
+    StorePropsPatch,
     StorePropValue,
     StoreResolverName,
     StoreResolverValue,
@@ -228,58 +229,42 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
             return;
         }
 
-        if (!this.hasProp(name)) {
-            this.incidentsHandler?.error(`Prop "${name}" wasn't registered. You have to add this prop first`);
-            return;
-        }
-
-        const handler = (name: string, newValue: any): void => {
-            this._props[name].value = newValue;
+        if (this.writeProp(name, newValue)) {
             this.handleOnSetProp(this._props[name]);
-        };
+        }
+    }
 
-        const prop: Prop<any> = this._props[name];
-        const newType: string = typeOf(newValue);
-
-        if (!isDef(newValue)) {
-            handler(name, null);
+    public setProps<P extends Dictionary>(patch: P & StorePropsPatch<S, P>): void {
+        if (!this._alive) {
+            this.incidentsHandler?.error("This store doesn't support anymore");
             return;
         }
 
-        if (prop.type !== newType) {
-            this.incidentsHandler?.error(`New value must have same type as initial value for prop "${name}"`);
+        const updatedNames: string[] = [];
+        const updatedValues: Dictionary = {};
+
+        // write everything first, so listeners always observe the fully updated store
+        Object
+            .entries(patch as Dictionary)
+            .forEach(([name, value]): void => {
+                if (this.writeProp(name, value)) {
+                    updatedNames.push(name);
+                    updatedValues[name] = this._props[name].value;
+                }
+            });
+
+        if (!updatedNames.length) {
             return;
         }
 
-        if (prop.isValueScalar) {
-
-            if (newValue === prop.value) {
-                return;
-            }
-            handler(name, newValue);
-            return;
+        for (const name of updatedNames) {
+            this.notifyPropListeners(this._props[name]);
         }
 
-        const isComplexDataJsonFriendly: boolean = this.isObjectJsonFriendly(newValue);
-
-        if (!isComplexDataJsonFriendly) {
-            this.incidentsHandler?.error("Complex data has to be json-friendly");
-            return;
+        // global listeners get the whole batch as a single notification
+        for (const handler of this._listenerHandlers) {
+            handler(updatedNames, updatedValues, this.props);
         }
-
-        if (this._strictObjectsInterfaces && prop.type === TardigradeTypes.Object) {
-            const isInterfaceCorrect: boolean = this.checkObjectInterface(prop.interface!, newValue as Dictionary);
-
-            if (!isInterfaceCorrect) {
-                this.incidentsHandler?.error("Income object interface isn't correct");
-                return;
-            }
-
-            handler(name, newValue);
-            return;
-        }
-
-        handler(name, newValue);
     }
 
     public addPropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void {
@@ -572,50 +557,50 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
             .forEach(([key, value]) => {
                 if (this.hasProp(key)) {
                     if (!override) return;
-                    this.silentSetProp(key, value);
+                    this.writeProp(key, value);
                 } else {
                     this.silentAddProp(key, value);
                 }
             });
     }
 
-    protected silentSetProp<T>(name: string, newValue: T): void {
+    // validates and writes a single prop value, returns true when the value was actually written
+    protected writeProp(name: string, newValue: any): boolean {
         if (!this.hasProp(name)) {
             this.incidentsHandler?.error(`Prop "${name}" wasn't registered. You have to add this prop first`);
-            return;
+            return false;
         }
 
-        const handler = (name: string, newValue: any): void => {
-            this._props[name].value = newValue;
+        const write = (value: any): boolean => {
+            this._props[name].value = value;
+            return true;
         };
 
         const prop: Prop<any> = this._props[name];
         const newType: string = typeOf(newValue);
 
         if (!isDef(newValue)) {
-            handler(name, null);
-            return;
+            return write(null);
         }
 
         if (prop.type !== newType) {
             this.incidentsHandler?.error(`New value must have same type as initial value for prop "${name}"`);
-            return;
+            return false;
         }
 
         if (prop.isValueScalar) {
             if (newValue === prop.value) {
-                return;
+                return false;
             }
 
-            handler(name, newValue);
-            return;
+            return write(newValue);
         }
 
         const isComplexDataJsonFriendly = this.isObjectJsonFriendly(newValue);
 
         if (!isComplexDataJsonFriendly) {
             this.incidentsHandler?.error("Complex data has to be json-friendly");
-            return;
+            return false;
         }
 
         if (this._strictObjectsInterfaces && prop.type === TardigradeTypes.Object) {
@@ -623,14 +608,11 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
 
             if (!isInterfaceCorrect) {
                 this.incidentsHandler?.error("Income object interface isn't correct");
-                return;
+                return false;
             }
-
-            handler(name, newValue);
-            return;
         }
 
-        handler(name, newValue);
+        return write(newValue);
     }
 
     protected silentAddProp<T>(name: string, value: T): void {
@@ -739,12 +721,16 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
         }
     }
 
-    protected handleOnSetProp(updatedProp: Prop<any>): void {
+    protected notifyPropListeners(updatedProp: Prop<any>): void {
         if (this.isPropListened(updatedProp.name)) {
             for (const handler of this._propListenerHandlers[updatedProp.name]) {
                 handler(updatedProp.value);
             }
         }
+    }
+
+    protected handleOnSetProp(updatedProp: Prop<any>): void {
+        this.notifyPropListeners(updatedProp);
 
         for (const handler of this._listenerHandlers) {
             handler(updatedProp.name, updatedProp.value, this.props);

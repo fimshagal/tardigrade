@@ -8,8 +8,9 @@ export const useTardigradeResolver = <T>(name: string, store?: Tardigrade<any>):
     const [value, setValue] = useState<Nullable<T>>(null);
 
     useEffect(() => {
-        // global listener catches resolver calls even for resolvers added after mount
-        const handler = (updatedName: string, updatedValue: Nullable<T>): void => {
+        // global listener catches resolver calls even for resolvers added after mount;
+        // batched prop updates arrive with string[] name and are ignored here
+        const handler = (updatedName: string | string[], updatedValue: Nullable<T>): void => {
             if (updatedName !== name) {
                 return;
             }

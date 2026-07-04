@@ -79,6 +79,33 @@ You can also set a property to null without changing its type:
 tardigrade.setProp("username", null);  // Sets 'username' to null, but its type remains string
 ```
 
+#### Batch updates
+
+To update several props at once use ```setProps```. All values are written first, then listeners are notified: each prop listener gets its new value, but global listeners are called **only once** per batch instead of once per change
+
+```ts
+tardigrade.setProps({
+    counter: 5,
+    username: "admin",
+});
+```
+
+Global listener receives a batched update in a special form: array of changed names and a dictionary of changed values
+
+```ts
+tardigrade.addListener((name, value, props) => {
+    if (Array.isArray(name)) {
+        // batched update via setProps
+        console.log("Changed props:", name, value);
+        return;
+    }
+
+    console.log(`Prop ${name} changed to`, value);
+});
+```
+
+Props that didn't actually change (same scalar value) are excluded from the batch, and if nothing changed listeners aren't called at all. Values are validated the same way as in ```setProp```: wrong types or unknown names are reported and skipped without breaking the rest of the batch
+
 And if you need to get prop you can tackle it with ```prop``` method:
 
 ```ts

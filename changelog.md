@@ -185,3 +185,16 @@
 - ```importAllResolversListenerHandlers```: merged resolver listeners were written into prop listeners storage, so ```merge``` erased prop listeners and lost resolver listeners
 
 ---
+
+## [1.3.0] - 2026-07-04
+### Added
+- method ```setProps``` for batch updates: writes several props at once, notifies each prop listener and calls global listeners only once per batch with ```(names: string[], changedValues, props)```
+- typed patch for ```setProps```: known prop names are checked against store shape
+- react bridge understands batched updates (```useTardigradeProps``` re-renders once per batch)
+- tests for ```setProps```
+
+### Updated
+- internals: ```setProp``` and ```silentSetProp``` merged into single ```writeProp``` (no behavior change)
+- docs
+
+---

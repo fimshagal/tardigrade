@@ -1,4 +1,4 @@
-/* Tardigrade store v1.2.1 */
+/* Tardigrade store v1.3.0 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -14,21 +14,21 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-var b = Object.defineProperty;
-var P = (n, e, r) => e in n ? b(n, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[e] = r;
-var l = (n, e, r) => (P(n, typeof e != "symbol" ? e + "" : e, r), r);
-var o = /* @__PURE__ */ ((n) => (n.Null = "null", n.Undefined = "undefined", n.Function = "function", n.AsyncFunction = "asyncfunction", n.Number = "number", n.String = "string", n.Boolean = "boolean", n.Array = "array", n.Object = "object", n.Any = "any", n))(o || {});
-const d = (n) => Object.prototype.toString.call(n).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), y = (n) => {
-  const e = d(n);
+var m = Object.defineProperty;
+var L = (i, e, r) => e in i ? m(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
+var h = (i, e, r) => (L(i, typeof e != "symbol" ? e + "" : e, r), r);
+var o = /* @__PURE__ */ ((i) => (i.Null = "null", i.Undefined = "undefined", i.Function = "function", i.AsyncFunction = "asyncfunction", i.Number = "number", i.String = "string", i.Boolean = "boolean", i.Array = "array", i.Object = "object", i.Any = "any", i))(o || {});
+const d = (i) => Object.prototype.toString.call(i).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), H = (i) => {
+  const e = d(i);
   return e !== "null" && e !== "undefined";
-}, x = (n) => {
-  const e = d(n);
+}, P = (i) => {
+  const e = d(i);
   return e === "string" || e === "number" || e === "symbol";
-}, a = (n, e) => Object.prototype.hasOwnProperty.call(n, e);
-class A {
+}, a = (i, e) => Object.prototype.hasOwnProperty.call(i, e);
+class b {
   constructor() {
-    l(this, "_header", "Tardigrade");
-    l(this, "_emitErrors", !1);
+    h(this, "_header", "Tardigrade");
+    h(this, "_emitErrors", !1);
   }
   warn(e) {
     e = e || "Unknown warn", console.warn(e);
@@ -42,31 +42,31 @@ class A {
     this._emitErrors = e;
   }
 }
-const O = (n) => {
-  n = n || !1;
-  const e = new A();
-  return e.emitErrors = n, e;
-}, m = () => typeof crypto.randomUUID == "function" ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (n) => {
+const x = (i) => {
+  i = i || !1;
+  const e = new b();
+  return e.emitErrors = i, e;
+}, y = () => typeof crypto.randomUUID == "function" ? crypto.randomUUID() : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (i) => {
   const e = Math.random() * 16 | 0;
-  return (n === "x" ? e : e & 3 | 8).toString(16);
+  return (i === "x" ? e : e & 3 | 8).toString(16);
 });
-class v {
+class p {
   constructor(e, r) {
-    l(this, "_resolvers", {});
-    l(this, "_props", {});
-    l(this, "_resolverListenerHandlers", {});
-    l(this, "_propListenerHandlers", {});
-    l(this, "_listenerHandlers", []);
-    l(this, "_alive", !0);
-    l(this, "_mergeAgent", null);
-    l(this, "_incidentsHandler", null);
-    l(this, "_sessionKey", null);
-    l(this, "_strictObjectsInterfaces", !1);
-    l(this, "_name", m());
+    h(this, "_resolvers", {});
+    h(this, "_props", {});
+    h(this, "_resolverListenerHandlers", {});
+    h(this, "_propListenerHandlers", {});
+    h(this, "_listenerHandlers", []);
+    h(this, "_alive", !0);
+    h(this, "_mergeAgent", null);
+    h(this, "_incidentsHandler", null);
+    h(this, "_sessionKey", null);
+    h(this, "_strictObjectsInterfaces", !1);
+    h(this, "_name", y());
     if (!e)
       throw Error("Tardigrade constructor error");
-    const { emitErrors: s, name: t, strictObjectsInterfaces: i } = r;
-    t && (this._name = t), i && (this._strictObjectsInterfaces = i), this._incidentsHandler = O(s), this._sessionKey = e;
+    const { emitErrors: s, name: t, strictObjectsInterfaces: n } = r;
+    t && (this._name = t), n && (this._strictObjectsInterfaces = n), this._incidentsHandler = x(s), this._sessionKey = e;
   }
   static isFn(e) {
     const r = d(e);
@@ -77,33 +77,33 @@ class v {
     return this._alive ? a(this._resolvers, e) : ((r = this.incidentsHandler) == null || r.error("This store doesn't support anymore"), !1);
   }
   addResolver(e, r) {
-    var s, t, i;
+    var s, t, n;
     if (!this._alive) {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (!v.isFn(r)) {
+    if (!p.isFn(r)) {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
     if (a(this._resolvers, e)) {
-      (i = this.incidentsHandler) == null || i.error("Resolver has been already planted");
+      (n = this.incidentsHandler) == null || n.error("Resolver has been already planted");
       return;
     }
     this._resolvers[e] = r;
   }
   setResolver(e, r) {
-    var s, t, i;
+    var s, t, n;
     if (!this._alive) {
       (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (!v.isFn(r)) {
+    if (!p.isFn(r)) {
       (t = this.incidentsHandler) == null || t.error("Resolver have to be a function");
       return;
     }
     if (!a(this._resolvers, e)) {
-      (i = this.incidentsHandler) == null || i.error("Resolver has been planted");
+      (n = this.incidentsHandler) == null || n.error("Resolver has been planted");
       return;
     }
     this._resolvers[e] = r;
@@ -127,7 +127,7 @@ class v {
       return;
     }
     const r = await this._resolvers[e](this.props);
-    this.handleOnCallResolver(e, r), a(this._resolverListenerHandlers, e) && this._resolverListenerHandlers[e].forEach((i) => i(r));
+    this.handleOnCallResolver(e, r), a(this._resolverListenerHandlers, e) && this._resolverListenerHandlers[e].forEach((n) => n(r));
   }
   addResolverListener(e, r) {
     var s, t;
@@ -159,7 +159,7 @@ class v {
   }
   addProp(e, r) {
     var s;
-    if (v.isFn(r)) {
+    if (p.isFn(r)) {
       (s = this.incidentsHandler) == null || s.error("Prop can't be a function. Use resolvers for this purpose");
       return;
     }
@@ -182,45 +182,28 @@ class v {
     this.removeAllPropListeners(e), delete this._props[e];
   }
   setProp(e, r) {
-    var c, p, u, f, _;
+    var s;
     if (!this._alive) {
-      (c = this.incidentsHandler) == null || c.error("This store doesn't support anymore");
+      (s = this.incidentsHandler) == null || s.error("This store doesn't support anymore");
       return;
     }
-    if (!this.hasProp(e)) {
-      (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
+    this.writeProp(e, r) && this.handleOnSetProp(this._props[e]);
+  }
+  setProps(e) {
+    var t;
+    if (!this._alive) {
+      (t = this.incidentsHandler) == null || t.error("This store doesn't support anymore");
       return;
     }
-    const s = (H, L) => {
-      this._props[H].value = L, this.handleOnSetProp(this._props[H]);
-    }, t = this._props[e], i = d(r);
-    if (!y(r)) {
-      s(e, null);
-      return;
+    const r = [], s = {};
+    if (Object.entries(e).forEach(([n, l]) => {
+      this.writeProp(n, l) && (r.push(n), s[n] = this._props[n].value);
+    }), !!r.length) {
+      for (const n of r)
+        this.notifyPropListeners(this._props[n]);
+      for (const n of this._listenerHandlers)
+        n(r, s, this.props);
     }
-    if (t.type !== i) {
-      (u = this.incidentsHandler) == null || u.error(`New value must have same type as initial value for prop "${e}"`);
-      return;
-    }
-    if (t.isValueScalar) {
-      if (r === t.value)
-        return;
-      s(e, r);
-      return;
-    }
-    if (!this.isObjectJsonFriendly(r)) {
-      (f = this.incidentsHandler) == null || f.error("Complex data has to be json-friendly");
-      return;
-    }
-    if (this._strictObjectsInterfaces && t.type === o.Object) {
-      if (!this.checkObjectInterface(t.interface, r)) {
-        (_ = this.incidentsHandler) == null || _.error("Income object interface isn't correct");
-        return;
-      }
-      s(e, r);
-      return;
-    }
-    s(e, r);
   }
   addPropListener(e, r) {
     var s, t;
@@ -244,7 +227,7 @@ class v {
       (t = this.incidentsHandler) == null || t.error(`Prop "${e}" doesn't have any listeners`);
       return;
     }
-    this._propListenerHandlers[e] = this._propListenerHandlers[e].filter((i) => i !== r);
+    this._propListenerHandlers[e] = this._propListenerHandlers[e].filter((n) => n !== r);
   }
   removeAllPropListeners(e) {
     var r, s;
@@ -313,13 +296,13 @@ class v {
       return;
     }
     const s = e.props;
-    Object.entries(s).forEach(([i, h]) => {
-      if (this.hasProp(i)) {
+    Object.entries(s).forEach(([n, l]) => {
+      if (this.hasProp(n)) {
         if (!r)
           return;
-        this.setProp(i, h);
+        this.setProp(n, l);
       } else
-        this.addProp(i, h);
+        this.addProp(n, l);
     });
   }
   merge(e, r) {
@@ -329,8 +312,8 @@ class v {
       return;
     }
     const s = Object.keys(e.props);
-    this.silentImportProps(e, r), this.importAllPropsListenerHandlers(e, r), this.importAllListenersHandlers(e, r), this.importResolvers(e, r), this.importAllResolversListenerHandlers(e, r), e.kill(this._sessionKey), e.setMergeAgent(this._sessionKey, this), s.forEach((i) => {
-      this.handleOnSetProp(this._props[i]);
+    this.silentImportProps(e, r), this.importAllPropsListenerHandlers(e, r), this.importAllListenersHandlers(e, r), this.importResolvers(e, r), this.importAllResolversListenerHandlers(e, r), e.kill(this._sessionKey), e.setMergeAgent(this._sessionKey, this), s.forEach((n) => {
+      this.handleOnSetProp(this._props[n]);
     });
   }
   removeAllResolvers() {
@@ -393,11 +376,11 @@ class v {
     const s = Object.keys(e), t = Object.keys(r);
     if (s.length !== t.length)
       return !1;
-    for (const i of s) {
-      const h = e[i];
-      if (!a(r, i))
+    for (const n of s) {
+      const l = e[n];
+      if (!a(r, n))
         return !1;
-      if (h !== o.Any && d(r[i]) !== h)
+      if (l !== o.Any && d(r[n]) !== l)
         return !1;
     }
     return !0;
@@ -409,77 +392,48 @@ class v {
       return;
     }
     const s = e.props;
-    Object.entries(s).forEach(([i, h]) => {
-      if (this.hasProp(i)) {
+    Object.entries(s).forEach(([n, l]) => {
+      if (this.hasProp(n)) {
         if (!r)
           return;
-        this.silentSetProp(i, h);
+        this.writeProp(n, l);
       } else
-        this.silentAddProp(i, h);
+        this.silentAddProp(n, l);
     });
   }
-  silentSetProp(e, r) {
-    var c, p, u, f;
-    if (!this.hasProp(e)) {
-      (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
-      return;
-    }
-    const s = (_, H) => {
-      this._props[_].value = H;
-    }, t = this._props[e], i = d(r);
-    if (!y(r)) {
-      s(e, null);
-      return;
-    }
-    if (t.type !== i) {
-      (p = this.incidentsHandler) == null || p.error(`New value must have same type as initial value for prop "${e}"`);
-      return;
-    }
-    if (t.isValueScalar) {
-      if (r === t.value)
-        return;
-      s(e, r);
-      return;
-    }
-    if (!this.isObjectJsonFriendly(r)) {
-      (u = this.incidentsHandler) == null || u.error("Complex data has to be json-friendly");
-      return;
-    }
-    if (this._strictObjectsInterfaces && t.type === o.Object) {
-      if (!this.checkObjectInterface(t.interface, r)) {
-        (f = this.incidentsHandler) == null || f.error("Income object interface isn't correct");
-        return;
-      }
-      s(e, r);
-      return;
-    }
-    s(e, r);
+  // validates and writes a single prop value, returns true when the value was actually written
+  writeProp(e, r) {
+    var c, u, f, _;
+    if (!this.hasProp(e))
+      return (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`), !1;
+    const s = (v) => (this._props[e].value = v, !0), t = this._props[e], n = d(r);
+    return H(r) ? t.type !== n ? ((u = this.incidentsHandler) == null || u.error(`New value must have same type as initial value for prop "${e}"`), !1) : t.isValueScalar ? r === t.value ? !1 : s(r) : this.isObjectJsonFriendly(r) ? this._strictObjectsInterfaces && t.type === o.Object && !this.checkObjectInterface(t.interface, r) ? ((_ = this.incidentsHandler) == null || _.error("Income object interface isn't correct"), !1) : s(r) : ((f = this.incidentsHandler) == null || f.error("Complex data has to be json-friendly"), !1) : s(null);
   }
   silentAddProp(e, r) {
-    var h, c, p, u, f;
+    var l, c, u, f, _;
     if (!this._alive) {
-      (h = this.incidentsHandler) == null || h.error("This store doesn't support anymore");
+      (l = this.incidentsHandler) == null || l.error("This store doesn't support anymore");
       return;
     }
-    if (v.isFn(r)) {
+    if (p.isFn(r)) {
       (c = this.incidentsHandler) == null || c.error("Prop can't be a function. Use resolvers for this purpose");
       return;
     }
     if (this.hasProp(e)) {
-      (p = this.incidentsHandler) == null || p.error("Prop can't be override, you have to remove prop first");
+      (u = this.incidentsHandler) == null || u.error("Prop can't be override, you have to remove prop first");
       return;
     }
-    if (!y(r)) {
-      (u = this.incidentsHandler) == null || u.error("Value can't be nullable");
+    if (!H(r)) {
+      (f = this.incidentsHandler) == null || f.error("Value can't be nullable");
       return;
     }
-    const s = d(r), t = x(r);
+    const s = d(r), t = P(r);
     if (t) {
       this._props[e] = { name: e, value: r, type: s, isValueScalar: t };
       return;
     }
     if (!this.isObjectJsonFriendly(r)) {
-      (f = this.incidentsHandler) == null || f.error("Complex data has to be json-friendly");
+      (_ = this.incidentsHandler) == null || _.error("Complex data has to be json-friendly");
       return;
     }
     this._props[e] = this._strictObjectsInterfaces && s === o.Object ? { name: e, value: r, type: s, isValueScalar: t, interface: this.extractInterface(r) } : { name: e, value: r, type: s, isValueScalar: t };
@@ -487,12 +441,12 @@ class v {
   extractInterface(e) {
     const r = {};
     return Object.entries(e).forEach(([s, t]) => {
-      const i = d(t);
-      if (i === o.Null || i === o.Undefined) {
+      const n = d(t);
+      if (n === o.Null || n === o.Undefined) {
         r[s] = o.Any;
         return;
       }
-      r[s] = i;
+      r[s] = n;
     }), r;
   }
   importAllResolversListenerHandlers(e, r) {
@@ -529,10 +483,13 @@ class v {
     for (const s of this._listenerHandlers)
       s(e, r, this.props);
   }
-  handleOnSetProp(e) {
+  notifyPropListeners(e) {
     if (this.isPropListened(e.name))
       for (const r of this._propListenerHandlers[e.name])
         r(e.value);
+  }
+  handleOnSetProp(e) {
+    this.notifyPropListeners(e);
     for (const r of this._listenerHandlers)
       r(e.name, e.value, this.props);
   }
@@ -568,12 +525,12 @@ class v {
     return this._incidentsHandler;
   }
 }
-const j = () => Symbol(m()), R = j();
-console.log("Tardigrade v1.2.1");
-const S = (n, e) => {
+const A = () => Symbol(y()), O = A();
+console.log("Tardigrade v1.3.0");
+const R = (i, e) => {
   e = e || {};
-  const r = new v(R, e);
-  return n && Object.entries(n).forEach(([s, t]) => {
+  const r = new p(O, e);
+  return i && Object.entries(i).forEach(([s, t]) => {
     switch (d(t)) {
       case o.Function:
       case o.AsyncFunction:
@@ -595,7 +552,7 @@ const S = (n, e) => {
   }), r;
 };
 export {
-  v as Tardigrade,
+  p as Tardigrade,
   o as TardigradeTypes,
-  S as createTardigrade
+  R as createTardigrade
 };

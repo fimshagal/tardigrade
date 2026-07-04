@@ -1,4 +1,4 @@
-import { AnyFunction, Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, PropsOf, StoreListener, StorePropName, StorePropValue, StoreResolverName, StoreResolverValue, TardigradeInitialOptions } from "./lib";
+import { AnyFunction, Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, PropsOf, StoreListener, StorePropName, StorePropsPatch, StorePropValue, StoreResolverName, StoreResolverValue, TardigradeInitialOptions } from "./lib";
 import { TardigradeIncidentsHandler } from "./tardigrade.incidents.handler";
 export declare class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrade<S> {
     protected _resolvers: Dictionary<(...args: any[]) => any>;
@@ -26,6 +26,7 @@ export declare class Tardigrade<S extends Dictionary = Dictionary> implements IT
     hasProp(name: string): boolean;
     removeProp(name: string): void;
     setProp<K extends StorePropName<S>>(name: K, newValue: Nullable<StorePropValue<S, K>>): void;
+    setProps<P extends Dictionary>(patch: P & StorePropsPatch<S, P>): void;
     addPropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void;
     removePropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void;
     removeAllPropListeners(name: string): void;
@@ -47,7 +48,7 @@ export declare class Tardigrade<S extends Dictionary = Dictionary> implements IT
     setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade<any>): void;
     protected checkObjectInterface(checkerInterface: Dictionary, object: Dictionary): boolean;
     protected silentImportProps(target: Tardigrade<any>, override?: boolean): void;
-    protected silentSetProp<T>(name: string, newValue: T): void;
+    protected writeProp(name: string, newValue: any): boolean;
     protected silentAddProp<T>(name: string, value: T): void;
     protected extractInterface(object: Dictionary): Dictionary;
     protected importAllResolversListenerHandlers(target: Tardigrade<any>, override?: boolean): void;
@@ -55,6 +56,7 @@ export declare class Tardigrade<S extends Dictionary = Dictionary> implements IT
     protected importAllListenersHandlers(target: Tardigrade<any>, override?: boolean): void;
     protected isPropListened(name: string): boolean;
     protected handleOnCallResolver(updatedResolverName: string, value: any): void;
+    protected notifyPropListeners(updatedProp: Prop<any>): void;
     protected handleOnSetProp(updatedProp: Prop<any>): void;
     protected isObjectJsonFriendly(object: any): boolean;
     protected cloneComplexData<T>(complexData: T): any;

@@ -30,7 +30,13 @@ export type StoreResolverValue<S extends Dictionary, K> = K extends keyof Resolv
     ? (ResolversOf<S>[K] extends AnyFunction ? Awaited<ReturnType<ResolversOf<S>[K]>> : any)
     : any;
 
-export type StoreListener<S extends Dictionary> = (name: string, value: Nullable<any>, props: PropsOf<S> & Dictionary) => void;
+// batched updates via setProps deliver string[] as name and a dictionary of changed values
+export type StoreListener<S extends Dictionary> = (name: string | string[], value: Nullable<any>, props: PropsOf<S> & Dictionary) => void;
+
+// validates patch object against store shape: known keys are strictly typed, unknown stay any
+export type StorePropsPatch<S extends Dictionary, P> = {
+    [K in keyof P]: K extends keyof PropsOf<S> ? Nullable<PropsOf<S>[K]> : any;
+};
 
 export interface ITardigrade<S extends Dictionary = Dictionary> {
     addProp<K extends StorePropName<S>>(name: K, value: StorePropValue<S, K>): void;
@@ -38,6 +44,7 @@ export interface ITardigrade<S extends Dictionary = Dictionary> {
     removeProp(name: string): void;
     removeAllProps(): void;
     setProp<K extends StorePropName<S>>(name: K, newValue: Nullable<StorePropValue<S, K>>): void;
+    setProps<P extends Dictionary>(patch: P & StorePropsPatch<S, P>): void;
     addPropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void;
     removePropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void;
     removeAllPropListeners(name: string): void;
