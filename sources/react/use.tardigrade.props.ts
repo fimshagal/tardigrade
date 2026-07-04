@@ -3,7 +3,7 @@ import { Dictionary, Tardigrade } from "tardigrade-store";
 import { useTardigradeStore } from "./context";
 import { areValuesEqual } from "./value.helpers";
 
-export const useTardigradeProps = (store?: Tardigrade): Dictionary => {
+export const useTardigradeProps = (store?: Tardigrade<any>): Dictionary => {
     const targetStore = useTardigradeStore(store);
 
     const [props, setProps] = useState<Dictionary>(() => targetStore.props);

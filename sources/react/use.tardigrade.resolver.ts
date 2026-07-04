@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Nullable, Tardigrade } from "tardigrade-store";
 import { useTardigradeStore } from "./context";
 
-export const useTardigradeResolver = <T>(name: string, store?: Tardigrade): [() => Promise<void>, Nullable<T>] => {
+export const useTardigradeResolver = <T>(name: string, store?: Tardigrade<any>): [() => Promise<void>, Nullable<T>] => {
     const targetStore = useTardigradeStore(store);
 
     const [value, setValue] = useState<Nullable<T>>(null);

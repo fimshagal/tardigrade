@@ -3,7 +3,9 @@ sources/
 .gitignore
 build.index.js
 tsconfig.json
+tsconfig.typecheck.json
 vite.config.ts
+vite.react.config.ts
 .eslintrc
 tardigrade.jpg
 processing/

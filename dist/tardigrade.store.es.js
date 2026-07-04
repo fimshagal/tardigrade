@@ -14,14 +14,14 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-var L = Object.defineProperty;
-var x = (n, e, r) => e in n ? L(n, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[e] = r;
-var l = (n, e, r) => (x(n, typeof e != "symbol" ? e + "" : e, r), r);
+var b = Object.defineProperty;
+var P = (n, e, r) => e in n ? b(n, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : n[e] = r;
+var l = (n, e, r) => (P(n, typeof e != "symbol" ? e + "" : e, r), r);
 var o = /* @__PURE__ */ ((n) => (n.Null = "null", n.Undefined = "undefined", n.Function = "function", n.AsyncFunction = "asyncfunction", n.Number = "number", n.String = "string", n.Boolean = "boolean", n.Array = "array", n.Object = "object", n.Any = "any", n))(o || {});
 const d = (n) => Object.prototype.toString.call(n).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), y = (n) => {
   const e = d(n);
   return e !== "null" && e !== "undefined";
-}, P = (n) => {
+}, x = (n) => {
   const e = d(n);
   return e === "string" || e === "number" || e === "symbol";
 }, a = (n, e) => Object.prototype.hasOwnProperty.call(n, e);
@@ -182,17 +182,17 @@ class v {
     this.removeAllPropListeners(e), delete this._props[e];
   }
   setProp(e, r) {
-    var p, c, u, f, _;
+    var c, p, u, f, _;
     if (!this._alive) {
-      (p = this.incidentsHandler) == null || p.error("This store doesn't support anymore");
+      (c = this.incidentsHandler) == null || c.error("This store doesn't support anymore");
       return;
     }
     if (!this.hasProp(e)) {
-      (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
+      (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
-    const s = (H, b) => {
-      this._props[H].value = b, this.handleOnSetProp(this._props[H]);
+    const s = (H, L) => {
+      this._props[H].value = L, this.handleOnSetProp(this._props[H]);
     }, t = this._props[e], i = d(r);
     if (!y(r)) {
       s(e, null);
@@ -390,7 +390,7 @@ class v {
     this._mergeAgent = r;
   }
   checkObjectInterface(e, r) {
-    const s = Object.keys(e), t = Object.keys(e);
+    const s = Object.keys(e), t = Object.keys(r);
     if (s.length !== t.length)
       return !1;
     for (const i of s) {
@@ -419,9 +419,9 @@ class v {
     });
   }
   silentSetProp(e, r) {
-    var p, c, u, f;
+    var c, p, u, f;
     if (!this.hasProp(e)) {
-      (p = this.incidentsHandler) == null || p.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
+      (c = this.incidentsHandler) == null || c.error(`Prop "${e}" wasn't registered. You have to add this prop first`);
       return;
     }
     const s = (_, H) => {
@@ -432,7 +432,7 @@ class v {
       return;
     }
     if (t.type !== i) {
-      (c = this.incidentsHandler) == null || c.error(`New value must have same type as initial value for prop "${e}"`);
+      (p = this.incidentsHandler) == null || p.error(`New value must have same type as initial value for prop "${e}"`);
       return;
     }
     if (t.isValueScalar) {
@@ -456,24 +456,24 @@ class v {
     s(e, r);
   }
   silentAddProp(e, r) {
-    var h, p, c, u, f;
+    var h, c, p, u, f;
     if (!this._alive) {
       (h = this.incidentsHandler) == null || h.error("This store doesn't support anymore");
       return;
     }
     if (v.isFn(r)) {
-      (p = this.incidentsHandler) == null || p.error("Prop can't be a function. Use resolvers for this purpose");
+      (c = this.incidentsHandler) == null || c.error("Prop can't be a function. Use resolvers for this purpose");
       return;
     }
     if (this.hasProp(e)) {
-      (c = this.incidentsHandler) == null || c.error("Prop can't be override, you have to remove prop first");
+      (p = this.incidentsHandler) == null || p.error("Prop can't be override, you have to remove prop first");
       return;
     }
     if (!y(r)) {
       (u = this.incidentsHandler) == null || u.error("Value can't be nullable");
       return;
     }
-    const s = d(r), t = P(r);
+    const s = d(r), t = x(r);
     if (t) {
       this._props[e] = { name: e, value: r, type: s, isValueScalar: t };
       return;
@@ -497,7 +497,7 @@ class v {
   }
   importAllResolversListenerHandlers(e, r) {
     const s = e.exportAllResolversListenerHandlers(this._sessionKey);
-    this._propListenerHandlers = r ? {
+    this._resolverListenerHandlers = r ? {
       ...this._resolverListenerHandlers,
       ...s
     } : {
@@ -544,7 +544,7 @@ class v {
     }
   }
   cloneComplexData(e) {
-    return JSON.parse(JSON.stringify(e));
+    return typeof structuredClone == "function" ? structuredClone(e) : JSON.parse(JSON.stringify(e));
   }
   get mergeAgent() {
     return this._mergeAgent;

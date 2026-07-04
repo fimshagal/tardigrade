@@ -284,6 +284,45 @@ tardigrade.reset();
 
 ---
 
+## TypeScript typing
+
+The store shape can be locked at compile time. Pass an interface (or just let TypeScript infer it from initial data) and props/resolvers become strictly typed: known prop names get autocomplete, values are type-checked, and resolver listeners receive the awaited return type of the resolver
+
+```ts
+const store = createTardigrade({
+    counter: 0,
+    username: "guest",
+    double: ({ counter }: { counter: number }) => counter * 2,
+});
+
+store.setProp("counter", 5); // ok
+store.setProp("counter", "text"); // compile error: string is not assignable to number
+
+const counter = store.prop("counter"); // typed as Nullable<number>
+
+store.addResolverListener("double", (value) => {
+    // value is typed as Nullable<number>
+});
+```
+
+You can also declare the shape explicitly without initial data:
+
+```ts
+interface StoreShape {
+    counter: number;
+    username: string;
+}
+
+const store = createTardigrade<StoreShape>();
+
+store.addProp("counter", 0); // ok
+store.addProp("counter", "text"); // compile error
+```
+
+Dynamic props keep working: any name that isn't declared in the shape falls back to ```any```, so nothing about the runtime flexibility is lost. And plain ```createTardigrade()``` without a shape behaves exactly as before
+
+---
+
 ## Resolvers
 
 Resolver - is a function which can be pass into store and be called in certain moment to bring some value. Application can follow resolvers as props to control state

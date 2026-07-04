@@ -1,17 +1,17 @@
 import { createContext, createElement, ReactElement, ReactNode, useContext } from "react";
 import { Nullable, Tardigrade } from "tardigrade-store";
 
-export const TardigradeContext = createContext<Nullable<Tardigrade>>(null);
+export const TardigradeContext = createContext<Nullable<Tardigrade<any>>>(null);
 
 export interface TardigradeProviderProps {
-    store: Tardigrade;
+    store: Tardigrade<any>;
     children?: ReactNode;
 }
 
 export const TardigradeProvider = ({ store, children }: TardigradeProviderProps): ReactElement =>
     createElement(TardigradeContext.Provider, { value: store }, children);
 
-export const useTardigradeStore = (store?: Tardigrade): Tardigrade => {
+export const useTardigradeStore = (store?: Tardigrade<any>): Tardigrade<any> => {
     const contextStore = useContext(TardigradeContext);
     const targetStore = store ?? contextStore;
 

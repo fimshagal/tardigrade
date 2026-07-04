@@ -161,6 +161,8 @@
 
 ## [1.2.0] - 2026-07-04
 ### Added
+- strict TypeScript typing: ```createTardigrade<Shape>()``` and shape inference from initial data; ```prop```, ```setProp```, ```addProp```, prop and resolver listeners are typed by store shape, dynamic props fall back to ```any```
+- ```typecheck``` npm script (tsc over sources and tests, validates ```@ts-expect-error``` assertions)
 - React bridge out of the box: subpath export ```tardigrade-store/react```
 - ```useTardigrade``` hook to create component-scoped store
 - ```useTardigradeProp``` hook to subscribe to single prop
@@ -175,6 +177,11 @@
 - exports map: added ```types``` conditions and ```./react``` subpath
 - ```ITardigrade``` interface: added ```props``` getter
 - root export: types and ```Tardigrade``` class are exported now
+- complex props cloning uses ```structuredClone``` when available (json fallback kept), noticeably faster on large objects
 - docs
+
+### Fixed
+- ```checkObjectInterface```: keys count was read from the interface twice, so objects with extra or missing keys passed the ```strictObjectsInterfaces``` check
+- ```importAllResolversListenerHandlers```: merged resolver listeners were written into prop listeners storage, so ```merge``` erased prop listeners and lost resolver listeners
 
 ---

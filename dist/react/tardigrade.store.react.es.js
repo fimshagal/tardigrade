@@ -14,17 +14,17 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-import { createContext as h, createElement as y, useContext as R, useRef as p, useState as f, useEffect as g, useCallback as P } from "react";
-import { createTardigrade as x } from "tardigrade-store";
-const S = h(null), O = ({ store: r, children: t }) => y(S.Provider, { value: r }, t), v = (r) => {
+import { createContext as T, createElement as h, useContext as R, useRef as p, useState as f, useEffect as g, useCallback as P } from "react";
+import { createTardigrade as C } from "tardigrade-store";
+const S = T(null), O = ({ store: r, children: t }) => h(S.Provider, { value: r }, t), v = (r) => {
   const t = R(S), e = r ?? t;
   if (!e)
     throw new Error("Tardigrade react bridge: store wasn't provided. Pass it into the hook directly or wrap your components with <TardigradeProvider store={...}>");
   return e;
 }, V = (r, t) => {
   const e = p(null);
-  return e.current || (e.current = x(r, t)), e.current;
-}, d = (r) => typeof r == "object" && r !== null, L = (r) => d(r) ? JSON.parse(JSON.stringify(r)) : r, T = (r, t) => {
+  return e.current || (e.current = C(r, t)), e.current;
+}, d = (r) => typeof r == "object" && r !== null, x = (r) => d(r) ? typeof structuredClone == "function" ? structuredClone(r) : JSON.parse(JSON.stringify(r)) : r, y = (r, t) => {
   if (Object.is(r, t))
     return !0;
   if (!d(r) || !d(t))
@@ -37,22 +37,22 @@ const S = h(null), O = ({ store: r, children: t }) => y(S.Provider, { value: r }
 }, E = (r, t) => {
   const e = v(t), [n, c] = f(() => e.hasProp(r) ? e.prop(r) : null), s = p(n);
   g(() => {
-    const i = (a) => {
-      if (T(s.current, a))
+    const u = (l) => {
+      if (y(s.current, l))
         return;
-      const l = L(a);
-      s.current = l, c(l);
+      const a = x(l);
+      s.current = a, c(a);
     };
-    i(e.hasProp(r) ? e.prop(r) : null);
-    const u = (a, l) => {
-      a === r && i(l);
+    u(e.hasProp(r) ? e.prop(r) : null);
+    const i = (l, a) => {
+      l === r && u(a);
     };
-    return e.addListener(u), () => {
-      e.isAlive && e.removeListener(u);
+    return e.addListener(i), () => {
+      e.isAlive && e.removeListener(i);
     };
   }, [e, r]);
-  const o = P((i) => {
-    e.setProp(r, i);
+  const o = P((u) => {
+    e.setProp(r, u);
   }, [e, r]);
   return [n, o];
 }, J = (r) => {
@@ -60,7 +60,7 @@ const S = h(null), O = ({ store: r, children: t }) => y(S.Provider, { value: r }
   return g(() => {
     const s = () => {
       const o = t.props;
-      T(c.current, o) || (c.current = o, n(o));
+      y(c.current, o) || (c.current = o, n(o));
     };
     return s(), t.addListener(s), () => {
       t.isAlive && t.removeListener(s);
@@ -69,8 +69,8 @@ const S = h(null), O = ({ store: r, children: t }) => y(S.Provider, { value: r }
 }, N = (r, t) => {
   const e = v(t), [n, c] = f(null);
   return g(() => {
-    const o = (i, u) => {
-      i === r && c(u);
+    const o = (u, i) => {
+      u === r && c(i);
     };
     return e.addListener(o), () => {
       e.isAlive && e.removeListener(o);

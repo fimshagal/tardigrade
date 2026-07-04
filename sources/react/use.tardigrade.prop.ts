@@ -3,7 +3,7 @@ import { Nullable, Tardigrade } from "tardigrade-store";
 import { useTardigradeStore } from "./context";
 import { areValuesEqual, cloneValue } from "./value.helpers";
 
-export const useTardigradeProp = <T>(name: string, store?: Tardigrade): [Nullable<T>, (value: Nullable<T>) => void] => {
+export const useTardigradeProp = <T>(name: string, store?: Tardigrade<any>): [Nullable<T>, (value: Nullable<T>) => void] => {
     const targetStore = useTardigradeStore(store);
 
     const [value, setValue] = useState<Nullable<T>>(() => (targetStore.hasProp(name) ? targetStore.prop(name) : null));

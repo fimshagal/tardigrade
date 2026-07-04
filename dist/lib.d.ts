@@ -4,33 +4,45 @@ export type Dictionary<T = any> = {
     [key: DictionaryKey]: T;
 };
 export type Nullable<T> = T | null | undefined;
-export interface ITardigrade {
-    addProp<T>(name: string, value: T): void;
+export type AnyFunction = (...args: any[]) => any;
+export type PropsOf<S extends Dictionary> = {
+    [K in keyof S as S[K] extends AnyFunction ? never : K]: S[K];
+};
+export type ResolversOf<S extends Dictionary> = {
+    [K in keyof S as S[K] extends AnyFunction ? K : never]: S[K];
+};
+export type StorePropName<S extends Dictionary> = (keyof PropsOf<S> & string) | (string & {});
+export type StorePropValue<S extends Dictionary, K> = K extends keyof PropsOf<S> ? PropsOf<S>[K] : any;
+export type StoreResolverName<S extends Dictionary> = (keyof ResolversOf<S> & string) | (string & {});
+export type StoreResolverValue<S extends Dictionary, K> = K extends keyof ResolversOf<S> ? (ResolversOf<S>[K] extends AnyFunction ? Awaited<ReturnType<ResolversOf<S>[K]>> : any) : any;
+export type StoreListener<S extends Dictionary> = (name: string, value: Nullable<any>, props: PropsOf<S> & Dictionary) => void;
+export interface ITardigrade<S extends Dictionary = Dictionary> {
+    addProp<K extends StorePropName<S>>(name: K, value: StorePropValue<S, K>): void;
     hasProp(name: string): boolean;
     removeProp(name: string): void;
     removeAllProps(): void;
-    setProp<T>(name: string, newValue: T): void;
-    addPropListener(name: string, handler: (value: Nullable<any>) => void): void;
-    removePropListener(name: string, handler: (value: Nullable<any>) => void): void;
+    setProp<K extends StorePropName<S>>(name: K, newValue: Nullable<StorePropValue<S, K>>): void;
+    addPropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void;
+    removePropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void;
     removeAllPropListeners(name: string): void;
-    prop(name: string): Nullable<any>;
-    addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
-    removeListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void;
+    prop<K extends StorePropName<S>>(name: K): Nullable<StorePropValue<S, K>>;
+    addListener(handler: StoreListener<S>): void;
+    removeListener(handler: StoreListener<S>): void;
     removeAllListeners(): void;
-    importProps(target: Tardigrade, override?: boolean): void;
-    importResolvers(target: Tardigrade, override?: boolean): void;
-    merge(target: Tardigrade, override?: boolean): void;
-    addResolver(name: string, resolver: (...args: any[]) => any): void;
+    importProps(target: Tardigrade<any>, override?: boolean): void;
+    importResolvers(target: Tardigrade<any>, override?: boolean): void;
+    merge(target: Tardigrade<any>, override?: boolean): void;
+    addResolver(name: StoreResolverName<S>, resolver: AnyFunction): void;
     hasResolver(name: string): boolean;
-    setResolver(name: string, resolver: (...args: any[]) => any): void;
+    setResolver(name: StoreResolverName<S>, resolver: AnyFunction): void;
     removeResolver(name: string): void;
     removeAllResolvers(): void;
-    callResolver(name: string): Promise<void>;
-    addResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
-    removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void;
+    callResolver(name: StoreResolverName<S>): Promise<void>;
+    addResolverListener<K extends StoreResolverName<S>>(name: K, handler: (value: Nullable<StoreResolverValue<S, K>>) => void): void;
+    removeResolverListener<K extends StoreResolverName<S>>(name: K, handler: (value: Nullable<StoreResolverValue<S, K>>) => void): void;
     removeAllResolverListeners(name: string): void;
     reset(): void;
-    setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade): void;
+    setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade<any>): void;
     kill(sessionKey: symbol): void;
     exportAllPropsListenerHandlers(sessionKey: symbol): Nullable<{}>;
     exportAllResolvers(sessionKey: symbol): Nullable<{}>;
@@ -38,8 +50,8 @@ export interface ITardigrade {
     exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]>;
     get name(): DictionaryKey;
     get isAlive(): boolean;
-    get mergeAgent(): Nullable<Tardigrade>;
-    get props(): Dictionary;
+    get mergeAgent(): Nullable<Tardigrade<any>>;
+    get props(): PropsOf<S> & Dictionary;
 }
 export interface ITardigradeIncidentsHandler {
     warn(message?: string): void;

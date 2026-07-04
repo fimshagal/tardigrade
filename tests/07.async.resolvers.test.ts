@@ -1,7 +1,6 @@
 import {describe, it, expect, vi} from "vitest";
 import { createTardigrade } from "../sources";
 import { Tardigrade } from "../sources/tardigrade";
-import {as} from "vitest/dist/chunks/reporters.DAfKSDh5";
 
 describe('Tardigrade Store - async resolver test', async () => {
     it("it should fetch data async and notify listener", async () => {
@@ -14,7 +13,7 @@ describe('Tardigrade Store - async resolver test', async () => {
            return Promise.resolve({
                json: async () => mockFetchResponse,
            });
-        });
+        }) as any;
 
         const tardigrade: Tardigrade = createTardigrade({
             [resolverName]: async () => {

@@ -1,18 +1,33 @@
-import { Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, TardigradeInitialOptions, TardigradeTypes } from "./lib";
+import {
+    AnyFunction,
+    Dictionary,
+    DictionaryKey,
+    ITardigrade,
+    Nullable,
+    Prop,
+    PropsOf,
+    StoreListener,
+    StorePropName,
+    StorePropValue,
+    StoreResolverName,
+    StoreResolverValue,
+    TardigradeInitialOptions,
+    TardigradeTypes,
+} from "./lib";
 import { isDef, isScalar, typeOf } from "./type.of";
 import { hasOwnProperty } from "./has.own.property";
 import { TardigradeIncidentsHandler } from "./tardigrade.incidents.handler";
 import { createIncidentsHandler } from "./x/create.incidents.handler";
 import { randomUUID } from "./utils";
 
-export class Tardigrade implements ITardigrade {
+export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrade<S> {
     protected _resolvers: Dictionary<(...args: any[]) => any> = {};
     protected _props: Dictionary<Prop<any>> = {};
     protected _resolverListenerHandlers: Dictionary<((...args: any[]) => void)[]> = {};
     protected _propListenerHandlers: Dictionary<((...args: any[]) => void)[]> = {};
     protected _listenerHandlers: ((...args: any[]) => void)[] = [];
     protected _alive: boolean = true;
-    protected _mergeAgent: Nullable<Tardigrade> = null;
+    protected _mergeAgent: Nullable<Tardigrade<any>> = null;
 
     protected readonly _incidentsHandler: Nullable<TardigradeIncidentsHandler> = null;
     protected readonly _sessionKey: Nullable<symbol> = null;
@@ -53,7 +68,7 @@ export class Tardigrade implements ITardigrade {
         return hasOwnProperty(this._resolvers, name);
     }
 
-    public addResolver(name: string, resolver: (...args: any[]) => any): void {
+    public addResolver(name: StoreResolverName<S>, resolver: AnyFunction): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -72,7 +87,7 @@ export class Tardigrade implements ITardigrade {
         this._resolvers[name] = resolver;
     }
 
-    public setResolver(name: string, resolver: (...args: any[]) => any): void {
+    public setResolver(name: StoreResolverName<S>, resolver: AnyFunction): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -105,7 +120,7 @@ export class Tardigrade implements ITardigrade {
         delete this._resolverListenerHandlers[name];
     }
 
-    public async callResolver(name: string): Promise<void> {
+    public async callResolver(name: StoreResolverName<S>): Promise<void> {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -128,7 +143,7 @@ export class Tardigrade implements ITardigrade {
             .forEach((handler) => handler(value));
     }
 
-    public addResolverListener(name: string, handler: (value: Nullable<any>) => void): void {
+    public addResolverListener<K extends StoreResolverName<S>>(name: K, handler: (value: Nullable<StoreResolverValue<S, K>>) => void): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -146,7 +161,7 @@ export class Tardigrade implements ITardigrade {
         this._resolverListenerHandlers[name].push(handler);
     }
 
-    public removeResolverListener(name: string, handler: (value: Nullable<any>) => void): void {
+    public removeResolverListener<K extends StoreResolverName<S>>(name: K, handler: (value: Nullable<StoreResolverValue<S, K>>) => void): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -173,7 +188,7 @@ export class Tardigrade implements ITardigrade {
         delete this._resolverListenerHandlers[name];
     }
 
-    public addProp<T>(name: string, value: T): void {
+    public addProp<K extends StorePropName<S>>(name: K, value: StorePropValue<S, K>): void {
         if (Tardigrade.isFn(value)) {
             this.incidentsHandler?.error("Prop can't be a function. Use resolvers for this purpose");
             return;
@@ -207,7 +222,7 @@ export class Tardigrade implements ITardigrade {
         delete this._props[name];
     }
 
-    public setProp<T>(name: string, newValue: T): void {
+    public setProp<K extends StorePropName<S>>(name: K, newValue: Nullable<StorePropValue<S, K>>): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -267,7 +282,7 @@ export class Tardigrade implements ITardigrade {
         handler(name, newValue);
     }
 
-    public addPropListener(name: string, handler: (value: Nullable<any>) => void): void {
+    public addPropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void {
         if (!this._alive) {
             this.incidentsHandler?.error("store doesn't support anymore");
             return;
@@ -285,7 +300,7 @@ export class Tardigrade implements ITardigrade {
         this._propListenerHandlers[name].push(handler);
     }
 
-    public removePropListener(name: string, handler: (value: Nullable<any>) => void): void {
+    public removePropListener<K extends StorePropName<S>>(name: K, handler: (value: Nullable<StorePropValue<S, K>>) => void): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -314,7 +329,7 @@ export class Tardigrade implements ITardigrade {
         delete this._propListenerHandlers[name];
     }
 
-    public prop(name: string): Nullable<any> {
+    public prop<K extends StorePropName<S>>(name: K): Nullable<StorePropValue<S, K>> {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return null;
@@ -334,7 +349,7 @@ export class Tardigrade implements ITardigrade {
         return this.cloneComplexData(prop.value);
     }
 
-    public addListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void {
+    public addListener(handler: StoreListener<S>): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -343,7 +358,7 @@ export class Tardigrade implements ITardigrade {
         this._listenerHandlers.push(handler);
     }
 
-    public removeListener(handler: (name: string, value: Nullable<any>, props: Dictionary<Prop<any>>) => void): void {
+    public removeListener(handler: StoreListener<S>): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -362,7 +377,7 @@ export class Tardigrade implements ITardigrade {
         this._listenerHandlers = [];
     }
 
-    public importResolvers(target: Tardigrade, override?: boolean): void {
+    public importResolvers(target: Tardigrade<any>, override?: boolean): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -380,7 +395,7 @@ export class Tardigrade implements ITardigrade {
             };
     }
 
-    public importProps(target: Tardigrade, override?: boolean): void {
+    public importProps(target: Tardigrade<any>, override?: boolean): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -400,7 +415,7 @@ export class Tardigrade implements ITardigrade {
             });
     }
 
-    public merge(target: Tardigrade, override?: boolean): void {
+    public merge(target: Tardigrade<any>, override?: boolean): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -513,13 +528,13 @@ export class Tardigrade implements ITardigrade {
         return [ ...this._listenerHandlers ];
     }
 
-    public setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade): void {
+    public setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade<any>): void {
         this._mergeAgent = mergeAgent;
     }
 
     protected checkObjectInterface(checkerInterface: Dictionary, object: Dictionary): boolean {
         const interfaceKeys: string[] = Object.keys(checkerInterface);
-        const objectKeys: string[] = Object.keys(checkerInterface);
+        const objectKeys: string[] = Object.keys(object);
 
         if (interfaceKeys.length !== objectKeys.length) {
             return false;
@@ -544,7 +559,7 @@ export class Tardigrade implements ITardigrade {
         return true;
     }
 
-    protected silentImportProps(target: Tardigrade, override?: boolean): void {
+    protected silentImportProps(target: Tardigrade<any>, override?: boolean): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
             return;
@@ -678,10 +693,10 @@ export class Tardigrade implements ITardigrade {
         return response as Dictionary;
     }
 
-    protected importAllResolversListenerHandlers(target: Tardigrade, override?: boolean): void {
+    protected importAllResolversListenerHandlers(target: Tardigrade<any>, override?: boolean): void {
         const importedResolversHandlers = target.exportAllResolversListenerHandlers(this._sessionKey!);
 
-        this._propListenerHandlers = override ? {
+        this._resolverListenerHandlers = override ? {
             ...this._resolverListenerHandlers,
             ...importedResolversHandlers,
         } : {
@@ -690,7 +705,7 @@ export class Tardigrade implements ITardigrade {
         };
     }
 
-    protected importAllPropsListenerHandlers(target: Tardigrade, override?: boolean): void {
+    protected importAllPropsListenerHandlers(target: Tardigrade<any>, override?: boolean): void {
         const importedHandlers = target.exportAllPropsListenerHandlers(this._sessionKey!);
 
         this._propListenerHandlers = override ? {
@@ -702,7 +717,7 @@ export class Tardigrade implements ITardigrade {
         };
     }
 
-    protected importAllListenersHandlers(target: Tardigrade, override?: boolean): void {
+    protected importAllListenersHandlers(target: Tardigrade<any>, override?: boolean): void {
         const importedHandlers = target.exportAllListenersHandlers(this._sessionKey!) as Nullable<((value: Nullable<any>) => void)[]>;
         const merged = [
             ...this._listenerHandlers,
@@ -746,10 +761,16 @@ export class Tardigrade implements ITardigrade {
     }
 
     protected cloneComplexData<T>(complexData: T): any {
+        // props are json-friendly by contract, so both branches are semantically equal,
+        // but structuredClone is significantly faster on large objects
+        if (typeof structuredClone === "function") {
+            return structuredClone(complexData);
+        }
+
         return JSON.parse(JSON.stringify(complexData));
     }
 
-    public get mergeAgent(): Nullable<Tardigrade> {
+    public get mergeAgent(): Nullable<Tardigrade<any>> {
         return this._mergeAgent;
     }
 
@@ -761,10 +782,10 @@ export class Tardigrade implements ITardigrade {
         return this._name;
     }
 
-    public get props(): Dictionary {
+    public get props(): PropsOf<S> & Dictionary {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
-            return {};
+            return {} as PropsOf<S> & Dictionary;
         }
 
         const response: Dictionary = {};
@@ -775,7 +796,7 @@ export class Tardigrade implements ITardigrade {
                 response[propName] = prop.isValueScalar ? prop.value : this.cloneComplexData(prop.value);
             });
 
-        return response;
+        return response as PropsOf<S> & Dictionary;
     }
 
     protected get incidentsHandler(): Nullable<TardigradeIncidentsHandler> {
