@@ -623,6 +623,28 @@ const props = useTardigradeProps();
 console.log(props.counter, props.username);
 ```
 
+#### ```useTardigradeSelector<T>(selector, store?, isEqual?)```
+
+Computes a derived value from props and re-renders the component **only when the result changes**. This is the middle ground between ```useTardigradeProp``` (one key) and ```useTardigradeProps``` (any change)
+
+```tsx
+const fullName = useTardigradeSelector((p) => `${p.firstName} ${p.lastName}`);
+// changing an unrelated prop (e.g. theme) won't re-render this component
+
+const userSlice = useTardigradeSelector((p) => ({ name: p.user?.name, role: p.user?.role }));
+// content-equal slices keep the previous reference, safe for useEffect deps
+```
+
+By default results are compared the same way as object props in the bridge (content equality). You can pass a custom comparison as the third argument:
+
+```tsx
+const items = useTardigradeSelector((p) => p.items, store, (a, b) => a.length === b.length);
+```
+
+Inline selectors are fine — the hook keeps the selector in a ref, so no ```useCallback``` is required and the subscription is never re-created. Note that a new closure is applied on the next store update, not immediately on re-render
+
+Selectors pair well with ```setProps```: a batch produces a single notification, so the selector recomputes once with the final values
+
 #### ```useTardigradeResolver<T>(name, store?)```
 
 Wires a resolver into the component. Returns a tuple ```[callResolver, lastValue]```. The last value updates every time the resolver is called — by this component or anywhere else in the app

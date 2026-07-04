@@ -191,7 +191,8 @@
 - method ```setProps``` for batch updates: writes several props at once, notifies each prop listener and calls global listeners only once per batch with ```(names: string[], changedValues, props)```
 - typed patch for ```setProps```: known prop names are checked against store shape
 - react bridge understands batched updates (```useTardigradeProps``` re-renders once per batch)
-- tests for ```setProps```
+- ```useTardigradeSelector``` hook: derived values from several props with re-render only when the selector result changes; supports custom equality function, inline selectors work without ```useCallback```
+- tests for ```setProps``` and ```useTardigradeSelector```
 
 ### Updated
 - internals: ```setProp``` and ```silentSetProp``` merged into single ```writeProp``` (no behavior change)
