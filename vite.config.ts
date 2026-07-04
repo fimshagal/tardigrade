@@ -30,9 +30,11 @@ export default defineConfig({
         include: ['tests/**/*.test.{js,ts,tsx}'],
     },
     resolve: {
-        alias: {
-            "tardigrade-store": path.resolve(__dirname, 'sources/index.ts'),
-        },
+        // array form matters: the more specific subpath must be matched first
+        alias: [
+            { find: "tardigrade-store/persist", replacement: path.resolve(__dirname, 'sources/persist/index.ts') },
+            { find: "tardigrade-store", replacement: path.resolve(__dirname, 'sources/index.ts') },
+        ],
     },
     plugins: [
         banner(bannerText),

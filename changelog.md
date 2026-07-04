@@ -186,6 +186,19 @@
 
 ---
 
+## [1.4.0] - 2026-07-04
+### Added
+- persist layer: subpath export ```tardigrade-store/persist``` with ```persist(store, options)``` returning ```PersistLink```
+- snapshot-based auto-save on ```setProp``` / ```setProps``` / ```addProp``` with debounce (```saveAfter```, 0 = sync); resolver calls don't trigger writes
+- ```save```, ```restore```, ```forget```, ```peek```, ```hold``` / ```unhold```, ```retain``` / ```drop```, runtime ```pick```, ```dispose``` (+ ```isHeld```, ```isDisposed```)
+- envelope format ```{ version, data }``` with ```migrate``` support
+- storage adapters: localStorage by default, in-memory fallback for non-browser, custom via ```PersistStorage``` interface
+- react hook ```usePersistedTardigrade``` (subpath ```tardigrade-store/persist/react```): creates or accepts a store, restores on client in effect (SSR-safe), detaches on unmount, survives react strict mode remount
+- 8 test files for persist
+- docs
+
+---
+
 ## [1.3.0] - 2026-07-04
 ### Added
 - method ```setProps``` for batch updates: writes several props at once, notifies each prop listener and calls global listeners only once per batch with ```(names: string[], changedValues, props)```

@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "preprocessing": "node processing/update.version",
     "postprocessing": "node processing/create.index",
-    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
+    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.persist.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
@@ -30,6 +30,18 @@
       "require": "./dist/react/tardigrade.store.react.cjs.js",
       "import": "./dist/react/tardigrade.store.react.es.js",
       "default": "./dist/react/tardigrade.store.react.es.js"
+    },
+    "./persist": {
+      "types": "./dist/persist/index.d.ts",
+      "require": "./dist/persist/tardigrade.store.persist.cjs.js",
+      "import": "./dist/persist/tardigrade.store.persist.es.js",
+      "default": "./dist/persist/tardigrade.store.persist.es.js"
+    },
+    "./persist/react": {
+      "types": "./dist/persist/react/index.d.ts",
+      "require": "./dist/persist/tardigrade.store.persist.react.cjs.js",
+      "import": "./dist/persist/tardigrade.store.persist.react.es.js",
+      "default": "./dist/persist/tardigrade.store.persist.react.es.js"
     }
   },
   "peerDependencies": {

@@ -1,0 +1,17 @@
+/* Tardigrade persist v1.4.0 */
+
+/* Created by fSha | fimashagal@gmail.com */
+           
+/*
+ * Creative Commons Attribution 4.0 International (CC BY 4.0)
+ *
+ * You are free to:
+ *
+ * - Share — copy and redistribute the material in any medium or format
+ * - Adapt — remix, transform, and build upon the material for any purpose, even commercially.
+ *
+ * Under the following terms:
+ *
+ * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+ */
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const M=()=>{const e=new Map;return{read:r=>e.has(r)?e.get(r):null,write:(r,n)=>{e.set(r,n)},remove:r=>{e.delete(r)}}},P=()=>({read:e=>localStorage.getItem(e),write:(e,r)=>localStorage.setItem(e,r),remove:e=>localStorage.removeItem(e)}),I=()=>typeof localStorage<"u"?P():M(),L=(e,r,n)=>{const o=r(e);if(!n.size)return o;const a={};for(const s of n)s in o&&(a[s]=o[s]);return a},z=(e,r)=>JSON.stringify({version:r,data:e}),D=e=>{const r=JSON.parse(e);if(!r||typeof r!="object"||typeof r.version!="number"||!r.data||typeof r.data!="object")throw new Error("Tardigrade persist: malformed envelope in storage");return r},J=(e,r)=>{Object.entries(r).forEach(([n,o])=>{if(e.hasProp(n)){e.setProp(n,o);return}o!=null&&e.addProp(n,o)})},N=(e,r)=>{const{key:n,storage:o=I(),saveAfter:a=300,restoreOnStart:s=!0,version:y=1,migrate:h,onRestore:v,onSave:S,onError:i=t=>console.warn("Tardigrade persist:",t)}=r;let w=r.pick??(t=>t);const m=new Set;let l=!1,c=!1,d=!1,f=null;const p=()=>{f!==null&&(clearTimeout(f),f=null)},T=()=>e.isAlive?L(e.props,w,m):{},u=()=>{if(p(),!e.isAlive){i(new Error(`Tardigrade persist: can't save, store "${String(e.name)}" isn't alive`));return}try{const t=T();o.write(n,z(t,y)),S==null||S(t)}catch(t){i(t)}},b=()=>{if(!e.isAlive){i(new Error(`Tardigrade persist: can't restore, store "${String(e.name)}" isn't alive`));return}try{const t=o.read(n);if(t===null)return;const A=D(t);let g=A.data;const E=A.version??1;E<y&&h&&(g=h(g,E)),d=!0;try{J(e,g)}finally{d=!1}v==null||v(g)}catch(t){d=!1,i(t)}},O=()=>{if(!(l||c||d)){if(a===0){u();return}p(),f=setTimeout(u,a)}},k=t=>{typeof t=="string"&&!e.hasProp(t)||O()},j={store:e,save:u,restore:b,forget:()=>{try{o.remove(n)}catch(t){i(t)}},hold:()=>{l=!0,p()},unhold:()=>{l=!1,u()},retain:t=>{m.add(t)},drop:t=>{m.delete(t)},pick:t=>{w=t},peek:T,dispose:()=>{c||(c=!0,p(),e.isAlive&&e.removeListener(k))},get isHeld(){return l},get isDisposed(){return c}};return s&&b(),e.addListener(k),j};exports.createDefaultStorage=I;exports.createInMemoryStorage=M;exports.createLocalStorageAdapter=P;exports.persist=N;

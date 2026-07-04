@@ -669,6 +669,104 @@ The bridge keeps object props referentially stable: if an update brings an objec
 
 ---
 
+## Persist
+
+Tardigrade can persist props into a serializable storage (localStorage by default) via a separate subpath export. Zero dependencies, doesn't change the store model: persist reads ```store.props```, writes snapshots and restores props back through ```setProp``` / ```addProp```. Resolvers and listeners are never persisted
+
+```ts
+import { createTardigrade } from "tardigrade-store";
+import { persist } from "tardigrade-store/persist";
+
+const store = createTardigrade({ theme: "light", counter: 0 });
+
+const link = persist(store, {
+    key: "my-app",
+    pick: (props) => ({ theme: props.theme }),
+    saveAfter: 300,
+});
+
+store.setProp("theme", "dark"); // auto-saved 300ms later
+```
+
+#### How it works
+
+Every save writes a full snapshot (not a delta) wrapped in an envelope ```{ version, data }```. Auto-save triggers on ```setProp```, ```setProps``` and ```addProp``` with a debounce (```saveAfter``` ms, ```0``` means synchronous). Resolver calls don't trigger writes. On start (```restoreOnStart```, default ```true```) the whole stored blob is merged back into the store: existing props via ```setProp```, unknown ones via ```addProp```
+
+Important: ```pick``` applies **only on save**, restore always merges everything from storage. And since the core doesn't emit events on ```removeProp``` / ```reset```, call ```link.save()``` explicitly after them
+
+#### PersistLink methods
+
+```ts
+link.save();      // write snapshot right now (works even on hold)
+link.restore();   // read storage and merge into the store
+link.forget();    // remove the key from storage, store untouched
+link.peek();      // the snapshot that would be written, without writing
+
+link.hold();      // suspend auto-save for bulk operations
+link.unhold();    // resume auto-save and save once
+
+link.retain("draft"); // allowlist for dynamic props (applied on top of pick)
+link.drop("draft");
+link.pick((props) => ({ theme: props.theme })); // replace pick at runtime
+
+link.dispose();   // detach auto-save; explicit save/restore keep working
+```
+
+Bulk operations without extra writes:
+
+```ts
+link.hold();
+store.addProp("a", 1);
+store.removeProp("old");
+link.unhold(); // single save with the final state
+```
+
+#### Migrations
+
+Bump ```version``` and provide ```migrate``` to upgrade older snapshots:
+
+```ts
+persist(store, {
+    key: "my-app",
+    version: 2,
+    migrate: (saved, fromVersion) => {
+        if (fromVersion < 2) {
+            const [firstName, lastName] = saved.fullName.split(" ");
+            return { firstName, lastName };
+        }
+        return saved;
+    },
+});
+```
+
+#### Custom storage
+
+Anything with ```read``` / ```write``` / ```remove``` works — the default is localStorage in browsers and an in-memory map elsewhere (SSR, tests):
+
+```ts
+import { PersistStorage, createInMemoryStorage } from "tardigrade-store/persist";
+
+persist(store, { key: "my-app", storage: createInMemoryStorage() });
+```
+
+#### React
+
+```tsx
+import { usePersistedTardigrade } from "tardigrade-store/persist/react";
+
+const Settings = () => {
+    const link = usePersistedTardigrade({ theme: "light" }, { key: "settings" });
+    // link.store is a regular Tardigrade store, use it with bridge hooks
+};
+
+// or with an existing store
+const link = usePersistedTardigrade(store, { key: "settings" });
+```
+
+The hook creates the link once, restores on the client in an effect (SSR-safe) and detaches auto-save on unmount
+
+---
+
 ## Links
 
 Github: [fimshagal/tardigrade](https://github.com/fimshagal/tardigrade)
