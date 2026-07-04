@@ -219,7 +219,11 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
             return;
         }
 
-        this.removeAllPropListeners(name);
+        // silent cleanup: a prop without listeners is a normal case here, not a warning
+        if (this.isPropListened(name)) {
+            this.removeAllPropListeners(name);
+        }
+
         delete this._props[name];
     }
 

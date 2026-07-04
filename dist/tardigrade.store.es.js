@@ -1,4 +1,4 @@
-/* Tardigrade store v1.4.0 */
+/* Tardigrade store v1.5.0 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
@@ -14,9 +14,9 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-var m = Object.defineProperty;
-var L = (i, e, r) => e in i ? m(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
-var h = (i, e, r) => (L(i, typeof e != "symbol" ? e + "" : e, r), r);
+var L = Object.defineProperty;
+var m = (i, e, r) => e in i ? L(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
+var h = (i, e, r) => (m(i, typeof e != "symbol" ? e + "" : e, r), r);
 var o = /* @__PURE__ */ ((i) => (i.Null = "null", i.Undefined = "undefined", i.Function = "function", i.AsyncFunction = "asyncfunction", i.Number = "number", i.String = "string", i.Boolean = "boolean", i.Array = "array", i.Object = "object", i.Any = "any", i))(o || {});
 const d = (i) => Object.prototype.toString.call(i).replace(/^\[object (.+)\]$/, "$1").toLowerCase(), H = (i) => {
   const e = d(i);
@@ -179,7 +179,7 @@ class p {
       (s = this.incidentsHandler) == null || s.error("Prop can't be deleted, you have to remove prop first");
       return;
     }
-    this.removeAllPropListeners(e), delete this._props[e];
+    this.isPropListened(e) && this.removeAllPropListeners(e), delete this._props[e];
   }
   setProp(e, r) {
     var s;
@@ -526,7 +526,7 @@ class p {
   }
 }
 const A = () => Symbol(y()), O = A();
-console.log("Tardigrade v1.4.0");
+console.log("Tardigrade v1.5.0");
 const R = (i, e) => {
   e = e || {};
   const r = new p(O, e);

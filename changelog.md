@@ -212,3 +212,20 @@
 - docs
 
 ---
+
+## [1.5.0] - 2026-07-04
+### Added
+- history layer: subpath export ```tardigrade-store/history``` with ```history(store, options)``` returning ```HistoryLink``` — snapshot-based undo/redo for props
+- auto-record on ```setProp``` / ```setProps``` / ```addProp``` (```setProps``` batch = one step); resolver calls don't create steps
+- ```undo``` / ```redo```, manual ```record```, ```hold``` / ```unhold``` for bulk operations, ```clear```, ```peek``` / ```peekUndo``` / ```peekRedo```, ```dispose``` (+ ```canUndo```, ```canRedo```, ```isHeld```, ```isDisposed```)
+- ```limit``` option (default 50, oldest steps are dropped), ```recordOnStart```, ```pick``` (unpicked props are invisible to history and survive undo), ```onUndo``` / ```onRedo``` callbacks
+- restore without ```reset()```: diff-based apply through ```setProp``` / ```addProp``` / ```removeProp```, dynamic props are added and removed by undo/redo
+- content-equal snapshots are skipped (no duplicated steps), new change after undo clears the redo branch
+- react hook ```useHistory``` (subpath ```tardigrade-store/history/react```): link per store, re-renders on ```canUndo``` / ```canRedo``` flips, disposes on unmount, survives react strict mode remount
+- 11 test files for history including persist interplay
+- docs
+
+### Fixed
+- ```removeProp``` no longer warns "doesn't have any listeners" when removing a prop that had no listeners
+
+---

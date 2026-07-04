@@ -767,6 +767,126 @@ The hook creates the link once, restores on the client in an effect (SSR-safe) a
 
 ---
 
+## History (undo / redo)
+
+Tardigrade can track props changes and roll them back via a separate subpath export. Zero dependencies, doesn't change the store model: history records snapshots of ```store.props``` and restores them back through ```setProp``` / ```addProp``` / ```removeProp```. Resolvers, listeners and merge lifecycle are never touched by undo/redo
+
+```ts
+import { createTardigrade } from "tardigrade-store";
+import { history } from "tardigrade-store/history";
+
+const store = createTardigrade({ counter: 0, title: "draft" });
+const timeline = history(store, { limit: 100 });
+
+store.setProp("counter", 1);
+store.setProp("counter", 2);
+
+timeline.undo(); // counter: 1
+timeline.undo(); // counter: 0
+timeline.redo(); // counter: 1
+```
+
+#### How it works
+
+Every step is a full picked snapshot (not a delta). Auto-record triggers on ```setProp```, ```setProps``` and ```addProp```; a ```setProps``` batch is recorded as **one step**. Resolver calls don't create steps. Content-equal snapshots are skipped, so there are no duplicated steps. A new change after ```undo``` clears the redo branch (classic behavior). When ```limit``` (default 50) is exceeded, the oldest step is dropped
+
+Undo/redo restores the store by diff without ```reset()```: missing keys are removed, existing ones are set, new ones are added — so dynamic props are fully supported. Since the core doesn't emit events on ```removeProp``` / ```reset``` / ```removeAllProps```, call ```timeline.record()``` explicitly after them (or wrap bulk work in ```hold``` / ```unhold```)
+
+#### HistoryLink methods
+
+```ts
+timeline.undo();     // roll back one step, false if nothing to undo
+timeline.redo();     // replay an undone step, false if nothing to redo
+timeline.record();   // record current snapshot manually (after removeProp etc)
+
+timeline.hold();     // suspend auto-record for bulk operations
+timeline.unhold();   // resume auto-record and record a single step
+
+timeline.clear();    // empty both stacks, store untouched
+timeline.peek();     // current picked snapshot
+timeline.peekUndo(); // snapshot the next undo() would restore, or null
+timeline.peekRedo(); // snapshot the next redo() would restore, or null
+
+timeline.canUndo;    // boolean
+timeline.canRedo;    // boolean
+timeline.isHeld;     // boolean
+
+timeline.dispose();  // detach from the store, drop the stacks
+```
+
+Bulk operations as a single step:
+
+```ts
+timeline.hold();
+store.addProp("field_email", "a@b.c");
+store.addProp("field_phone", "+380");
+timeline.unhold(); // one step with both fields
+
+timeline.undo(); // both fields disappear
+```
+
+Merge as one logical operation:
+
+```ts
+timeline.hold();
+host.merge(remote);
+timeline.unhold();
+```
+
+After ```reset()``` start a fresh baseline:
+
+```ts
+store.reset();
+timeline.clear(); // also re-attaches auto-record which reset() dropped
+```
+
+#### pick — keep ephemeral state out of history
+
+Only picked props enter snapshots, and undo/redo touches **only** keys that were picked. Unpicked props (session tokens, UI state) are invisible to history and survive undo:
+
+```ts
+const timeline = history(store, {
+    pick: (p) => ({ title: p.title, body: p.body }),
+});
+
+store.setProp("sidebarOpen", true); // not recorded, not restored
+store.setProp("title", "New");      // recorded
+```
+
+#### History + persist together
+
+Both layers subscribe to the same store and compose naturally:
+
+```ts
+const timeline = history(store);
+const link = persist(store, { key: "editor" });
+
+timeline.undo(); // restores props via setProp → persist auto-saves the restored state
+```
+
+Storage always follows the visible state, so after a reload the user continues from the last undone state. If you don't want persist restore to become an undoable step, attach persist **before** history (or call ```timeline.clear()``` after restore) — then the restored state is the history baseline
+
+#### React
+
+```tsx
+import { useHistory } from "tardigrade-store/history/react";
+
+const Toolbar = ({ store }) => {
+    const timeline = useHistory(store);
+
+    return (
+        <>
+            <button disabled={!timeline.canUndo} onClick={() => timeline.undo()}>Undo</button>
+            <button disabled={!timeline.canRedo} onClick={() => timeline.redo()}>Redo</button>
+        </>
+    );
+};
+```
+
+The hook creates the link once per store, re-renders the component when ```canUndo``` / ```canRedo``` flip and disposes on unmount. Prop values themselves re-render through the usual bridge hooks (```useTardigradeProp``` and others), since undo/redo restores props via regular ```setProp``` / ```addProp```
+
+---
+
 ## Links
 
 Github: [fimshagal/tardigrade](https://github.com/fimshagal/tardigrade)

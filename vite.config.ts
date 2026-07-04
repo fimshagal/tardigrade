@@ -33,6 +33,7 @@ export default defineConfig({
         // array form matters: the more specific subpath must be matched first
         alias: [
             { find: "tardigrade-store/persist", replacement: path.resolve(__dirname, 'sources/persist/index.ts') },
+            { find: "tardigrade-store/history", replacement: path.resolve(__dirname, 'sources/history/index.ts') },
             { find: "tardigrade-store", replacement: path.resolve(__dirname, 'sources/index.ts') },
         ],
     },

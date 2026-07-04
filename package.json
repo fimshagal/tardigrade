@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "preprocessing": "node processing/update.version",
     "postprocessing": "node processing/create.index",
-    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.persist.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
+    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.persist.config.ts && vite build --config vite.history.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
@@ -42,6 +42,18 @@
       "require": "./dist/persist/tardigrade.store.persist.react.cjs.js",
       "import": "./dist/persist/tardigrade.store.persist.react.es.js",
       "default": "./dist/persist/tardigrade.store.persist.react.es.js"
+    },
+    "./history": {
+      "types": "./dist/history/index.d.ts",
+      "require": "./dist/history/tardigrade.store.history.cjs.js",
+      "import": "./dist/history/tardigrade.store.history.es.js",
+      "default": "./dist/history/tardigrade.store.history.es.js"
+    },
+    "./history/react": {
+      "types": "./dist/history/react/index.d.ts",
+      "require": "./dist/history/tardigrade.store.history.react.cjs.js",
+      "import": "./dist/history/tardigrade.store.history.react.es.js",
+      "default": "./dist/history/tardigrade.store.history.react.es.js"
     }
   },
   "peerDependencies": {

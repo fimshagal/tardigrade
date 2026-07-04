@@ -7,6 +7,7 @@ tsconfig.typecheck.json
 vite.config.ts
 vite.react.config.ts
 vite.persist.config.ts
+vite.history.config.ts
 .eslintrc
 tardigrade.jpg
 processing/
