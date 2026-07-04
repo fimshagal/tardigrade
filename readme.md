@@ -30,13 +30,14 @@ Tardigrade allows you to dynamically add and remove properties, clone and merge 
 
 Tardigrade works with immutable data even if the provided data was originally mutable. It ensures that all state transformations maintain immutability, preventing unintended side effects and making state changes more predictable and reliable
 
+### React friendly
+
+Use Tardigrade with React.js
+
 ### Small size
 
 Tardigrade had a small size
 
-### React friendly
-
-Use Tardigrade with React.js
 
 ### Ease of async
 
