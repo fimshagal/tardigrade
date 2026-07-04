@@ -1,4 +1,4 @@
-/* Tardigrade store react bridge v1.3.0 */
+/* Tardigrade store react bridge v1.3.1 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
