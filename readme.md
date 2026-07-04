@@ -34,10 +34,13 @@ Tardigrade works with immutable data even if the provided data was originally mu
 
 Tardigrade had a small size
 
+### React friendly
+
+Use Tardigrade with React.js
+
 ### Ease of async
 
-With Tardigrade's resolvers you can easily store async or dynamic derived data 
-
+With Tardigrade's resolvers you can easily store async or dynamic derived data
 
 ## Basic usage
 
