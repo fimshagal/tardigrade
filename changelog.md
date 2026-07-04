@@ -225,6 +225,9 @@
 - 11 test files for history including persist interplay
 - docs
 
+### Updated
+- react bridge subscription hooks (```useTardigradeProp```, ```useTardigradeProps```, ```useTardigradeSelector```) migrated to ```useSyncExternalStore```: tearing-safe with React 18 concurrent rendering, SSR-ready via ```getServerSnapshot```; snapshots are cached with content equality so referential stability is preserved; on React 16.8–17 an internal fallback shim is used, peer range stays ```>=16.8```
+
 ### Fixed
 - ```removeProp``` no longer warns "doesn't have any listeners" when removing a prop that had no listeners
 

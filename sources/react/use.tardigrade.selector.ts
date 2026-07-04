@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { Dictionary, Tardigrade } from "tardigrade-store";
+import { useCallback, useRef } from "react";
+import { Dictionary, Nullable, Tardigrade } from "tardigrade-store";
 import { useTardigradeStore } from "./context";
 import { areValuesEqual } from "./value.helpers";
+import { useSyncExternalStoreCompat } from "./use.sync.external.store";
 
 export type TardigradeSelector<T> = (props: Dictionary) => T;
 
@@ -21,34 +22,39 @@ export const useTardigradeSelector = <T>(
     const isEqualRef = useRef(isEqual);
     isEqualRef.current = isEqual;
 
-    const [selected, setSelected] = useState<T>(() => selector(targetStore.props));
-    const selectedRef = useRef<T>(selected);
+    // boxed cache: T itself may be null/undefined, the box tells "computed at least once"
+    const cacheRef = useRef<Nullable<{ value: T }>>(null);
 
-    useEffect(() => {
-        const apply = (): void => {
-            const next = selectorRef.current(targetStore.props);
+    const subscribe = useCallback((onStoreChange: () => void): (() => void) => {
+        const handler = (): void => onStoreChange();
 
-            // re-render only when the selector result really changed
-            if (isEqualRef.current(selectedRef.current, next)) {
-                return;
-            }
-
-            selectedRef.current = next;
-            setSelected(next);
-        };
-
-        // re-run in case the store changed between render and effect
-        apply();
-
-        targetStore.addListener(apply);
+        targetStore.addListener(handler);
 
         return () => {
             if (!targetStore.isAlive) {
                 return;
             }
-            targetStore.removeListener(apply);
+            targetStore.removeListener(handler);
         };
     }, [targetStore]);
 
-    return selected;
+    const getSnapshot = (): T => {
+        // killed store: keep the last rendered value, don't spam error logs
+        if (!targetStore.isAlive && cacheRef.current) {
+            return cacheRef.current.value;
+        }
+
+        const next = selectorRef.current(targetStore.props);
+
+        // re-render only when the selector result really changed
+        if (cacheRef.current && isEqualRef.current(cacheRef.current.value, next)) {
+            return cacheRef.current.value;
+        }
+
+        cacheRef.current = { value: next };
+
+        return next;
+    };
+
+    return useSyncExternalStoreCompat(subscribe, getSnapshot, getSnapshot);
 };

@@ -1,39 +1,46 @@
-import { useEffect, useRef, useState } from "react";
-import { Dictionary, Tardigrade } from "tardigrade-store";
+import { useCallback, useRef } from "react";
+import { Dictionary, Nullable, Tardigrade } from "tardigrade-store";
 import { useTardigradeStore } from "./context";
 import { areValuesEqual } from "./value.helpers";
+import { useSyncExternalStoreCompat } from "./use.sync.external.store";
 
 export const useTardigradeProps = (store?: Tardigrade<any>): Dictionary => {
     const targetStore = useTardigradeStore(store);
 
-    const [props, setProps] = useState<Dictionary>(() => targetStore.props);
-    const propsRef = useRef<Dictionary>(props);
+    // snapshot cache: getSnapshot must return a stable reference between changes,
+    // while the "props" getter returns fresh clones on every read
+    const cacheRef = useRef<Nullable<Dictionary>>(null);
 
-    useEffect(() => {
-        const applyProps = (): void => {
-            // "props" getter already returns fresh clones, so only equality guard is needed
-            const nextProps = targetStore.props;
+    const subscribe = useCallback((onStoreChange: () => void): (() => void) => {
+        const handler = (): void => onStoreChange();
 
-            if (areValuesEqual(propsRef.current, nextProps)) {
-                return;
-            }
-
-            propsRef.current = nextProps;
-            setProps(nextProps);
-        };
-
-        // re-read props in case they changed between render and effect
-        applyProps();
-
-        targetStore.addListener(applyProps);
+        targetStore.addListener(handler);
 
         return () => {
             if (!targetStore.isAlive) {
                 return;
             }
-            targetStore.removeListener(applyProps);
+            targetStore.removeListener(handler);
         };
     }, [targetStore]);
 
-    return props;
+    const getSnapshot = (): Dictionary => {
+        // killed store: keep the last rendered snapshot, don't spam error logs
+        if (!targetStore.isAlive) {
+            return cacheRef.current ?? {};
+        }
+
+        const fresh = targetStore.props;
+
+        // content-equal snapshot keeps the previous reference: no extra re-renders
+        if (cacheRef.current && areValuesEqual(cacheRef.current, fresh)) {
+            return cacheRef.current;
+        }
+
+        cacheRef.current = fresh;
+
+        return fresh;
+    };
+
+    return useSyncExternalStoreCompat(subscribe, getSnapshot, getSnapshot);
 };

@@ -643,7 +643,7 @@ By default results are compared the same way as object props in the bridge (cont
 const items = useTardigradeSelector((p) => p.items, store, (a, b) => a.length === b.length);
 ```
 
-Inline selectors are fine — the hook keeps the selector in a ref, so no ```useCallback``` is required and the subscription is never re-created. Note that a new closure is applied on the next store update, not immediately on re-render
+Inline selectors are fine — the hook keeps the selector in a ref, so no ```useCallback``` is required and the subscription is never re-created
 
 Selectors pair well with ```setProps```: a batch produces a single notification, so the selector recomputes once with the final values
 
@@ -668,6 +668,10 @@ All the bridge hooks unsubscribe automatically on unmount, so there are no leake
 #### Objects handling
 
 The bridge keeps object props referentially stable: if an update brings an object with the same content, the component doesn't re-render and keeps the previous reference, so it's safe to use hook values in ```useEffect``` dependency arrays. Values stored in react state are always clones — mutating them never affects the store internals
+
+#### Concurrent rendering
+
+Subscription hooks (```useTardigradeProp```, ```useTardigradeProps```, ```useTardigradeSelector```) are built on ```useSyncExternalStore```, so they are tearing-safe with React 18 concurrent features (```startTransition```, ```useDeferredValue```, Suspense). On React 16.8–17 the bridge transparently falls back to an internal shim with the same semantics — the peer dependency range stays ```react >=16.8```
 
 ---
 

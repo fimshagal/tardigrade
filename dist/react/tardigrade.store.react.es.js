@@ -14,97 +14,101 @@
  *
  * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
  */
-import { createContext as R, createElement as T, useContext as h, useRef as d, useState as p, useEffect as f, useCallback as y } from "react";
-import { createTardigrade as L } from "tardigrade-store";
-const P = R(null), w = ({ store: r, children: t }) => T(P.Provider, { value: r }, t), g = (r) => {
-  const t = h(P), e = r ?? t;
-  if (!e)
+import * as T from "react";
+import { createContext as A, createElement as P, useContext as b, useRef as a, useState as R, useEffect as x, useCallback as f } from "react";
+import { createTardigrade as E } from "tardigrade-store";
+const y = A(null), O = ({ store: e, children: t }) => P(y.Provider, { value: e }, t), v = (e) => {
+  const t = b(y), r = e ?? t;
+  if (!r)
     throw new Error("Tardigrade react bridge: store wasn't provided. Pass it into the hook directly or wrap your components with <TardigradeProvider store={...}>");
-  return e;
-}, O = (r, t) => {
-  const e = d(null);
-  return e.current || (e.current = L(r, t)), e.current;
-}, v = (r) => typeof r == "object" && r !== null, x = (r) => v(r) ? typeof structuredClone == "function" ? structuredClone(r) : JSON.parse(JSON.stringify(r)) : r, S = (r, t) => {
-  if (Object.is(r, t))
+  return r;
+}, j = (e, t) => {
+  const r = a(null);
+  return r.current || (r.current = E(e, t)), r.current;
+}, h = (e) => typeof e == "object" && e !== null, g = (e, t) => {
+  if (Object.is(e, t))
     return !0;
-  if (!v(r) || !v(t))
+  if (!h(e) || !h(t))
     return !1;
   try {
-    return JSON.stringify(r) === JSON.stringify(t);
+    return JSON.stringify(e) === JSON.stringify(t);
   } catch {
     return !1;
   }
-}, E = (r, t) => {
-  const e = g(t), [o, u] = p(() => e.hasProp(r) ? e.prop(r) : null), n = d(o);
-  f(() => {
-    const i = (c) => {
-      if (S(n.current, c))
-        return;
-      const l = x(c);
-      n.current = l, u(l);
-    };
-    i(e.hasProp(r) ? e.prop(r) : null);
-    const a = (c, l) => {
-      if (Array.isArray(c)) {
-        if (!c.includes(r))
-          return;
-        i(l[r]);
-        return;
-      }
-      c === r && i(l);
-    };
-    return e.addListener(a), () => {
-      e.isAlive && e.removeListener(a);
-    };
-  }, [e, r]);
-  const s = y((i) => {
-    e.setProp(r, i);
-  }, [e, r]);
-  return [o, s];
-}, J = (r) => {
-  const t = g(r), [e, o] = p(() => t.props), u = d(e);
-  return f(() => {
-    const n = () => {
-      const s = t.props;
-      S(u.current, s) || (u.current = s, o(s));
-    };
-    return n(), t.addListener(n), () => {
-      t.isAlive && t.removeListener(n);
-    };
-  }, [t]), e;
-}, V = (r, t) => {
-  const e = g(t), [o, u] = p(null);
-  return f(() => {
-    const s = (i, a) => {
-      i === r && u(a);
-    };
-    return e.addListener(s), () => {
-      e.isAlive && e.removeListener(s);
-    };
-  }, [e, r]), [y(() => e.callResolver(r), [e, r]), o];
-}, b = (r, t, e = S) => {
-  const o = g(t), u = d(r);
-  u.current = r;
-  const n = d(e);
-  n.current = e;
-  const [s, i] = p(() => r(o.props)), a = d(s);
-  return f(() => {
+}, L = (e, t) => {
+  const r = t(), [, n] = R(0), o = a({ value: r, getSnapshot: t });
+  return o.current.value = r, o.current.getSnapshot = t, x(() => {
     const c = () => {
-      const l = u.current(o.props);
-      n.current(a.current, l) || (a.current = l, i(l));
+      const s = o.current, l = s.getSnapshot();
+      Object.is(s.value, l) || n((i) => i + 1);
     };
-    return c(), o.addListener(c), () => {
-      o.isAlive && o.removeListener(c);
+    return c(), e(c);
+  }, [e]), r;
+}, C = T.useSyncExternalStore, S = C ?? L, U = (e, t) => {
+  const r = v(t), n = a(null), o = a(!1), c = f((u) => {
+    const d = (p) => {
+      (Array.isArray(p) ? p.includes(e) : p === e) && u();
     };
-  }, [o]), s;
+    return r.addListener(d), () => {
+      r.isAlive && r.removeListener(d);
+    };
+  }, [r, e]), s = () => {
+    if (!r.isAlive)
+      return n.current;
+    const u = r.hasProp(e) ? r.prop(e) : null;
+    return o.current && g(n.current, u) || (n.current = u, o.current = !0), n.current;
+  }, l = S(c, s, s), i = f((u) => {
+    r.setProp(e, u);
+  }, [r, e]);
+  return [l, i];
+}, F = (e) => {
+  const t = v(e), r = a(null), n = f((c) => {
+    const s = () => c();
+    return t.addListener(s), () => {
+      t.isAlive && t.removeListener(s);
+    };
+  }, [t]), o = () => {
+    if (!t.isAlive)
+      return r.current ?? {};
+    const c = t.props;
+    return r.current && g(r.current, c) ? r.current : (r.current = c, c);
+  };
+  return S(n, o, o);
+}, J = (e, t) => {
+  const r = v(t), [n, o] = R(null);
+  return x(() => {
+    const s = (l, i) => {
+      l === e && o(i);
+    };
+    return r.addListener(s), () => {
+      r.isAlive && r.removeListener(s);
+    };
+  }, [r, e]), [f(() => r.callResolver(e), [r, e]), n];
+}, V = (e, t, r = g) => {
+  const n = v(t), o = a(e);
+  o.current = e;
+  const c = a(r);
+  c.current = r;
+  const s = a(null), l = f((u) => {
+    const d = () => u();
+    return n.addListener(d), () => {
+      n.isAlive && n.removeListener(d);
+    };
+  }, [n]), i = () => {
+    if (!n.isAlive && s.current)
+      return s.current.value;
+    const u = o.current(n.props);
+    return s.current && c.current(s.current.value, u) ? s.current.value : (s.current = { value: u }, u);
+  };
+  return S(l, i, i);
 };
 export {
-  P as TardigradeContext,
-  w as TardigradeProvider,
-  O as useTardigrade,
-  E as useTardigradeProp,
-  J as useTardigradeProps,
-  V as useTardigradeResolver,
-  b as useTardigradeSelector,
-  g as useTardigradeStore
+  y as TardigradeContext,
+  O as TardigradeProvider,
+  j as useTardigrade,
+  U as useTardigradeProp,
+  F as useTardigradeProps,
+  J as useTardigradeResolver,
+  V as useTardigradeSelector,
+  v as useTardigradeStore
 };

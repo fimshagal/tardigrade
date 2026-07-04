@@ -1,46 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Nullable, Tardigrade } from "tardigrade-store";
 import { useTardigradeStore } from "./context";
-import { areValuesEqual, cloneValue } from "./value.helpers";
+import { areValuesEqual } from "./value.helpers";
+import { useSyncExternalStoreCompat } from "./use.sync.external.store";
 
 export const useTardigradeProp = <T>(name: string, store?: Tardigrade<any>): [Nullable<T>, (value: Nullable<T>) => void] => {
     const targetStore = useTardigradeStore(store);
 
-    const [value, setValue] = useState<Nullable<T>>(() => (targetStore.hasProp(name) ? targetStore.prop(name) : null));
-    const valueRef = useRef<Nullable<T>>(value);
+    // snapshot cache: getSnapshot must return a stable reference between changes,
+    // while store.prop() returns a fresh clone on every read
+    const cacheRef = useRef<Nullable<T>>(null);
+    const primedRef = useRef(false);
 
-    useEffect(() => {
-        const applyValue = (nextValue: Nullable<T>): void => {
-            // skip content-equal objects to keep referential stability and avoid extra re-renders
-            if (areValuesEqual(valueRef.current, nextValue)) {
-                return;
-            }
-
-            // clone to never hold store's internal reference in react state
-            const clonedValue = cloneValue(nextValue);
-
-            valueRef.current = clonedValue;
-            setValue(clonedValue);
-        };
-
-        // re-read value in case it changed between render and effect
-        applyValue(targetStore.hasProp(name) ? targetStore.prop(name) : null);
-
+    const subscribe = useCallback((onStoreChange: () => void): (() => void) => {
         // global listener catches updates even for props added after mount;
         // batched setProps updates arrive as (names[], values dictionary)
-        const handler = (updatedName: string | string[], updatedValue: any): void => {
-            if (Array.isArray(updatedName)) {
-                if (!updatedName.includes(name)) {
-                    return;
-                }
-                applyValue(updatedValue[name]);
-                return;
-            }
+        const handler = (updatedName: string | string[]): void => {
+            const isRelevant = Array.isArray(updatedName)
+                ? updatedName.includes(name)
+                : updatedName === name;
 
-            if (updatedName !== name) {
-                return;
+            if (isRelevant) {
+                onStoreChange();
             }
-            applyValue(updatedValue);
         };
 
         targetStore.addListener(handler);
@@ -52,6 +34,28 @@ export const useTardigradeProp = <T>(name: string, store?: Tardigrade<any>): [Nu
             targetStore.removeListener(handler);
         };
     }, [targetStore, name]);
+
+    const getSnapshot = (): Nullable<T> => {
+        // killed store: keep the last rendered value, don't spam error logs
+        if (!targetStore.isAlive) {
+            return cacheRef.current;
+        }
+
+        // prop() clones complex values, so react never holds store's internal reference
+        const fresh = targetStore.hasProp(name) ? (targetStore.prop(name) as Nullable<T>) : null;
+
+        // skip content-equal objects to keep referential stability and avoid extra re-renders
+        if (primedRef.current && areValuesEqual(cacheRef.current, fresh)) {
+            return cacheRef.current;
+        }
+
+        cacheRef.current = fresh;
+        primedRef.current = true;
+
+        return cacheRef.current;
+    };
+
+    const value = useSyncExternalStoreCompat(subscribe, getSnapshot, getSnapshot);
 
     const setProp = useCallback((nextValue: Nullable<T>): void => {
         targetStore.setProp(name, nextValue);
