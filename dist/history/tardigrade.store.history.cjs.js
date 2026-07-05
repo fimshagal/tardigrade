@@ -1,17 +1,6 @@
-/* Tardigrade history v1.7.0 */
+/* Tardigrade history v1.7.1 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
-/*
- * Creative Commons Attribution 4.0 International (CC BY 4.0)
- *
- * You are free to:
- *
- * - Share — copy and redistribute the material in any medium or format
- * - Adapt — remix, transform, and build upon the material for any purpose, even commercially.
- *
- * Under the following terms:
- *
- * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
- */
+/* MIT License | Copyright (c) 2024-2026 fSha | see LICENSE file */
 "use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const z=(e,r)=>r(e.props),O=e=>typeof structuredClone=="function"?structuredClone(e):JSON.parse(JSON.stringify(e)),b=(e,r)=>JSON.stringify(e)===JSON.stringify(r),P=(e=1/0)=>{const r=[];return{push:p=>{for(r.push(p);r.length>e;)r.shift()},pop:()=>r.pop()??null,peek:()=>r.length?r[r.length-1]:null,clear:()=>{r.length=0},get size(){return r.length}}},J=(e,r,p)=>{Object.keys(p).forEach(n=>{!(n in r)&&e.hasProp(n)&&e.removeProp(n)}),Object.entries(r).forEach(([n,u])=>{if(e.hasProp(n)){e.setProp(n,u);return}u!=null&&e.addProp(n,u)})},L=(e,r)=>{const{limit:p=50,recordOnStart:n=!0,pick:u=t=>t,onUndo:g,onRedo:y}=r??{},s=P(p),i=P();let o={},S=!1,a=!1,c=!1,k=!1;const f=()=>e.isAlive?z(e,u):{},h=()=>{if(c||!e.isAlive)return;const t=f();if(!S){o=t,S=!0;return}b(t,o)||(s.push(o),o=t,i.clear())},v=(t,l)=>{k=!0;try{J(e,t,l)}finally{k=!1}o=t},d=t=>{a||k||c||typeof t=="string"&&!e.hasProp(t)||h()},A={store:e,undo:()=>{if(!e.isAlive||!s.size)return!1;const t=f(),l=s.pop();return i.push(t),v(l,t),g==null||g(l),!0},redo:()=>{if(!e.isAlive||!i.size)return!1;const t=f(),l=i.pop();return s.push(t),v(l,t),y==null||y(l),!0},record:h,hold:()=>{a=!0},unhold:()=>{a=!1,h()},clear:()=>{s.clear(),i.clear(),o=f(),S=!0,!c&&e.isAlive&&(e.removeListener(d),e.addListener(d))},peek:f,peekUndo:()=>{const t=s.peek();return t?O(t):null},peekRedo:()=>{const t=i.peek();return t?O(t):null},dispose:()=>{c||(c=!0,e.isAlive&&e.removeListener(d),s.clear(),i.clear())},get canUndo(){return s.size>0},get canRedo(){return i.size>0},get isHeld(){return a},get isDisposed(){return c}};return n&&h(),e.addListener(d),A};exports.history=L;

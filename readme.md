@@ -1029,6 +1029,12 @@ E-mail: [fimashagal@gmail.com](mailto:fimashagal@gmail.com)
 
 ---
 
+## License
+
+MIT
+
+---
+
 ## Support
 
 If you find this package useful, consider supporting my work via PayPal:

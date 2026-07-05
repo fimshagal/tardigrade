@@ -1,19 +1,8 @@
-/* Tardigrade store v1.7.0 */
+/* Tardigrade store v1.7.1 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
-/*
- * Creative Commons Attribution 4.0 International (CC BY 4.0)
- *
- * You are free to:
- *
- * - Share — copy and redistribute the material in any medium or format
- * - Adapt — remix, transform, and build upon the material for any purpose, even commercially.
- *
- * Under the following terms:
- *
- * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
- */
+/* MIT License | Copyright (c) 2024-2026 fSha | see LICENSE file */
 var m = Object.defineProperty;
 var b = (i, e, r) => e in i ? m(i, e, { enumerable: !0, configurable: !0, writable: !0, value: r }) : i[e] = r;
 var l = (i, e, r) => (b(i, typeof e != "symbol" ? e + "" : e, r), r);
@@ -543,7 +532,7 @@ class u {
   }
 }
 const w = () => Symbol(P()), O = w();
-console.log("Tardigrade v1.7.0");
+console.log("Tardigrade v1.7.1");
 const g = (i, e) => {
   e = e || {};
   const r = new u(O, e);

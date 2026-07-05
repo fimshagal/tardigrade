@@ -1,17 +1,6 @@
-/* Tardigrade store react bridge v1.7.0 */
+/* Tardigrade store react bridge v1.7.1 */
 
 /* Created by fSha | fimashagal@gmail.com */
            
-/*
- * Creative Commons Attribution 4.0 International (CC BY 4.0)
- *
- * You are free to:
- *
- * - Share — copy and redistribute the material in any medium or format
- * - Adapt — remix, transform, and build upon the material for any purpose, even commercially.
- *
- * Under the following terms:
- *
- * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
- */
+/* MIT License | Copyright (c) 2024-2026 fSha | see LICENSE file */
 "use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const s=require("react"),T=require("tardigrade-store");function b(r){const t=Object.create(null,{[Symbol.toStringTag]:{value:"Module"}});if(r){for(const e in r)if(e!=="default"){const n=Object.getOwnPropertyDescriptor(r,e);Object.defineProperty(t,e,n.get?n:{enumerable:!0,get:()=>r[e]})}}return t.default=r,Object.freeze(t)}const h=b(s),v=s.createContext(null),y=({store:r,children:t})=>s.createElement(v.Provider,{value:r},t),f=r=>{const t=s.useContext(v),e=r??t;if(!e)throw new Error("Tardigrade react bridge: store wasn't provided. Pass it into the hook directly or wrap your components with <TardigradeProvider store={...}>");return e},P=(r,t)=>{const e=s.useRef(null);return e.current||(e.current=T.createTardigrade(r,t)),e.current},R=r=>typeof r=="object"&&r!==null,p=(r,t)=>{if(Object.is(r,t))return!0;if(!R(r)||!R(t))return!1;try{return JSON.stringify(r)===JSON.stringify(t)}catch{return!1}},x=(r,t)=>{const e=t(),[,n]=s.useState(0),o=s.useRef({value:e,getSnapshot:t});return o.current.value=e,o.current.getSnapshot=t,s.useEffect(()=>{const u=()=>{const c=o.current,l=c.getSnapshot();Object.is(c.value,l)||n(i=>i+1)};return u(),r(u)},[r]),e},C=h.useSyncExternalStore,S=C??x,O=(r,t)=>{const e=f(t),n=s.useRef(null),o=s.useRef(!1),u=s.useCallback(a=>{const d=g=>{(Array.isArray(g)?g.includes(r):g===r)&&a()};return e.addListener(d),()=>{e.isAlive&&e.removeListener(d)}},[e,r]),c=()=>{if(!e.isAlive)return n.current;const a=e.hasProp(r)?e.prop(r):null;return o.current&&p(n.current,a)||(n.current=a,o.current=!0),n.current},l=S(u,c,c),i=s.useCallback(a=>{e.setProp(r,a)},[e,r]);return[l,i]},k=r=>{const t=f(r),e=s.useRef(null),n=s.useCallback(u=>{const c=()=>u();return t.addListener(c),()=>{t.isAlive&&t.removeListener(c)}},[t]),o=()=>{if(!t.isAlive)return e.current??{};const u=t.props;return e.current&&p(e.current,u)?e.current:(e.current=u,u)};return S(n,o,o)},A=(r,t)=>{const e=f(t),[n,o]=s.useState(null);return s.useEffect(()=>{const c=(l,i)=>{l===r&&o(i)};return e.addListener(c),()=>{e.isAlive&&e.removeListener(c)}},[e,r]),[s.useCallback(()=>e.callResolver(r),[e,r]),n]},E=(r,t,e=p)=>{const n=f(t),o=s.useRef(r);o.current=r;const u=s.useRef(e);u.current=e;const c=s.useRef(null),l=s.useCallback(a=>{const d=()=>a();return n.addListener(d),()=>{n.isAlive&&n.removeListener(d)}},[n]),i=()=>{if(!n.isAlive&&c.current)return c.current.value;const a=o.current(n.props);return c.current&&u.current(c.current.value,a)?c.current.value:(c.current={value:a},a)};return S(l,i,i)};exports.TardigradeContext=v;exports.TardigradeProvider=y;exports.useTardigrade=P;exports.useTardigradeProp=O;exports.useTardigradeProps=k;exports.useTardigradeResolver=A;exports.useTardigradeSelector=E;exports.useTardigradeStore=f;

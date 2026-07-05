@@ -253,3 +253,9 @@
 - ```merge``` no longer touches listeners of props that were rejected during import
 
 ---
+
+## [1.7.1] - 2026-07-05
+### Updated
+- license changed from CC BY 4.0 to MIT: standard OSI-approved software license, ```"license": "MIT"``` in package.json, bundle banners updated
+
+---
