@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "preprocessing": "node processing/update.version",
     "postprocessing": "node processing/create.index",
-    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.persist.config.ts && vite build --config vite.history.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
+    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.persist.config.ts && vite build --config vite.history.config.ts && vite build --config vite.ward.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
@@ -54,6 +54,12 @@
       "require": "./dist/history/tardigrade.store.history.react.cjs.js",
       "import": "./dist/history/tardigrade.store.history.react.es.js",
       "default": "./dist/history/tardigrade.store.history.react.es.js"
+    },
+    "./ward": {
+      "types": "./dist/ward/index.d.ts",
+      "require": "./dist/ward/tardigrade.store.ward.cjs.js",
+      "import": "./dist/ward/tardigrade.store.ward.es.js",
+      "default": "./dist/ward/tardigrade.store.ward.es.js"
     }
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-/* Tardigrade persist v1.6.0 */
+/* Tardigrade persist v1.7.0 */
 
 /* Created by fSha | fimashagal@gmail.com */
            

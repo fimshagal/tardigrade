@@ -893,6 +893,134 @@ The hook creates the link once per store, re-renders the component when ```canUn
 
 ---
 
+## Ward (write rules)
+
+Ward is a rules layer that runs **before** a value lands in the store: a rule can allow the write, deny it or transform the value. It's business/semantic validation on top of the core type check. Separate subpath export, zero dependencies, the core only carries a tiny extension point
+
+```ts
+import { createTardigrade } from "tardigrade-store";
+import { ward } from "tardigrade-store/ward";
+
+const store = createTardigrade({ counter: 0, email: "" });
+const guard = ward(store);
+
+guard.addRule("counter", (value) => {
+    if (typeof value === "number" && value < 0) {
+        return { allow: false, reason: "counter cannot be negative" };
+    }
+    return { allow: true };
+});
+
+guard.addRule("email", (value) => ({
+    allow: true,
+    value: typeof value === "string" ? value.trim().toLowerCase() : value,
+}));
+
+store.setProp("counter", -1);       // denied, value stays 0
+store.setProp("email", "  A@B.C "); // stored as "a@b.c"
+```
+
+#### How it works
+
+Rules run before core validation and before the actual write. A denied write changes nothing: prop and global listeners don't fire, persist auto-save and history auto-record don't trigger. The denial is reported through the incidents handler (with ```emitErrors: true``` it becomes a thrown error) and through the optional ```onDeny``` callback:
+
+```ts
+const guard = ward(store, {
+    onDeny: (context, reason) => console.log(context, reason),
+});
+```
+
+A rule returning ```{ allow: true, value }``` replaces the value for the rest of the chain and for the write itself. The transformed value still goes through the core type check, so transforms must preserve the prop type — returning a string for a number prop gets rejected by the core right after ward
+
+A rule that throws denies the write (fail closed), with the error message as the reason
+
+#### Three kinds of rules
+
+```ts
+// global: sees every write as a context object
+guard.addRule((context) => {
+    // context.kind is "setProp" | "addProp" | "setProps"
+    return { allow: true };
+});
+
+// kind-bound: only one operation kind
+guard.addRule("addProp", (context) => {
+    if (context.kind === "addProp" && !context.name.startsWith("field_")) {
+        return { allow: false, reason: "dynamic props must use field_ prefix" };
+    }
+    return { allow: true };
+});
+
+// prop-bound shorthand: receives the value only
+guard.addRule("counter", (value) => {
+    return { allow: true };
+});
+```
+
+Execution order: global rules → kind rules → prop rules; insertion order inside each group. Every rule in the chain receives the value after the transforms of the previous ones
+
+A prop-bound rule guards the value however it enters the store: it matches both ```setProp``` and ```addProp``` with that name, so a rule can't be bypassed by removing and re-adding the prop. Kind names are reserved — a prop can't be named ```setProp```, ```addProp``` or ```setProps```
+
+#### Batches (setProps)
+
+A ```"setProps"``` kind rule sees the whole patch once and can allow or deny it entirely (transforming the patch isn't supported):
+
+```ts
+guard.addRule("setProps", (context) => {
+    if (context.kind === "setProps" && context.patch.counter < 0) {
+        return { allow: false, reason: "counter cannot be negative" };
+    }
+    return { allow: true };
+});
+```
+
+Prop-bound and ```"setProp"``` kind rules still apply to **every key** of the batch, so per-prop validation and transforms can't be bypassed via ```setProps```. If a per-key rule denies one key, only that key is skipped — the rest of the batch is applied and reported as a single notification
+
+#### What passes through ward
+
+```setProp```, ```addProp```, ```setProps```, and everything built on them: ```importProps```, ```merge```, persist ```restore()```, history ```undo()``` / ```redo()```. Initial props in ```createTardigrade(initialData)``` are the baseline and are never checked (the store exists before any ward does). ```removeProp```, ```reset```, resolvers and listeners are out of scope
+
+For bulk operations that should skip rules, suspend the link:
+
+```ts
+guard.hold();
+host.merge(remote);   // or link.restore()
+guard.unhold();
+```
+
+#### WardLink methods
+
+```ts
+const id = guard.addRule(fn);        // returns symbol id
+guard.removeRule(id);                // no-op if not found
+guard.clearRules();                  // drop all rules, stay attached
+
+guard.hold();                        // suspend all rules
+guard.unhold();                      // resume
+
+guard.ruleCount;                     // number
+guard.isHeld;                        // boolean
+guard.isDisposed;                    // boolean
+
+guard.dispose();                     // detach from the store, writes pass freely
+```
+
+One active ward per store: a second ```ward(store)``` throws until the previous link is disposed. Rules don't run while a rule is being evaluated (re-entrancy guard), so a rule must not write to the same store synchronously — use transforms instead
+
+#### React
+
+No dedicated hook is needed — attach in an effect:
+
+```tsx
+useEffect(() => {
+    const guard = ward(store);
+    guard.addRule("counter", counterRule);
+    return () => guard.dispose();
+}, [store]);
+```
+
+---
+
 ## Links
 
 Github: [fimshagal/tardigrade](https://github.com/fimshagal/tardigrade)

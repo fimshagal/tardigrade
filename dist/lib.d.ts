@@ -19,6 +19,26 @@ export type StoreListener<S extends Dictionary> = (name: string | string[], valu
 export type StorePropsPatch<S extends Dictionary, P> = {
     [K in keyof P]: K extends keyof PropsOf<S> ? Nullable<PropsOf<S>[K]> : any;
 };
+export type WardContext = {
+    kind: "setProp";
+    name: string;
+    value: unknown;
+} | {
+    kind: "addProp";
+    name: string;
+    value: unknown;
+} | {
+    kind: "setProps";
+    patch: Dictionary;
+};
+export type WardOutcome = {
+    allow: true;
+    value?: unknown;
+} | {
+    allow: false;
+    reason?: string;
+};
+export type WardRunner = (context: WardContext) => WardOutcome | void;
 export interface ITardigrade<S extends Dictionary = Dictionary> {
     addProp<K extends StorePropName<S>>(name: K, value: StorePropValue<S, K>): void;
     hasProp(name: string): boolean;

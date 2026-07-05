@@ -1,0 +1,84 @@
+/* Tardigrade ward v1.7.0 */
+
+/* Created by fSha | fimashagal@gmail.com */
+           
+/*
+ * Creative Commons Attribution 4.0 International (CC BY 4.0)
+ *
+ * You are free to:
+ *
+ * - Share — copy and redistribute the material in any medium or format
+ * - Adapt — remix, transform, and build upon the material for any purpose, even commercially.
+ *
+ * Under the following terms:
+ *
+ * - Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+ */
+const f = ["setProp", "addProp", "setProps"], c = (l, o) => l.scope === "global" ? !0 : l.scope === "kind" ? l.kind === o.kind : (o.kind === "setProp" || o.kind === "addProp") && o.name === l.propName, h = (l, o) => {
+  const a = [
+    ...l.filter((r) => r.scope === "global"),
+    ...l.filter((r) => r.scope === "kind"),
+    ...l.filter((r) => r.scope === "prop")
+  ].filter((r) => c(r, o));
+  let e = o, n = o.kind === "setProps" ? void 0 : o.value, d = !1;
+  for (const r of a) {
+    let t;
+    try {
+      t = r.scope === "prop" ? r.rule(n) : r.rule(e);
+    } catch (p) {
+      return { allow: !1, reason: p instanceof Error ? p.message : String(p) };
+    }
+    if (t) {
+      if (!t.allow)
+        return { allow: !1, reason: t.reason };
+      t.value !== void 0 && o.kind !== "setProps" && (n = t.value, d = !0, e = { ...e, value: n });
+    }
+  }
+  return d ? { allow: !0, value: n } : { allow: !0 };
+}, w = (l, o) => {
+  const { onDeny: a } = o ?? {}, e = [];
+  let n = !1, d = !1;
+  const r = (s) => {
+    if (n || !e.length)
+      return;
+    const u = h(e, s);
+    return u.allow || a == null || a(s, u.reason), u;
+  }, t = l.registerWardRunner(r);
+  return {
+    store: l,
+    addRule: (s, u) => {
+      if (d)
+        throw Error("Tardigrade ward: link is disposed, create a new one with ward(store)");
+      const i = Symbol("tardigrade-ward-rule");
+      return typeof s == "function" ? (e.push({ id: i, scope: "global", rule: s }), i) : f.includes(s) ? (e.push({ id: i, scope: "kind", kind: s, rule: u }), i) : (e.push({ id: i, scope: "prop", propName: s, rule: u }), i);
+    },
+    removeRule: (s) => {
+      const u = e.findIndex((i) => i.id === s);
+      u !== -1 && e.splice(u, 1);
+    },
+    clearRules: () => {
+      e.length = 0;
+    },
+    hold: () => {
+      n = !0;
+    },
+    unhold: () => {
+      n = !1;
+    },
+    dispose: () => {
+      d || (d = !0, e.length = 0, t());
+    },
+    get ruleCount() {
+      return e.length;
+    },
+    get isHeld() {
+      return n;
+    },
+    get isDisposed() {
+      return d;
+    }
+  };
+};
+export {
+  w as ward
+};

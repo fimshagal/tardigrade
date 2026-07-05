@@ -232,3 +232,24 @@
 - ```removeProp``` no longer warns "doesn't have any listeners" when removing a prop that had no listeners
 
 ---
+
+## [1.7.0] - 2026-07-05
+### Added
+- ward layer: subpath export ```tardigrade-store/ward``` with ```ward(store, options)``` returning ```WardLink``` — rules run before a write and can allow, deny or transform the value
+- three rule scopes: global ```addRule(fn)```, kind-bound ```addRule("setProp" | "addProp" | "setProps", fn)```, prop-bound shorthand ```addRule(propName, fn)```; execution order global → kind → prop, chain passes transformed value to the next rule
+- prop-bound rules match both ```setProp``` and ```addProp``` with that name, so rules can't be bypassed by re-adding a prop
+- ```setProps```: a ```"setProps"``` kind rule allows/denies the whole patch once; per-key rules still run for every key of the batch (transform works, a denied key is skipped, the rest is applied)
+- denied write is a non-event: no listeners, no persist auto-save, no history step; reported via incidents handler (throws with ```emitErrors: true```) and optional ```onDeny(context, reason)``` callback
+- a throwing rule denies the write (fail closed) with the error message as reason
+- ```removeRule(id)```, ```clearRules```, ```hold``` / ```unhold``` (bulk merge or restore without rules), ```dispose``` (+ ```ruleCount```, ```isHeld```, ```isDisposed```)
+- one active ward per store: second ```ward(store)``` throws until the previous link is disposed; re-entrancy guard prevents rules from re-triggering ward
+- rules apply to ```importProps``` / ```merge``` / persist restore / history undo-redo; initial props in ```createTardigrade``` are baseline and skip rules
+- core: minimal extension point ```registerWardRunner``` (for the ward package only), ward types in ```lib.ts```, no ward logic in core
+- 10 test files for ward
+- docs
+
+### Fixed
+- ```addProp``` crashed listener notification when the prop was rejected (nullable value, duplicate name): now it notifies only after the prop was actually created
+- ```merge``` no longer touches listeners of props that were rejected during import
+
+---

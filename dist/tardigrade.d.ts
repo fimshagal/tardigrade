@@ -1,4 +1,4 @@
-import { AnyFunction, Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, PropsOf, StoreListener, StorePropName, StorePropsPatch, StorePropValue, StoreResolverName, StoreResolverValue, TardigradeInitialOptions } from "./lib";
+import { AnyFunction, Dictionary, DictionaryKey, ITardigrade, Nullable, Prop, PropsOf, StoreListener, StorePropName, StorePropsPatch, StorePropValue, StoreResolverName, StoreResolverValue, TardigradeInitialOptions, WardContext, WardOutcome, WardRunner } from "./lib";
 import { TardigradeIncidentsHandler } from "./tardigrade.incidents.handler";
 export declare class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrade<S> {
     protected _resolvers: Dictionary<(...args: any[]) => any>;
@@ -8,6 +8,8 @@ export declare class Tardigrade<S extends Dictionary = Dictionary> implements IT
     protected _listenerHandlers: ((...args: any[]) => void)[];
     protected _alive: boolean;
     protected _mergeAgent: Nullable<Tardigrade<any>>;
+    protected _wardRunner: Nullable<WardRunner>;
+    protected _wardRunning: boolean;
     protected readonly _incidentsHandler: Nullable<TardigradeIncidentsHandler>;
     protected readonly _sessionKey: Nullable<symbol>;
     protected readonly _strictObjectsInterfaces: boolean;
@@ -46,10 +48,12 @@ export declare class Tardigrade<S extends Dictionary = Dictionary> implements IT
     exportAllResolversListenerHandlers(sessionKey: symbol): Nullable<{}>;
     exportAllListenersHandlers(sessionKey: symbol): Nullable<((value: Nullable<any>) => void)[]>;
     setMergeAgent(sessionKey: symbol, mergeAgent: Tardigrade<any>): void;
+    registerWardRunner(runner: WardRunner): () => void;
+    protected runWard(context: WardContext): Nullable<WardOutcome>;
     protected checkObjectInterface(checkerInterface: Dictionary, object: Dictionary): boolean;
     protected silentImportProps(target: Tardigrade<any>, override?: boolean): void;
     protected writeProp(name: string, newValue: any): boolean;
-    protected silentAddProp<T>(name: string, value: T): void;
+    protected silentAddProp<T>(name: string, value: T): boolean;
     protected extractInterface(object: Dictionary): Dictionary;
     protected importAllResolversListenerHandlers(target: Tardigrade<any>, override?: boolean): void;
     protected importAllPropsListenerHandlers(target: Tardigrade<any>, override?: boolean): void;

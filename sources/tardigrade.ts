@@ -14,6 +14,9 @@ import {
     StoreResolverValue,
     TardigradeInitialOptions,
     TardigradeTypes,
+    WardContext,
+    WardOutcome,
+    WardRunner,
 } from "./lib";
 import { isDef, isScalar, typeOf } from "./type.of";
 import { hasOwnProperty } from "./has.own.property";
@@ -29,6 +32,8 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
     protected _listenerHandlers: ((...args: any[]) => void)[] = [];
     protected _alive: boolean = true;
     protected _mergeAgent: Nullable<Tardigrade<any>> = null;
+    protected _wardRunner: Nullable<WardRunner> = null;
+    protected _wardRunning: boolean = false;
 
     protected readonly _incidentsHandler: Nullable<TardigradeIncidentsHandler> = null;
     protected readonly _sessionKey: Nullable<symbol> = null;
@@ -195,7 +200,11 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
             return;
         }
 
-        this.silentAddProp(name, value);
+        // notify only when the prop was actually created (rejected add used to crash listeners here)
+        if (!this.silentAddProp(name, value)) {
+            return;
+        }
+
         this.handleOnSetProp(this._props[name]);
     }
 
@@ -241,6 +250,14 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
     public setProps<P extends Dictionary>(patch: P & StorePropsPatch<S, P>): void {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
+            return;
+        }
+
+        // batch-level ward check: deny skips the whole patch; per-key rules still run in writeProp
+        const outcome = this.runWard({ kind: "setProps", patch: patch as Dictionary });
+
+        if (outcome && !outcome.allow) {
+            this.incidentsHandler?.error(`Ward denied batch update${outcome.reason ? `: ${outcome.reason}` : ""}`);
             return;
         }
 
@@ -422,6 +439,11 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
 
         targetPropsNames
             .forEach((name) => {
+                // an imported prop may have been rejected (e.g. by ward rules), skip it
+                if (!hasOwnProperty(this._props, name)) {
+                    return;
+                }
+
                 this.handleOnSetProp(this._props[name]);
             });
     }
@@ -521,6 +543,36 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
         this._mergeAgent = mergeAgent;
     }
 
+    // extension point for the ward package only, not a part of the public store API
+    public registerWardRunner(runner: WardRunner): () => void {
+        if (this._wardRunner) {
+            throw Error("Tardigrade: a ward runner is already registered for this store. Dispose the previous ward link first");
+        }
+
+        this._wardRunner = runner;
+
+        return (): void => {
+            if (this._wardRunner === runner) {
+                this._wardRunner = null;
+            }
+        };
+    }
+
+    protected runWard(context: WardContext): Nullable<WardOutcome> {
+        // re-entrancy guard: rules must not trigger ward again through nested writes
+        if (!this._wardRunner || this._wardRunning) {
+            return null;
+        }
+
+        this._wardRunning = true;
+
+        try {
+            return this._wardRunner(context) ?? null;
+        } finally {
+            this._wardRunning = false;
+        }
+    }
+
     protected checkObjectInterface(checkerInterface: Dictionary, object: Dictionary): boolean {
         const interfaceKeys: string[] = Object.keys(checkerInterface);
         const objectKeys: string[] = Object.keys(object);
@@ -575,6 +627,18 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
             return false;
         }
 
+        // ward rules run before core type validation and may deny or transform the value
+        const outcome = this.runWard({ kind: "setProp", name, value: newValue });
+
+        if (outcome && !outcome.allow) {
+            this.incidentsHandler?.error(`Ward denied writing prop "${name}"${outcome.reason ? `: ${outcome.reason}` : ""}`);
+            return false;
+        }
+
+        if (outcome && outcome.allow && outcome.value !== undefined) {
+            newValue = outcome.value;
+        }
+
         const write = (value: any): boolean => {
             this._props[name].value = value;
             return true;
@@ -619,25 +683,38 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
         return write(newValue);
     }
 
-    protected silentAddProp<T>(name: string, value: T): void {
+    // returns true when the prop was actually created
+    protected silentAddProp<T>(name: string, value: T): boolean {
         if (!this._alive) {
             this.incidentsHandler?.error("This store doesn't support anymore");
-            return;
+            return false;
         }
 
         if (Tardigrade.isFn(value)) {
             this.incidentsHandler?.error("Prop can't be a function. Use resolvers for this purpose");
-            return;
+            return false;
         }
 
         if (this.hasProp(name)) {
             this.incidentsHandler?.error("Prop can't be override, you have to remove prop first");
-            return;
+            return false;
+        }
+
+        // ward rules run before core validation and may deny or transform the value
+        const outcome = this.runWard({ kind: "addProp", name, value });
+
+        if (outcome && !outcome.allow) {
+            this.incidentsHandler?.error(`Ward denied adding prop "${name}"${outcome.reason ? `: ${outcome.reason}` : ""}`);
+            return false;
+        }
+
+        if (outcome && outcome.allow && outcome.value !== undefined) {
+            value = outcome.value as T;
         }
 
         if (!isDef(value)) {
             this.incidentsHandler?.error("Value can't be nullable");
-            return;
+            return false;
         }
 
         const type: string = typeOf(value) as TardigradeTypes;
@@ -645,19 +722,21 @@ export class Tardigrade<S extends Dictionary = Dictionary> implements ITardigrad
 
         if (isValueScalar) {
             this._props[name] = { name, value, type, isValueScalar } as Prop<T>;
-            return;
+            return true;
         }
 
         const isComplexDataJsonFriendly = this.isObjectJsonFriendly(value);
 
         if (!isComplexDataJsonFriendly) {
             this.incidentsHandler?.error("Complex data has to be json-friendly");
-            return;
+            return false;
         }
 
         this._props[name] = this._strictObjectsInterfaces && type === TardigradeTypes.Object
             ? { name, value, type, isValueScalar, interface: this.extractInterface(value as Dictionary) } as Prop<T>
             : { name, value, type, isValueScalar } as Prop<T>;
+
+        return true;
     }
 
     protected extractInterface(object: Dictionary): Dictionary {

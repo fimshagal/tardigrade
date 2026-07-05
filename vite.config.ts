@@ -34,6 +34,7 @@ export default defineConfig({
         alias: [
             { find: "tardigrade-store/persist", replacement: path.resolve(__dirname, 'sources/persist/index.ts') },
             { find: "tardigrade-store/history", replacement: path.resolve(__dirname, 'sources/history/index.ts') },
+            { find: "tardigrade-store/ward", replacement: path.resolve(__dirname, 'sources/ward/index.ts') },
             { find: "tardigrade-store", replacement: path.resolve(__dirname, 'sources/index.ts') },
         ],
     },

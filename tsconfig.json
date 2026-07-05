@@ -16,7 +16,8 @@
     "paths": {
       "tardigrade-store": ["./sources/index.ts"],
       "tardigrade-store/persist": ["./sources/persist/index.ts"],
-      "tardigrade-store/history": ["./sources/history/index.ts"]
+      "tardigrade-store/history": ["./sources/history/index.ts"],
+      "tardigrade-store/ward": ["./sources/ward/index.ts"]
     }
   },
   "include": ["sources/**/*.ts"],
