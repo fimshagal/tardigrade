@@ -1,47 +1,33 @@
 # Tardigrade
 
-Tardigrade is free lightweight zero-dependency javascript library for managing state and data with strict typing, supporting dynamic properties, property-specific, global and local listeners, and automatic cleanup for safe and flexible state control
+State that survives everything. Tardigrade is a small, typed state manager whose core has no dependencies — and around that core you add only the pieces you actually need: persistence, undo/redo, write rules, and bridges for React, Vue and Svelte. Each one is a separate import, so a project that just needs a store stays tiny
 
-## Why this library was created
+The name isn't accidental. A tardigrade is the animal that survives anything, and that's the idea here: your state survives reloads (persist), user mistakes (history undo/redo), bad data (ward rules) and even parts of the app being torn down (merge / lifecycle)
 
-This library was created to offer a simplified approach to state management with enhanced type safety, addressing some of the complexities and boilerplate often found in solutions like Redux. With this library, the goal was to create a lightweight state management tool that eliminates unnecessary configuration and ensures strict type control, while still being flexible enough to handle dynamic state changes and listeners
+## Why this library exists
 
----
+Most state managers make you choose: either something minimal that you outgrow the moment you need persistence or validation, or a full framework with actions, reducers and boilerplate for a counter. Tardigrade tries to sit in between — a plain store you can read and write directly, with strict per-property typing and dynamic properties, that you can *grow* into a serious setup by attaching optional layers instead of rewriting anything
 
-## Change log
-
-There is ```changelog.md``` file, and you can easily check all changes that was added 
+The core stays deliberately lean; everything heavier lives in its own subpath export and plugs into a tiny extension point
 
 ---
 
-## Advantages of Tardigrade 
+## What you get
 
-I've designed Tardigrade to offer a flexible, safe, and intuitive way to manage state in applications. Here's why this approach stands out:
+**A typed store, without the ceremony.** Read and write properties directly (`store.setProp`, `store.prop`), no actions or reducers. Each property locks its type on creation, and TypeScript infers the shape from your initial data so autocomplete and checks just work — while dynamic, runtime-added properties are still allowed
 
-### Ease of use
+**Reactivity that fits the framework.** Property-specific, global and derived (selector) listeners on the core, plus ready-made bridges: React (`useSyncExternalStore`, concurrent-safe), Vue 3 (composables returning refs, `v-model` friendly) and Svelte (native store contract, `$`-auto-subscription). Batched updates via `setProps` notify once, not per key
 
-Minimal boilerplate code and a fairly straightforward API. Tardigrade provides a structured way to manage state, but with fewer steps. Tardigrade reduces the need for writing actions, reducers, and dispatchers, allowing developers to focus more on business logic.
+**Optional layers that compose.** Attach only what you need — they all share the same store and stack naturally:
+- **persist** — snapshot state to localStorage (or any adapter) with versioning and migrations
+- **history** — snapshot-based undo/redo with a redo branch and a step limit
+- **ward** — rules that run *before* a write to allow, deny or transform the value
 
-### Full Dynamic State Control
+**Predictable data.** Values are cloned in and out, so nothing outside can mutate the store's internals; object props keep referential stability, so equal content never triggers a spurious re-render. Resolvers cover async and derived data, and the lifecycle (`merge`, `kill`, automatic listener cleanup) keeps things tidy when parts of the app come and go
 
-Tardigrade allows you to dynamically add and remove properties, clone and merge stores and others, making it ideal for applications that need to modify their state structure on the fly. This flexibility is crucial for dynamic applications where data models evolve over time.
+Full history of changes lives in `changelog.md`
 
-### Immutability
-
-Tardigrade works with immutable data even if the provided data was originally mutable. It ensures that all state transformations maintain immutability, preventing unintended side effects and making state changes more predictable and reliable
-
-### React friendly
-
-Use Tardigrade with React.js
-
-### Small size
-
-Tardigrade had a small size
-
-
-### Ease of async
-
-With Tardigrade's resolvers you can easily store async or dynamic derived data
+---
 
 ## Basic usage
 
@@ -50,7 +36,7 @@ With Tardigrade's resolvers you can easily store async or dynamic derived data
 To start using the library, first create an instance of it:
 
 ```ts
-import { createTardigrade } from "tardigrade";
+import { createTardigrade } from "tardigrade-store";
 
 const tardigrade = createTardigrade();
 ```
@@ -269,7 +255,7 @@ const currentStore = altStore.mergeAgent || altStore;
 Here’s how you can combine everything:
 
 ```ts
-import { createTardigrade } from "tardigrade";
+import { createTardigrade } from "tardigrade-store";
 
 const tardigrade = createTardigrade();
 
@@ -363,7 +349,7 @@ Resolver - is a function which can be pass into store and be called in certain m
 #### Simple resolver usage
 
 ```ts
-import { createTardigrade } from "tardigrade";
+import { createTardigrade } from "tardigrade-store";
 
 const tardigrade = createTardigrade();
 
@@ -378,7 +364,7 @@ tardigrade.callResolver("random"); // as result it will call resolver listener h
 Income resolver handler can use single argument - all the current props object
 
 ```ts
-import { createTardigrade } from "tardigrade";
+import { createTardigrade } from "tardigrade-store";
 
 const tardigrade = createTardigrade();
 tardigrade.addProp("money", 1e5);
@@ -563,7 +549,7 @@ store.setProp(propNames.user, {
 
 ## React bridge
 
-Tardigrade ships with a react bridge out of the box. It lives in a separate subpath export, so it doesn't affect bundle size or projects without react. React (>=16.8) is an optional peer dependency: install it only if you are going to use the bridge
+React (>=16.8) is an optional peer dependency — install it only if you use the bridge
 
 ```ts
 import { TardigradeProvider, useTardigrade, useTardigradeProp } from "tardigrade-store/react";
@@ -773,7 +759,7 @@ Semantics match the other bridges: subscribers get the current value synchronous
 
 ## Persist
 
-Tardigrade can persist props into a serializable storage (localStorage by default) via a separate subpath export. Zero dependencies, doesn't change the store model: persist reads ```store.props```, writes snapshots and restores props back through ```setProp``` / ```addProp```. Resolvers and listeners are never persisted
+Persist snapshots props into a serializable storage (localStorage by default) without changing the store model: it reads ```store.props```, writes snapshots and restores them back through ```setProp``` / ```addProp```. Resolvers and listeners are never persisted
 
 ```ts
 import { createTardigrade } from "tardigrade-store";
@@ -871,7 +857,7 @@ The hook creates the link once, restores on the client in an effect (SSR-safe) a
 
 ## History (undo / redo)
 
-Tardigrade can track props changes and roll them back via a separate subpath export. Zero dependencies, doesn't change the store model: history records snapshots of ```store.props``` and restores them back through ```setProp``` / ```addProp``` / ```removeProp```. Resolvers, listeners and merge lifecycle are never touched by undo/redo
+History tracks prop changes and rolls them back without changing the store model: it records snapshots of ```store.props``` and restores them through ```setProp``` / ```addProp``` / ```removeProp```. Resolvers, listeners and merge lifecycle are never touched by undo/redo
 
 ```ts
 import { createTardigrade } from "tardigrade-store";
@@ -991,7 +977,7 @@ The hook creates the link once per store, re-renders the component when ```canUn
 
 ## Ward (write rules)
 
-Ward is a rules layer that runs **before** a value lands in the store: a rule can allow the write, deny it or transform the value. It's business/semantic validation on top of the core type check. Separate subpath export, zero dependencies, the core only carries a tiny extension point
+Ward is a rules layer that runs **before** a value lands in the store: a rule can allow the write, deny it or transform the value. It's business/semantic validation on top of the core type check — the core itself only carries a tiny extension point
 
 ```ts
 import { createTardigrade } from "tardigrade-store";
