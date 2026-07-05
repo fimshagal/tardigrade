@@ -22,13 +22,15 @@ export default defineConfig({
             entry: {
                 "tardigrade.store.persist": path.resolve(__dirname, "sources/persist/index.ts"),
                 "tardigrade.store.persist.react": path.resolve(__dirname, "sources/persist/react/index.ts"),
+                "tardigrade.store.persist.vue": path.resolve(__dirname, "sources/persist/vue/index.ts"),
+                "tardigrade.store.persist.svelte": path.resolve(__dirname, "sources/persist/svelte/index.ts"),
             },
             formats: ["es", "cjs"],
             fileName: (format: any, entryName: any) => `${entryName}.${format}.js`,
         },
         rollupOptions: {
             // core and persist stay external so the app always shares single instances
-            external: ["react", "react/jsx-runtime", "tardigrade-store", "tardigrade-store/persist"],
+            external: ["react", "react/jsx-runtime", "vue", "tardigrade-store", "tardigrade-store/persist"],
         },
     },
 });

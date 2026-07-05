@@ -272,3 +272,14 @@
 - docs
 
 ---
+
+## [1.9.0] - 2026-07-05
+### Added
+- persist for vue: subpath export ```tardigrade-store/persist/vue``` with ```usePersistedTardigrade``` — creates or accepts a store, restores in ```onMounted``` (client only, Nuxt/SSR-safe), disposes on component/effect scope destroy
+- persist for svelte: subpath export ```tardigrade-store/persist/svelte``` with ```persistedTardigrade``` — creates or accepts a store and wires persist in one call, restores synchronously (in-memory no-op on the server)
+- history for vue: subpath export ```tardigrade-store/history/vue``` with ```useHistory``` — same ```HistoryLink``` API, ```canUndo``` / ```canRedo``` are reactive (safe in templates and computeds), disposes on scope destroy
+- history for svelte: subpath export ```tardigrade-store/history/svelte``` with ```tardigradeHistory``` — same ```HistoryLink``` API, ```canUndo``` / ```canRedo``` are svelte-readable stores (```$```-subscribable), still zero dependencies
+- tests for all four wrappers
+- docs: framework subsections in persist/history, ward lifecycle patterns for react/vue/svelte
+
+---

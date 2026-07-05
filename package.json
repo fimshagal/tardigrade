@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "index.js",
@@ -43,6 +43,18 @@
       "import": "./dist/persist/tardigrade.store.persist.react.es.js",
       "default": "./dist/persist/tardigrade.store.persist.react.es.js"
     },
+    "./persist/vue": {
+      "types": "./dist/persist/vue/index.d.ts",
+      "require": "./dist/persist/tardigrade.store.persist.vue.cjs.js",
+      "import": "./dist/persist/tardigrade.store.persist.vue.es.js",
+      "default": "./dist/persist/tardigrade.store.persist.vue.es.js"
+    },
+    "./persist/svelte": {
+      "types": "./dist/persist/svelte/index.d.ts",
+      "require": "./dist/persist/tardigrade.store.persist.svelte.cjs.js",
+      "import": "./dist/persist/tardigrade.store.persist.svelte.es.js",
+      "default": "./dist/persist/tardigrade.store.persist.svelte.es.js"
+    },
     "./history": {
       "types": "./dist/history/index.d.ts",
       "require": "./dist/history/tardigrade.store.history.cjs.js",
@@ -54,6 +66,18 @@
       "require": "./dist/history/tardigrade.store.history.react.cjs.js",
       "import": "./dist/history/tardigrade.store.history.react.es.js",
       "default": "./dist/history/tardigrade.store.history.react.es.js"
+    },
+    "./history/vue": {
+      "types": "./dist/history/vue/index.d.ts",
+      "require": "./dist/history/tardigrade.store.history.vue.cjs.js",
+      "import": "./dist/history/tardigrade.store.history.vue.es.js",
+      "default": "./dist/history/tardigrade.store.history.vue.es.js"
+    },
+    "./history/svelte": {
+      "types": "./dist/history/svelte/index.d.ts",
+      "require": "./dist/history/tardigrade.store.history.svelte.cjs.js",
+      "import": "./dist/history/tardigrade.store.history.svelte.es.js",
+      "default": "./dist/history/tardigrade.store.history.svelte.es.js"
     },
     "./ward": {
       "types": "./dist/ward/index.d.ts",

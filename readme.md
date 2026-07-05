@@ -853,6 +853,32 @@ const link = usePersistedTardigrade(store, { key: "settings" });
 
 The hook creates the link once, restores on the client in an effect (SSR-safe) and detaches auto-save on unmount
 
+#### Vue
+
+```ts
+import { usePersistedTardigrade } from "tardigrade-store/persist/vue";
+
+// inside setup(): restore runs in onMounted (client only, Nuxt-safe),
+// auto-save detaches when the component or effect scope is destroyed
+const link = usePersistedTardigrade({ theme: "light" }, { key: "settings" });
+
+// or with an existing store
+const link = usePersistedTardigrade(store, { key: "settings" });
+```
+
+#### Svelte
+
+```ts
+import { persistedTardigrade } from "tardigrade-store/persist/svelte";
+
+const link = persistedTardigrade({ theme: "light" }, { key: "settings" });
+// link.store is a regular store: wrap its props with tardigradeProp for $-syntax
+```
+
+The factory restores synchronously — the component script runs before the first render, and on the server the default storage is an in-memory no-op. Call ```link.dispose()``` in ```onDestroy``` if the store doesn't live as long as the app
+
+Persist itself is framework-agnostic: ```persist(store, options)``` works with any store no matter which bridge renders it — these wrappers only add lifecycle sugar
+
 ---
 
 ## History (undo / redo)
@@ -973,6 +999,42 @@ const Toolbar = ({ store }) => {
 
 The hook creates the link once per store, re-renders the component when ```canUndo``` / ```canRedo``` flip and disposes on unmount. Prop values themselves re-render through the usual bridge hooks (```useTardigradeProp``` and others), since undo/redo restores props via regular ```setProp``` / ```addProp```
 
+#### Vue
+
+```vue
+<script setup lang="ts">
+import { useHistory } from "tardigrade-store/history/vue";
+
+const timeline = useHistory(store);
+// timeline.canUndo / timeline.canRedo are reactive, safe to use in templates and computeds
+</script>
+
+<template>
+    <button :disabled="!timeline.canUndo" @click="timeline.undo()">Undo</button>
+    <button :disabled="!timeline.canRedo" @click="timeline.redo()">Redo</button>
+</template>
+```
+
+The composable disposes the link when the component (or ```effectScope```) is destroyed
+
+#### Svelte
+
+```svelte
+<script lang="ts">
+import { tardigradeHistory } from "tardigrade-store/history/svelte";
+
+const timeline = tardigradeHistory(store);
+const { canUndo, canRedo } = timeline; // svelte-readable stores
+</script>
+
+<button disabled={!$canUndo} on:click={() => timeline.undo()}>Undo</button>
+<button disabled={!$canRedo} on:click={() => timeline.redo()}>Redo</button>
+```
+
+Here ```canUndo``` / ```canRedo``` are readable stores (```$```-subscribable), the rest of the ```HistoryLink``` API is passed through unchanged. Call ```timeline.dispose()``` in ```onDestroy``` if the store outlives the component
+
+Like persist, history itself is framework-agnostic — ```history(store, options)``` works with any bridge; the wrappers add reactive flags and lifecycle handling
+
 ---
 
 ## Ward (write rules)
@@ -1089,17 +1151,36 @@ guard.dispose();                     // detach from the store, writes pass freel
 
 One active ward per store: a second ```ward(store)``` throws until the previous link is disposed. Rules don't run while a rule is being evaluated (re-entrancy guard), so a rule must not write to the same store synchronously — use transforms instead
 
-#### React
+#### Frameworks
 
-No dedicated hook is needed — attach in an effect:
+Ward is framework-agnostic and needs no dedicated hooks — attach it wherever the store lives. If the store is bound to a component, tie the link to the component lifecycle:
 
 ```tsx
+// react
 useEffect(() => {
     const guard = ward(store);
     guard.addRule("counter", counterRule);
     return () => guard.dispose();
 }, [store]);
 ```
+
+```ts
+// vue (setup)
+const guard = ward(store);
+guard.addRule("counter", counterRule);
+onScopeDispose(() => guard.dispose());
+```
+
+```svelte
+<script>
+// svelte
+const guard = ward(store);
+guard.addRule("counter", counterRule);
+onDestroy(() => guard.dispose());
+</script>
+```
+
+For app-level stores just call ```ward(store)``` next to ```createTardigrade``` — no cleanup needed
 
 ---
 

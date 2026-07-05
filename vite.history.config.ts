@@ -22,13 +22,15 @@ export default defineConfig({
             entry: {
                 "tardigrade.store.history": path.resolve(__dirname, "sources/history/index.ts"),
                 "tardigrade.store.history.react": path.resolve(__dirname, "sources/history/react/index.ts"),
+                "tardigrade.store.history.vue": path.resolve(__dirname, "sources/history/vue/index.ts"),
+                "tardigrade.store.history.svelte": path.resolve(__dirname, "sources/history/svelte/index.ts"),
             },
             formats: ["es", "cjs"],
             fileName: (format: any, entryName: any) => `${entryName}.${format}.js`,
         },
         rollupOptions: {
             // core and history stay external so the app always shares single instances
-            external: ["react", "react/jsx-runtime", "tardigrade-store", "tardigrade-store/history"],
+            external: ["react", "react/jsx-runtime", "vue", "tardigrade-store", "tardigrade-store/history"],
         },
     },
 });
