@@ -259,3 +259,16 @@
 - license changed from CC BY 4.0 to MIT: standard OSI-approved software license, ```"license": "MIT"``` in package.json, bundle banners updated
 
 ---
+
+## [1.8.0] - 2026-07-05
+### Added
+- vue bridge: subpath export ```tardigrade-store/vue``` for Vue 3 Composition API — ```useTardigradeProp``` (writable ref, ```v-model``` friendly), ```useTardigradeProps```, ```useTardigradeSelector```, ```useTardigradeResolver```, ```useTardigrade```, ```provideTardigradeStore``` / ```useTardigradeStore``` (provide/inject analog of the react provider); subscriptions detach on component/effect scope dispose; vue (>=3.0) is an optional peer dependency
+- svelte bridge: subpath export ```tardigrade-store/svelte``` — ```tardigradeProp``` (writable: subscribe/set/update), ```tardigradeProps```, ```tardigradeSelector```, ```tardigradeResolver``` (readable + ```.call()```); implements the svelte store contract by hand, so it works with ```$```-auto-subscription in Svelte 3/4/5 and adds **zero** dependencies
+- both bridges share react bridge semantics: cloned values with referential stability (content-equal updates don't notify), ```setProps``` batch arrives as a single update, writes go through the store so ward rules and type checks apply
+- tests for both bridges
+
+### Updated
+- value clone/compare helpers moved to a shared internal module (```sources/bridge```), react bridge re-exports them (no api change)
+- docs
+
+---

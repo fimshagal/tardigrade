@@ -1,0 +1,6 @@
+/* Tardigrade store svelte bridge v1.8.0 */
+
+/* Created by fSha | fimashagal@gmail.com */
+           
+/* MIT License | Copyright (c) 2024-2026 fSha | see LICENSE file */
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const a=r=>typeof r=="object"&&r!==null,d=(r,e)=>{if(Object.is(r,e))return!0;if(!a(r)||!a(e))return!1;try{return JSON.stringify(r)===JSON.stringify(e)}catch{return!1}},o=(r,e)=>{const n=()=>r.isAlive&&r.hasProp(e)?r.prop(e):null;return{subscribe:i=>{let t=n();i(t);const s=l=>{if(!(Array.isArray(l)?l.includes(e):l===e))return;const u=n();d(t,u)||(t=u,i(u))};return r.addListener(s),()=>{r.isAlive&&r.removeListener(s)}},set:i=>{r.setProp(e,i)},update:i=>{r.setProp(e,i(n()))}}},f=r=>{const e=()=>r.isAlive?r.props:{};return{subscribe:c=>{let i=e();c(i);const t=()=>{const s=e();d(i,s)||(i=s,c(s))};return r.addListener(t),()=>{r.isAlive&&r.removeListener(t)}}}},b=(r,e,n=d)=>({subscribe:i=>{let t=e(r.props);i(t);const s=()=>{if(!r.isAlive)return;const l=e(r.props);n(t,l)||(t=l,i(l))};return r.addListener(s),()=>{r.isAlive&&r.removeListener(s)}}}),p=(r,e)=>({subscribe:c=>{c(null);const i=(t,s)=>{t===e&&c(s)};return r.addListener(i),()=>{r.isAlive&&r.removeListener(i)}},call:()=>r.callResolver(e)});exports.tardigradeProp=o;exports.tardigradeProps=f;exports.tardigradeResolver=p;exports.tardigradeSelector=b;

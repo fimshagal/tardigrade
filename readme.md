@@ -675,6 +675,102 @@ Subscription hooks (```useTardigradeProp```, ```useTardigradeProps```, ```useTar
 
 ---
 
+## Vue bridge
+
+The same bridge for Vue 3 Composition API lives in ```tardigrade-store/vue```. Vue (>=3.0) is an optional peer dependency. The composables mirror the react hooks one to one, but return refs — idiomatic for Vue reactivity
+
+```ts
+import {
+    provideTardigradeStore,
+    useTardigrade,
+    useTardigradeProp,
+    useTardigradeProps,
+    useTardigradeSelector,
+    useTardigradeResolver,
+} from "tardigrade-store/vue";
+```
+
+#### ```useTardigradeProp<T>(name, store?)```
+
+Returns a **writable ref**: reading is reactive, writing goes through ```store.setProp``` (so core type checks and ward rules apply). Works with ```v-model``` out of the box
+
+```vue
+<script setup lang="ts">
+import { useTardigrade, useTardigradeProp } from "tardigrade-store/vue";
+
+const store = useTardigrade({ counter: 0, username: "guest" });
+const counter = useTardigradeProp<number>("counter", store);
+const username = useTardigradeProp<string>("username", store);
+</script>
+
+<template>
+    <button @click="counter!++">{{ counter }}</button>
+    <input v-model="username" />
+</template>
+```
+
+#### Provide / inject
+
+```ts
+// parent component setup()
+provideTardigradeStore(store);
+
+// any descendant component setup()
+const counter = useTardigradeProp<number>("counter"); // store taken via inject
+```
+
+#### The rest of the composables
+
+```ts
+const props = useTardigradeProps(store);                       // Ref<Dictionary>, whole snapshot
+const fullName = useTardigradeSelector((p) => `${p.first} ${p.last}`, store); // Ref<T>, recomputes only when the result changes
+const [fetchPosts, posts] = useTardigradeResolver<Post[]>("fetchPosts", store); // [call, Ref<T | null>]
+```
+
+Semantics match the react bridge: object values are clones with referential stability (content-equal updates don't trigger reactivity), ```setProps``` batches arrive as a single update, subscriptions are cleaned up automatically when the component (or ```effectScope```) is destroyed
+
+---
+
+## Svelte bridge
+
+The svelte bridge in ```tardigrade-store/svelte``` implements the **svelte store contract** by hand, so it has zero dependencies — nothing is imported from the svelte package, and it works with ```$```-auto-subscription in Svelte 3, 4 and 5 alike
+
+```ts
+import { tardigradeProp, tardigradeProps, tardigradeSelector, tardigradeResolver } from "tardigrade-store/svelte";
+```
+
+#### ```tardigradeProp<T>(store, name)```
+
+A writable store: ```subscribe``` / ```set``` / ```update```. Writes go through ```store.setProp```, so type checks and ward rules apply
+
+```svelte
+<script lang="ts">
+import { createTardigrade } from "tardigrade-store";
+import { tardigradeProp } from "tardigrade-store/svelte";
+
+const store = createTardigrade({ counter: 0, username: "guest" });
+const counter = tardigradeProp<number>(store, "counter");
+const username = tardigradeProp<string>(store, "username");
+</script>
+
+<button on:click={() => counter.update((v) => (v ?? 0) + 1)}>{$counter}</button>
+<input bind:value={$username} />
+```
+
+#### The rest of the stores
+
+```ts
+const props = tardigradeProps(store);                          // readable, whole snapshot
+const fullName = tardigradeSelector(store, (p) => `${p.first} ${p.last}`); // readable, notifies only when the result changes
+const posts = tardigradeResolver<Post[]>(store, "fetchPosts"); // readable + .call()
+
+await posts.call(); // $posts updates with the resolver result
+```
+
+Semantics match the other bridges: subscribers get the current value synchronously (store contract), object values are clones with referential stability, ```setProps``` batches produce a single notification per subscriber, unsubscribe detaches from the store
+
+---
+
 ## Persist
 
 Tardigrade can persist props into a serializable storage (localStorage by default) via a separate subpath export. Zero dependencies, doesn't change the store model: persist reads ```store.props```, writes snapshots and restores props back through ```setProp``` / ```addProp```. Resolvers and listeners are never persisted

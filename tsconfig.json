@@ -17,7 +17,9 @@
       "tardigrade-store": ["./sources/index.ts"],
       "tardigrade-store/persist": ["./sources/persist/index.ts"],
       "tardigrade-store/history": ["./sources/history/index.ts"],
-      "tardigrade-store/ward": ["./sources/ward/index.ts"]
+      "tardigrade-store/ward": ["./sources/ward/index.ts"],
+      "tardigrade-store/vue": ["./sources/vue/index.ts"],
+      "tardigrade-store/svelte": ["./sources/svelte/index.ts"]
     }
   },
   "include": ["sources/**/*.ts"],

@@ -1,6 +1,6 @@
 {
   "name": "tardigrade-store",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "description": "A simple state management library",
   "main": "dist/tardigrade.store.cjs.js",
   "module": "index.js",
@@ -9,7 +9,7 @@
   "scripts": {
     "preprocessing": "node processing/update.version",
     "postprocessing": "node processing/create.index",
-    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.persist.config.ts && vite build --config vite.history.config.ts && vite build --config vite.ward.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
+    "build": "npm run clean && npm run preprocessing && vite build && vite build --config vite.react.config.ts && vite build --config vite.vue.config.ts && vite build --config vite.svelte.config.ts && vite build --config vite.persist.config.ts && vite build --config vite.history.config.ts && vite build --config vite.ward.config.ts && tsc --emitDeclarationOnly --project tsconfig.json && npm run postprocessing",
     "clean": "rimraf dist",
     "dev": "vite",
     "lint": "eslint . --ext .ts",
@@ -60,13 +60,29 @@
       "require": "./dist/ward/tardigrade.store.ward.cjs.js",
       "import": "./dist/ward/tardigrade.store.ward.es.js",
       "default": "./dist/ward/tardigrade.store.ward.es.js"
+    },
+    "./vue": {
+      "types": "./dist/vue/index.d.ts",
+      "require": "./dist/vue/tardigrade.store.vue.cjs.js",
+      "import": "./dist/vue/tardigrade.store.vue.es.js",
+      "default": "./dist/vue/tardigrade.store.vue.es.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "require": "./dist/svelte/tardigrade.store.svelte.cjs.js",
+      "import": "./dist/svelte/tardigrade.store.svelte.es.js",
+      "default": "./dist/svelte/tardigrade.store.svelte.es.js"
     }
   },
   "peerDependencies": {
-    "react": ">=16.8.0"
+    "react": ">=16.8.0",
+    "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {
     "react": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },
@@ -88,6 +104,7 @@
     "typescript": "^5.6.2",
     "vite": "^4.5.0",
     "vite-plugin-banner": "^0.8.0",
-    "vitest": "^2.1.2"
+    "vitest": "^2.1.2",
+    "vue": "^3.5.39"
   }
 }

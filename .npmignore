@@ -9,6 +9,8 @@ vite.react.config.ts
 vite.persist.config.ts
 vite.history.config.ts
 vite.ward.config.ts
+vite.vue.config.ts
+vite.svelte.config.ts
 .eslintrc
 tardigrade.jpg
 processing/
